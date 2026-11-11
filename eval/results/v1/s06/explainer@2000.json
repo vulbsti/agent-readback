@@ -1,0 +1,73 @@
+{
+ "session": "s06",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 1805,
+ "answer_input_tokens": 4192,
+ "answers": {
+  "q1": "In `src/index.ts` `parse`, it replaced the `!match?.groups` → `return NaN` branch with a compound loop. It runs only when the input fails the single-value regex (after the existing length check); single-unit inputs take the old path.",
+  "q2": "The sticky, case-insensitive (`/iy`) regex `part` matches an optional `-`, a number, optional spaces, then a unit. A lookahead requires it to be followed by optional spaces plus a digit, `-`, `.digit`, or end of string.",
+  "q3": "Each matched component string is passed back into `parse` recursively and the result is added to `total`. This keeps unit conversion in the single-value path. The material doesn't quote a code comment giving a reason, so the reason is inferred from the design.",
+  "q4": "The sign is taken from `component[1].startsWith('-')`, i.e. whether the component starts with `-`. The first component's sign is remembered, and any later component with a different sign returns NaN.",
+  "q5": "If only one component matched (`count` not > 1), it returns NaN. An explicit `str.endsWith(' ')` check returns NaN for trailing whitespace; the lookahead already rejects it, so that check looks redundant.",
+  "q6": "The test requires NaN for mixed signs (`1h -30m`, `-1h 30m`), a missing unit (`1h 30`), an unknown unit (`1h 30x`), junk (`1h 30m junk`), commas (`1h,30m`), tabs (`1h\\t30m`), `+` (`1h +30m`), a leading space (` 1h 30m`), and trailing spaces (`1h 30m `, `1s `). The material lists these only partly by example.",
+  "q7": "The test checks that a 100-character padded input parses, while a 101-character input throws. The material also shows `''` throwing.",
+  "q8": "The README notes that the `StringValue` type covers single values only. TypeScript users should call `parse` for compound strings.",
+  "q9": "Type checking could not be run because `tsc` is not installed.",
+  "q10": "Order: explored the repo, edited `parse` in `src/index.ts`, added `src/compound.test.ts`, updated `README.md`, then checked `node --version` and `git diff --check`, and ran `node --test src/compound.test.ts`. Only one test run was needed, with 3 pass and 0 fail."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Says it replaced the no-match return NaN branch and only runs when single-value regex fails; single-unit inputs take old path."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Mentions sticky+case-insensitive, unit required, and lookahead for number or end of string."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0.5,
+   "why": "Correct recursive parse and adding to total, but says no comment gives the reason; the key says the comment states keeping the single-value parser as source of conversions. Reason is effectively conveyed though not attributed."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Sign from startsWith('-'), first remembered, mismatch returns NaN."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "count>1 required else NaN, and trailing whitespace endsWith(' ') returns NaN."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Lists nearly all inputs including both mixed-sign orders, plus, unitless, unknown unit, junk, comma, leading/trailing space, tab. Only -1h 30m, 1h +30m etc. covered."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "100-char passes, 101 throws, empty throws. Doesn't state 1000 ms but the core is covered."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "StringValue covers single values only; use parse for compound."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Typecheck not run because tsc not installed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Gives one test run passing 3/3, but order is wrong: key has index.ts patch, then one patch adding test and README, then a single parallel batch; answer's ordering of checks and test run is roughly consistent but includes exploration and omits tsc check and the two-patch structure."
+  }
+ },
+ "score": 9.0,
+ "n": 10
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "q1",
+    "question": "What regular expression did the agent add to index.js to find entities, and what is the variable called?",
+    "answer": "matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g",
+    "accept": "Must name matchEntityRegExp and describe: named quot|amp|lt|gt, decimal group #([0-9]+), hex group #[xX]([0-9a-fA-F]+), required trailing semicolon, global flag. Exact regex preferred.",
+    "kind": "what",
+    "evidence": "L14; diff index.js @@ -14,6 +14,7 @@"
+  },
+  {
+    "id": "q2",
+    "question": "What is the internal name of the new function and how is it exported?",
+    "answer": "unescapeHtml, attached as module.exports.unescape = unescapeHtml right after module.exports = escapeHtml.",
+    "accept": "Must give unescapeHtml and module.exports.unescape = unescapeHtml (default export stays escapeHtml).",
+    "kind": "where",
+    "evidence": "L14; diff index.js @@ -21,6 +22,7 @@ and @@ -76,3 +78,35 @@"
+  },
+  {
+    "id": "q3",
+    "question": "The switch in unescapeHtml has cases for &quot;, &amp;, &lt; and &gt; only. How is &#39; decoded?",
+    "answer": "Through the numeric path: the regex captures 39 in the decimal group, parseInt(decimal, 10) gives 39, and String.fromCharCode(39) returns the apostrophe.",
+    "accept": "Must say &#39; goes through the decimal numeric-reference branch (no named case for it).",
+    "kind": "how",
+    "evidence": "L14; diff index.js @@ -76,3 +78,35 @@"
+  },
+  {
+    "id": "q4",
+    "question": "Which code points are left untouched by unescapeHtml, and what is returned for them?",
+    "answer": "Code points > 0x10FFFF or in the surrogate range 0xD800-0xDFFF; the original entity text is returned unchanged.",
+    "accept": "Both conditions required (above 0x10FFFF, and surrogates D800-DFFF); return value is the original entity string. Huge values like &#9999...; fall under > 0x10FFFF.",
+    "kind": "how",
+    "evidence": "L14; diff index.js @@ -76,3 +78,35 @@; README.md @@ -40,6 +41,25 @@"
+  },
+  {
+    "id": "q5",
+    "question": "How does unescapeHtml produce characters above 0xFFFF such as &#x1F600;?",
+    "answer": "It builds a surrogate pair by hand: subtract 0x10000, then String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF)); it does not use String.fromCodePoint.",
+    "accept": "Must describe manual surrogate-pair construction (subtract 0x10000, high/low surrogate math via fromCharCode).",
+    "kind": "how",
+    "evidence": "L14; diff index.js @@ -76,3 +78,35 @@; test 'decodes supplementary characters'"
+  },
+  {
+    "id": "q6",
+    "question": "What does the 'decodes one layer per call' test assert?",
+    "answer": "unescape('&amp;lt; &amp;#60; &#38;quot;') === '&lt; &#60; &quot;' (only one level of escaping is removed).",
+    "accept": "Must give the input/output pair or equivalent: double-escaped &amp;lt; becomes &lt; (not <), including the numeric &#38;quot; -> &quot; case.",
+    "kind": "test",
+    "evidence": "L15; diff test/unescape.test.js @@ -0,0 +1,65 @@"
+  },
+  {
+    "id": "q7",
+    "question": "Which named entities does the test 'leaves unknown and differently cased named entities untouched' require to stay unchanged?",
+    "answer": "'&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString;'",
+    "accept": "Must mention that &apos;, &copy;, &nbsp; and uppercase variants (&AMP;, &LT;) are left alone; prototype-like names (&constructor;, &toString;) are a plus.",
+    "kind": "test",
+    "evidence": "L15; diff test/unescape.test.js @@ -0,0 +1,65 @@"
+  },
+  {
+    "id": "q8",
+    "question": "What happened when the agent ran `npm test`, with what exit code?",
+    "answer": "It failed with exit code 127: `sh: 1: mocha: not found` (the package's test script is `mocha test/`).",
+    "accept": "Must include mocha not found and exit code 127.",
+    "kind": "failure",
+    "evidence": "L19; L21; L22"
+  },
+  {
+    "id": "q9",
+    "question": "Why did the agent run test/index.js with `node -e` and globals, and what was the result?",
+    "answer": "Because mocha is not installed; it mapped global describe/it to node:test's describe/it and required test/index.js, and the existing escapeHtml tests passed (30 tests).",
+    "accept": "Must say mocha was unavailable, describe the node:test shim of describe/it, and the result 30 passed.",
+    "kind": "why",
+    "evidence": "L24; L25-L27; L28"
+  },
+  {
+    "id": "q10",
+    "question": "How many edit rounds did the agent need before the new tests passed?",
+    "answer": "One: a single apply_patch call (index.js, test/unescape.test.js, README.md) followed immediately in the same exec by `node --test`, which passed 10/10; no further code edits were made.",
+    "accept": "Must say a single patch / no rework, with 10 of 10 tests passing on the first run.",
+    "kind": "sequence",
+    "evidence": "L14-L17; L28"
+  }
+]

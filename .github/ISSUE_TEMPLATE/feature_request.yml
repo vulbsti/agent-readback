@@ -1,0 +1,34 @@
+name: Feature request
+description: Propose a new mode, backend, transcript format or option.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check docs/ROADMAP.md first; the item may already be scoped there.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What you are trying to understand or do, and why the current commands fall short.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: The command, flag or behaviour you want. Include example output if relevant.
+    validations:
+      required: true
+  - type: checkboxes
+    id: invariants
+    attributes:
+      label: Constraints
+      options:
+        - label: Keeps the read-only guarantee (nothing written to the observed transcript or repo).
+          required: true
+        - label: Needs no new runtime dependency (or the request explains why one is unavoidable).
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "q1",
+    "question": "Where in parse() did the agent put the compound-duration logic, and when does it run?",
+    "answer": "In src/index.ts, inside the `if (!match?.groups)` branch that used to just return NaN. It only runs when the existing single-value regex fails to match.",
+    "accept": "Must say it replaced the bare `return NaN` in the no-match branch, so single-unit inputs never reach it.",
+    "kind": "where",
+    "evidence": "L19-L20; diff src/index.ts @@ -80,7 +80,27 @@"
+  },
+  {
+    "id": "q2",
+    "question": "What regex does the compound loop use per component, and which flags and lookahead does it have?",
+    "answer": "`part` = /(-?\\d*\\.?\\d+) *(milliseconds?|...|y)(?= *-?\\d| *-?\\.\\d|$)/iy: case-insensitive and sticky (y), with a lookahead requiring that the next thing is another number (optionally negative or starting with .) or the end of the string.",
+    "accept": "Must mention the sticky + case-insensitive flags (iy), a required unit (not optional), and the lookahead that only allows another number or end of string after a component.",
+    "kind": "what",
+    "evidence": "L19-L20; diff src/index.ts @@ -80,7 +80,27 @@"
+  },
+  {
+    "id": "q3",
+    "question": "How is each component converted to milliseconds, and what reason does the code give?",
+    "answer": "It calls parse(component[0]) recursively and adds the result to total. The comment says to keep the single-value parser as the source of unit conversions.",
+    "accept": "Must mention the recursive parse() call on each matched component and the stated reason (reuse the existing single-value conversions).",
+    "kind": "how",
+    "evidence": "L18; L19 (code comment); diff src/index.ts @@ -80,7 +80,27 @@"
+  },
+  {
+    "id": "q4",
+    "question": "How are mixed-sign compounds like \"1h -30m\" detected?",
+    "answer": "Each component's sign is `component[1].startsWith('-')`. The first component sets `sign`, and any later component with a different sign returns NaN. A '+' sign isn't accepted by the regex at all.",
+    "accept": "Must mention comparing each component's leading '-' against the first component's sign and returning NaN on mismatch.",
+    "kind": "how",
+    "evidence": "L19; diff src/index.ts @@ -80,7 +80,27 @@; test '1h +30m'"
+  },
+  {
+    "id": "q5",
+    "question": "What does the compound branch return if it consumed only one component, and how is trailing whitespace treated?",
+    "answer": "It returns NaN unless count > 1, so the compound path never accepts a new single-unit form. If the string ends in spaces after the last component (offset reaches the end and str.endsWith(' ')), it returns NaN.",
+    "accept": "Both parts required: count > 1 is needed (otherwise NaN), and trailing whitespace -> NaN.",
+    "kind": "how",
+    "evidence": "L19; diff src/index.ts @@ -80,7 +80,27 @@"
+  },
+  {
+    "id": "q6",
+    "question": "Which inputs does the 'rejects mixed signs and invalid or incomplete components' test require to be NaN?",
+    "answer": "'1h -30m', '-1h 30m', '1h +30m', '1h 30', '1h 30x', '1h 30m junk', '1h,30m', '1h 30m ', ' 1h 30m', '1h\\t30m'",
+    "accept": "Must list most of them, including both mixed-sign orders, the plus sign, a unitless part, an unknown unit, trailing junk, a comma, leading/trailing space and a tab.",
+    "kind": "test",
+    "evidence": "L23-L24; diff src/compound.test.ts @@ -0,0 +1,31 @@"
+  },
+  {
+    "id": "q7",
+    "question": "How does the test check that the 100-character limit is kept?",
+    "answer": "'1' + 98 spaces + 's' (exactly 100 chars) parses to 1000; '1' + 99 spaces + 's' (101 chars) throws. parse('') also throws.",
+    "accept": "Must mention the 100-char input that passes (1000 ms) and the 101-char input that throws.",
+    "kind": "test",
+    "evidence": "L23-L24; diff src/compound.test.ts @@ -0,0 +1,31 @@"
+  },
+  {
+    "id": "q8",
+    "question": "What TypeScript limitation does the README note, and what does it tell users to do?",
+    "answer": "The StringValue type used by ms() and parseStrict only describes single values, so for compound strings TypeScript users should call parse.",
+    "accept": "Must say StringValue / ms / parseStrict types were not extended to compound strings, and to use parse instead.",
+    "kind": "why",
+    "evidence": "L23; diff README.md @@ -154,10 +154,19 @@; L32"
+  },
+  {
+    "id": "q9",
+    "question": "Which verification step could not be done, and why?",
+    "answer": "Type checking: node_modules/.bin/tsc was missing, so the command printed 'TypeScript compiler not installed' (Node v26.9.0) and tsc --noEmit never ran.",
+    "accept": "Must say the typecheck was skipped because the TypeScript compiler is not installed. An earlier memory-file rg that exited 1 with no match is a minor extra, not required.",
+    "kind": "failure",
+    "evidence": "L26-L27; L32"
+  },
+  {
+    "id": "q10",
+    "question": "In what order did the agent make its changes and run the tests, and how many test runs were needed?",
+    "answer": "First an apply_patch to src/index.ts only. Then a second apply_patch that added src/compound.test.ts and updated README.md. Then one parallel batch ran node --test (3/3 passed), git diff --check/--stat and the tsc check. No code changes followed.",
+    "accept": "Must give the order: index.ts patch, then test + README patch, then a single test run that passed 3 of 3 on the first try.",
+    "kind": "sequence",
+    "evidence": "L19-L20; L23-L24; L26-L29"
+  }
+]

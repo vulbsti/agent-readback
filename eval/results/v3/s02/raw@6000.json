@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 12350,
+ "answers": {
+  "q1": "`matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`, added next to `matchHtmlRegExp`.",
+  "q2": "The function is named `unescapeHtml`, and it is exported via `module.exports.unescape = unescapeHtml`.",
+  "q3": "`&#39;` is matched by the decimal numeric branch of the regex (`#([0-9]+)`). It is parsed with parseInt(…, 10) to 39 and converted with String.fromCharCode, giving `'`.",
+  "q4": "Code points above 0x10FFFF and surrogate-range code points 0xD800–0xDFFF are left untouched. The original entity text is returned unchanged for them.",
+  "q5": "It subtracts 0x10000 from the code point and builds a surrogate pair with String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF)).",
+  "q6": "It asserts that unescape('&amp;lt; &amp;#60; &#38;quot;') returns '&lt; &#60; &quot;', i.e. only one layer is decoded.",
+  "q7": "`&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString;` must all stay unchanged.",
+  "q8": "unknown. The material only says `npm test` was unavailable because Mocha isn't installed; no exit code is given.",
+  "q9": "Mocha wasn't installed, so the agent ran the existing test/index.js with Node's test APIs supplied as globals (describe/it) through `node -e`. The result was 30 tests passing, 0 failing.",
+  "q10": "unknown. The material doesn't show any edit rounds, only the final diff and a report that the new tests passed (10 passed)."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Exact regex and variable name match the key."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names unescapeHtml and module.exports.unescape = unescapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Correctly says decimal numeric branch, parseInt gives 39, fromCharCode gives apostrophe."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions given and original entity text returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Manual surrogate pair construction with correct math."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Input/output pair matches the key exactly."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Lists the full set of entities matching the key."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answered unknown; key requires mocha not found and exit code 127."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Mocha unavailable, node:test globals shim for describe/it, 30 tests passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answered unknown; key says one patch round with 10/10 passing."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 1
+}

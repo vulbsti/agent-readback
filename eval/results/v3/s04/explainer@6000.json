@@ -1,0 +1,74 @@
+{
+ "session": "s04",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 5573,
+ "answer_input_tokens": 11668,
+ "answers": {
+  "q1": "`_table_formats[\"dokuwiki\"]` is a TableFormat with lineabove, linebelowheader, linebetweenrows and linebelow all None, headerrow=partial(_dokuwiki_row, \"^\"), datarow=partial(_dokuwiki_row, \"|\"), padding=0 and with_header_hide=None.",
+  "q2": "The agent added it to the tabulate() docstring format list (plus a doctest), the cli.py help text, the README supported-formats list, the README CLI help list, and a new README section. It is also covered by a test that checks `tabulate_formats`.",
+  "q3": "It replaces `|` with `%%|%%` and `^` with `%%^%%` in each cell value, using DokuWiki's %% no-format escape, before adding padding.",
+  "q4": "Decimal is treated like right alignment: `\"  \" + value.rstrip() + \" \"`. A None/unknown alignment falls back to `\" \" + value.strip() + \" \"`.",
+  "q5": "Because tabulate has already padded cells to column width before calling the row function. Without re-trimming, short cells would have padding on both sides and look centered, so the agent strips the padding and re-applies DokuWiki spacing.",
+  "q6": "The material only says it checks `\"\"` and a header-only row; the exact expected strings are not shown.",
+  "q7": "`test_dokuwiki_header_alignment` failed (expected `'^  name   ^...'`, got `'^   name   ^...'`). The agent edited the test's expected string to match the actual output, after which the command passed 12 tests.",
+  "q8": "The agent searched online for DokuWiki table syntax (site.dokuwiki.org) and opened DokuWiki's raw `syntax.txt` and `handler.php` from GitHub. Which fetch failed is not shown in the material, so unknown.",
+  "q9": "`ruff check` plus `ruff format --check` exited 1 with 190 errors, including RUF022 and RUF100 on unchanged lines. The agent reran with `--config pyproject.toml`, which also exited 1, and `ruff format --check` wanted to reflow a `tabulate(...)` call in the test.",
+  "q10": "It patched test/test_output.py to collapse the `tabulate(...)` call onto one line, then ran ruff with a hand-picked `--select E4,E7,E9,F,W,B,C4,ISC,I,C90,UP --ignore ...` set. That check and `ruff format --check` passed, and the dokuwiki tests passed again (12)."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All key facts present: all line fields None, partial rows with ^ and |, padding=0, with_header_hide=None."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Mentions docstring, cli.py and README, but adds a test claim; tabulate_formats automatic pickup not stated. Mostly covers the places, so partial."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0.5,
+   "why": "Gives the %%|%% and %%^%% escaping but does not state it applies to both headers and data cells."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Decimal as right alignment with two leading spaces and trailing one; None/unknown stripped with single spaces."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Cells arrive pre-padded; stripping avoids a centered look."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0,
+   "why": "Does not give the assertions; says expected strings not shown."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Correct test and fix to the expected string, but omits the README/docstring example updates."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Does not identify that handler.php returned 404, says unknown."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Describes the wrong events; misses the snap wrapper failure on read-only file system and switch to /snap/ruff/1713/bin/ruff."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "One-line reformat in the test, explicit --select/--ignore set, checks passed, 12 tests passed."
+  }
+ },
+ "score": 5.5,
+ "n": 10,
+ "rep": 1
+}

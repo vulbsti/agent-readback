@@ -1,0 +1,73 @@
+{
+ "session": "s03",
+ "condition": "raw",
+ "budget": null,
+ "context_tokens_est": 7052,
+ "answer_input_tokens": 13431,
+ "answers": {
+  "q1": "A module-level helper `_arg_extreme(func, iterable, key, default)` in more.py, where `func` is `min` or `max`; argmin and argmax each just call it.",
+  "q2": "Each of argmin and argmax got two `@overload` signatures: the original (no default) returning `int`, and a new one with a required keyword-only `default: _V` returning `int | _V`.",
+  "q3": "It uses the module's `_marker` sentinel as the 'no default given' value. When a default is supplied, it calls `func(..., default=_marker)` and if the result is `_marker` the iterable was empty, so it returns the user's default (which may be None).",
+  "q4": "So an empty iterable still raises the builtin's own ValueError with the same message, keeping the original behavior when no default is given.",
+  "q5": "For both argmin and argmax, it asserts (via assertIs) that an empty list returns the default, and an empty iterator with `key=abs` returns it too, for defaults -1, 'x', None and 0.",
+  "q6": "`test_default_is_keyword_only` calls `func([], None, -1)` (passing default positionally) for both functions and asserts a TypeError is raised.",
+  "q7": "It failed with `ImportError: attempted relative import with no known parent package` because more.py was run as a top-level file. The `doctest-exit=0` is misleading because `$?` reflected the `tail` pipe's exit status, not doctest's.",
+  "q8": "It ran doctests via Python by importing `more_itertools.more`: `run_docstring_examples` on argmin and argmax, plus `doctest.testmod(m)`. The isolated run_docstring_examples calls showed NameErrors (argmin/argmax not defined, since globals were `{}`), while `testmod` reported `TestResults(failed=0, attempted=582)`.",
+  "q9": "It ran `/opt/venv/bin/python -m pytest tests/test_more.py -q -p no:cacheprovider` (plus `git diff --stat`), and the result was 630 passed, 11343 subtests passed.",
+  "q10": "[answer removed: the original q10 concerned a remark about the user's personal settings]"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names _arg_extreme(func, iterable, key, default), min/max, argmin/argmax call it."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Two overloads each; int and int | _V returns; keyword-only default."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Mentions _marker sentinel, default=_marker passed to func, result _marker means empty, user default returned incl. None."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Preserves original ValueError with same message."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Lists defaults, assertIs, empty list and empty iterator with key=abs, both functions."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Positional func([], None, -1) call and TypeError expected."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Relative-import ImportError and $? from tail pipe."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Both outcomes: NameError with empty globals, testmod failed=0 attempted=582."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Has the command with -p no:cacheprovider and 630 passed, 11343 subtests; the read-only cache warning reason is not given, though the key itself doesn't require it."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "[removed]"
+  }
+ },
+ "score": 9.5,
+ "n": 10
+}

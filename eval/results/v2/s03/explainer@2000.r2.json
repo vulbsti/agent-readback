@@ -1,0 +1,74 @@
+{
+ "session": "s03",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4710,
+ "answers": {
+  "q1": "`_arg_extreme(func, iterable, key, default)` in more.py. argmin and argmax delegate to it with builtin `min` or `max`.",
+  "q2": "Each of argmin and argmax got two `@overload`s in more.pyi. Without `default` it returns `int`; with `default: _V` it returns `int | _V`. The overloads were modelled on `first` and `last`.",
+  "q3": "When a default is given, it calls `func(pairs, key=itemgetter(1), default=_marker)`, so builtin min/max return the `_marker` sentinel for empty input. If `result is _marker`, it returns the user's `default`. Since the sentinel is a private object, None and 0 work as real defaults.",
+  "q4": "When `default is _marker`, no default was given, so the call matches the old code exactly. Builtin min/max then raise `ValueError` on empty input, preserving the existing behavior.",
+  "q5": "It checks that an empty iterable returns the given default, using `assertIs` for identity, with defaults `-1`, `'x'`, `None` and `0`. It also covers a `key=abs` case.",
+  "q6": "`test_default_is_keyword_only` asserts that `func([], None, -1)` raises `TypeError`. This is weak, because `key` is already keyword-only, so the call would raise `TypeError` regardless and it doesn't isolate `default`.",
+  "q7": "It failed with an ImportError because of the relative import in more.py. The printed `doctest-exit=0` was `tail`'s exit code, not doctest's.",
+  "q8": "It reran the doctests via an import. `run_docstring_examples(..., {})` raised `NameError` because the globals dict was empty, which was a harness problem. `doctest.testmod(m)` reported failed=0, attempted=582.",
+  "q9": "The full `tests/test_more.py` ran with `-p no:cacheprovider`. It gave 630 passed and 11343 subtests passed.",
+  "q10": "[answer removed: the original q10 concerned a remark about the user's personal settings]"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names _arg_extreme(func, iterable, key, default) and delegation with min/max."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Two overloads each; int vs int | _V."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Mentions _marker sentinel, default=_marker to min/max, and result is _marker check."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "No default preserves original ValueError behavior."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Has defaults and assertIs, and key=abs, but doesn't mention both plain [] and iter([]) cases explicitly."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Identifies func([], None, -1) expecting TypeError; extra critique is not wrong."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Mentions ImportError and tail's exit code but omits the 'no known parent package' detail; the key facts are essentially present, though the relative-import cause is given."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "NameError from empty globals and testmod 0 failed/582 attempted."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Has flag and results but omits the read-only cache warning reason; the key facts are present, so it is mostly correct."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "[removed]"
+  }
+ },
+ "score": 7.5,
+ "n": 10,
+ "rep": 2
+}

@@ -1,0 +1,74 @@
+{
+ "session": "s01",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 4692,
+ "answers": {
+  "q1": "`compact_suffixes = (\"K\", \"M\", \"B\", \"T\")`, placed after `human_powers`, with a comment saying it aligns with the first entries of `powers`.",
+  "q2": "unknown. The diff and transcript shown are truncated before the body of intword(), so the placement of the compact branch relative to the rounding-carry logic and the human_powers/_ngettext lookup isn't visible.",
+  "q3": "unknown. The exact condition is in the truncated part of the function body. The docstring only says compact uses K/M/B/T up to trillion and falls back to words above that.",
+  "q4": "It returns \"1.0 quadrillion\". The value rounds up past a trillion, so the suffix list (K/M/B/T) no longer applies and the word form is used. This matches the test case and the agent's summary.",
+  "q5": "intword(1_234_000, \"%0.3f\", compact=True) == \"1.234M\"; intword(999_499, \"%.0f\", compact=True) == \"999K\"; intword(999_500, \"%.0f\", compact=True) == \"1M\".",
+  "q6": "The first test run failed because src/humanize/_version.py was missing from the checkout. It did not come from the agent's change; the failure happened before the agent's changes were reached.",
+  "q7": "unknown. The portion of the transcript covering what happened right after the failure is truncated, so the agent's first attempt isn't visible.",
+  "q8": "The agent added a two-line placeholder _version.py setting `__version__ = \"0.0.0.dev0\"`. What the Grep step revealed about that file is unknown from the material, since the only Grep shown searched for `def intword`, which found src/humanize/number.py:223.",
+  "q9": "The requested command passed: 267 tests in tests/test_number.py, and the 8 doctests in number.py also passed.",
+  "q10": "The agent said git ignores the file, so it won't be committed. The reason it's absent from diff.patch is presumably the same ignore rule, but the material doesn't state this explicitly."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names compact_suffixes with K, M, B, T in order."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0,
+   "why": "Answer is unknown."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0,
+   "why": "Answer is unknown; the condition is not given."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Gives 1.0 quadrillion and explains the carry past trillion, so the word form is used."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "All three cases and expected outputs are correct."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Correctly says it was a missing _version.py and unrelated to the change, but does not mention the ModuleNotFoundError at collection."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is unknown."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0.5,
+   "why": "Gives the stub with __version__ = \"0.0.0.dev0\", but says nothing on hatch-vcs generation or gitignore."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Gives 267 tests and 8 doctests passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Says git ignores the file, which is the key reason, but does not cite the src/*/_version.py rule and hedges on diff.patch."
+  }
+ },
+ "score": 5.5,
+ "n": 10,
+ "rep": 1
+}

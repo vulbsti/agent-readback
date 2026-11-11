@@ -1,0 +1,74 @@
+{
+ "session": "s06",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 1926,
+ "answer_input_tokens": 4424,
+ "answers": {
+  "q1": "In `src/index.ts:parse`, it replaced the old `return NaN` that ran when the single-value regex had no match/groups. The compound loop runs only after the length/empty checks and when the single-value regex fails.",
+  "q2": "A sticky, case-insensitive regex `part` (`/iy`) that matches an optionally negative number, optional spaces and a unit. A lookahead then requires another number (`-?\\d` or `-?\\.\\d`) or end of string.",
+  "q3": "Each component's text is passed recursively to `parse(component[0])` and the results are summed into `total`. The reason: unit conversion stays in the existing single-value code, which is the source of unit conversions.",
+  "q4": "Each component's sign is taken from `component[1].startsWith('-')`. If it differs from the sign of earlier parts, the function returns NaN, so `1h -30m` and `-1h 30m` are rejected.",
+  "q5": "It returns NaN unless `count > 1`, so a single component gives NaN. After a match, spaces are skipped, and if that reaches the end and the string ends in a space, it returns NaN (trailing whitespace is rejected).",
+  "q6": "`1h -30m`, `-1h 30m`, `1h +30m`, `1h 30`, `1h 30x`, junk, commas (e.g. `1h,30m`), leading or trailing space, and tabs (e.g. `1h\\t30m`).",
+  "q7": "Test 3 checks that a 100-character string parses, while a 101-character string and `''` throw.",
+  "q8": "The README notes that the `StringValue` type only covers single values, so compound strings are typed only through `parse`. The material doesn't state what users are told to do beyond that, so that part is unknown.",
+  "q9": "The TypeScript type check could not be done because `tsc` is not installed (\"TypeScript compiler not installed\"). The existing test suites were also not run, but no reason is given for that.",
+  "q10": "The agent explored first (rg, listing, reading files), then edited `src/index.ts`, added `src/compound.test.ts`, and updated the README. It then checked the node version and tsc, ran `git diff --check`/`--stat`, and ran `node --test src/compound.test.ts`. It needed one test run, which exited 0, with no fix phase."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Says it replaced bare return NaN in the no-match branch and runs only when single regex fails."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Mentions sticky, case-insensitive, and the lookahead, but does not say the unit is required."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Recursive parse(component[0]) summed into total, with reason of reusing the single-value conversions."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Sign from startsWith('-'), mismatch returns NaN."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Both count>1 and trailing whitespace NaN are covered."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Lists most inputs including both mixed-sign orders, plus sign, unitless part, unknown unit, junk, comma, spaces, tab."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Does not give the 100-char input parsing to 1000 ms, and the 101-char throw is correct but vague."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0.5,
+   "why": "Correctly says StringValue covers only single values, but misses the instruction to use parse and says it is unknown."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Typecheck skipped because tsc is not installed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "One test run with no fix phase is right, but the order is muddled: it omits the two-patch split, and the test run happened in a parallel batch."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 1
+}

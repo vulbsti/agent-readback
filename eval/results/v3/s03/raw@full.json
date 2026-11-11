@@ -1,0 +1,74 @@
+{
+ "session": "s03",
+ "condition": "raw",
+ "budget": null,
+ "context_tokens_est": 7052,
+ "answer_input_tokens": 13431,
+ "answers": {
+  "q1": "`_arg_extreme(func, iterable, key, default)` in more.py, where func is min or max. argmin and argmax each just call it, e.g. `_arg_extreme(min, iterable, key, default)`.",
+  "q2": "Each of argmin and argmax became two @overload signatures. The original returns `int`, and a new one with keyword-only `default: _V` returns `int | _V`.",
+  "q3": "When a default is supplied, it calls `func(pairs, key=itemgetter(1), default=_marker)` using the private `_marker` sentinel. If the result is `_marker`, the iterable was empty and the user's default is returned, otherwise `result[0]`. Because the check is against `_marker` and not None, None works as a real default.",
+  "q4": "When `default is _marker` (none given), it calls `func(pairs, key=itemgetter(1))[0]` with no default, so min/max raise their usual ValueError on an empty iterable. The transcript doesn't state the reasoning beyond this.",
+  "q5": "For both argmin and argmax, it checks that an empty input returns the default itself (via assertIs), for both `[]` and `iter([])` with `key=abs`. The defaults tested are -1, 'x', None and 0.",
+  "q6": "test_default_is_keyword_only calls `func([], None, -1)` for both functions with default passed positionally, and asserts it raises TypeError.",
+  "q7": "It failed with `ImportError: attempted relative import with no known parent package`, because running the file as a script breaks its relative imports. The `doctest-exit=0` is misleading because `echo $?` reports the exit status of `tail` at the end of the pipe, not of the doctest run.",
+  "q8": "It ran doctest from Python with `import more_itertools.more`, calling `run_docstring_examples` on argmin and argmax and then `doctest.testmod(m)`. The argmin/argmax run printed NameError failures because the empty globals `{}` didn't define the functions, while `testmod` reported `TestResults(failed=0, attempted=582)`.",
+  "q9": "It ran `/opt/venv/bin/python -m pytest tests/test_more.py -q -p no:cacheprovider`, adding `-p no:cacheprovider`, followed by `git diff --stat`. Result: 630 passed, 11343 subtests passed.",
+  "q10": "[answer removed: the original q10 concerned a remark about the user's personal settings]"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names _arg_extreme(func, iterable, key, default) with min/max."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Two overloads; int and int | _V with keyword-only default."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Mentions _marker sentinel, default=_marker passed to min/max, check against _marker, result[0]."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "No default passed so min/max raise usual ValueError on empty."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Both functions, assertIs, [] and iter([]) with key=abs, defaults -1,'x',None,0."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Positional func([], None, -1) expecting TypeError."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Relative-import ImportError and exit status from tail in the pipe."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "NameError from empty globals and testmod failed=0, attempted=582."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Includes -p no:cacheprovider and 630 passed, 11343 subtests."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "[removed]"
+  }
+ },
+ "score": 10.0,
+ "n": 10,
+ "rep": 1
+}

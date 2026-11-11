@@ -1,0 +1,74 @@
+{
+ "session": "s04",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 13718,
+ "answers": {
+  "q1": "\"dokuwiki\" is a TableFormat with lineabove, linebelowheader, linebetweenrows and linebelow all None, headerrow=partial(_dokuwiki_row, \"^\"), datarow=partial(_dokuwiki_row, \"|\"), padding=0, with_header_hide=None.",
+  "q2": "README.md (supported formats list, a dokuwiki description/example section, and the CLI help text), tabulate/cli.py help text (supported output formats), and the tabulate() docstring (format list plus a dokuwiki example). Tests also check it's in tabulate_formats.",
+  "q3": "It replaces each \"|\" with \"%%|%%\" and each \"^\" with \"%%^%%\" (DokuWiki's no-format escape) in every cell value.",
+  "q4": "'decimal' is treated like right alignment (two spaces before, one after, value rstripped); a None/unknown alignment gets a single space on each side around the stripped value.",
+  "q5": "So that only the padding opposite the alignment remains; otherwise tabulate's width padding would leave extra spaces on both sides, making short cells look accidentally centered in DokuWiki.",
+  "q6": "That an empty table with no headers yields \"\", and an empty table with headers [\"name\",\"qty\"] yields \"^ name    ^ qty    ^\".",
+  "q7": "unknown — the material shows no failed run of the requested command; the shown run passed (12 passed).",
+  "q8": "unknown — the material shows no external research on DokuWiki syntax or any failed fetch.",
+  "q9": "unknown — the visible material doesn't show a failed first lint attempt; the shown ruff check and format check passed (the middle of the transcript is truncated).",
+  "q10": "The visible run used the snap-installed ruff (/snap/ruff/1713/bin/ruff) with --no-cache, running ruff check with selected rules and ruff format --check using pyproject.toml; both passed (\"All checks passed!\", \"3 files already formatted\"). What came before that is truncated."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Matches all key facts: None lines, partial rows with ^ and |, padding=0, with_header_hide=None."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names README.md, cli.py, and tabulate() docstring; extra test note is harmless."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0.5,
+   "why": "Gives correct %%|%% / %%^%% escaping and says every cell, but does not explicitly mention header and data cells; 'every cell' is close, though."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Decimal like right (two before, one after); None/unknown single space each side stripped."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Explains stripping keeps only opposite padding and avoids a centered look."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Both assertions given correctly."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer says unknown; key names test_dokuwiki_header_alignment and the fix."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer says unknown; key requires web search, syntax.txt and handler.php 404."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Answer says unknown; key describes snap failure and 190 errors."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Reports checks passed with ruff path, but misses the one-line reformat and the explicit --select/--ignore detail is only vaguely referenced."
+  }
+ },
+ "score": 6.0,
+ "n": 10,
+ "rep": 2
+}

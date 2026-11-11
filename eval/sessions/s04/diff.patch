@@ -1,0 +1,217 @@
+diff --git a/README.md b/README.md
+index 0283a0c..61d44a0 100644
+--- a/README.md
++++ b/README.md
+@@ -194,6 +194,7 @@ Supported table formats are:
+ -   "pretty"
+ -   "psql"
+ -   "rst"
++-   "dokuwiki"
+ -   "mediawiki"
+ -   "moinmoin"
+ -   "html"
+@@ -551,6 +552,20 @@ bacon       0
+ 
+ ```
+ 
++`dokuwiki` produces [DokuWiki](https://www.dokuwiki.org/wiki:syntax#tables)
++tables with `^` separating header cells and `|` separating data cells, and
++no horizontal rules. Alignment uses at least two spaces on the opposite side
++of a cell (both sides for centered cells); decimal alignment is rendered as
++right alignment. Literal `|` and `^` characters in headers and data are escaped
++with DokuWiki's `%%...%%` syntax.
++
++```pycon
++>>> print(tabulate([["apple", 3]], ["name", "qty"], tablefmt="dokuwiki"))
++^ name    ^    qty ^
++| apple   |      3 |
++
++```
++
+ `mediawiki` format produces a table markup used in
+ [Wikipedia](http://www.mediawiki.org/wiki/Help:Tables) and on other
+ MediaWiki-based sites:
+@@ -1158,7 +1173,7 @@ FORMAT:
+ -I INTFMT, --int INTFMT   integer point number format (default: "")
+ -f FMT, --format FMT      set output table format (default: simple)
+ 
+-Supported output formats: asciidoc, colon_grid, double_grid, double_outline,
++Supported output formats: asciidoc, colon_grid, dokuwiki, double_grid, double_outline,
+ fancy_grid, fancy_outline, github, grid, heavy_grid, heavy_outline, html, jira,
+ latex, latex_booktabs, latex_longtable, latex_raw, mediawiki, mixed_grid, mixed_outline,
+ moinmoin, orgtbl, outline, pipe, plain, presto, pretty, psql, rounded_grid,
+diff --git a/tabulate/__init__.py b/tabulate/__init__.py
+index 12a2950..4e0fa24 100644
+--- a/tabulate/__init__.py
++++ b/tabulate/__init__.py
+@@ -177,6 +177,24 @@ def _grid_line_with_colons(colwidths, colaligns):
+     return f"+{segments}+"
+ 
+ 
++def _dokuwiki_row(separator, cell_values, colwidths, colaligns):
++    """Encode alignment with whitespace and protect literal cell separators."""
++    cells = []
++    for value, align in zip(cell_values, colaligns):
++        value = value.replace("|", "%%|%%").replace("^", "%%^%%")
++        # Keep only the padding opposite the alignment, so short cells do not
++        # accidentally become centered. DokuWiki treats decimal as right aligned.
++        if align in ("right", "decimal"):
++            cells.append("  " + value.rstrip() + " ")
++        elif align == "center":
++            cells.append("  " + value + "  ")
++        elif align == "left":
++            cells.append(" " + value.lstrip() + "  ")
++        else:
++            cells.append(" " + value.strip() + " ")
++    return separator + separator.join(cells) + separator
++
++
+ def _mediawiki_row_with_attrs(separator, cell_values, colwidths, colaligns):
+     alignment = {
+         "left": "",
+@@ -590,6 +608,16 @@ _table_formats = {
+         padding=0,
+         with_header_hide=None,
+     ),
++    "dokuwiki": TableFormat(
++        lineabove=None,
++        linebelowheader=None,
++        linebetweenrows=None,
++        linebelow=None,
++        headerrow=partial(_dokuwiki_row, "^"),
++        datarow=partial(_dokuwiki_row, "|"),
++        padding=0,
++        with_header_hide=None,
++    ),
+     "mediawiki": TableFormat(
+         lineabove=Line(
+             '{| class="wikitable" style="text-align: left;"',
+@@ -1819,7 +1847,7 @@ def tabulate(
+     -----  --  ----
+ 
+     Various plain-text table formats (`tablefmt`) are supported:
+-    'plain', 'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'mediawiki',
++    'plain', 'simple', 'grid', 'pipe', 'orgtbl', 'rst', 'dokuwiki', 'mediawiki',
+     'latex', 'latex_raw', 'latex_booktabs', 'latex_longtable' and tsv.
+     Variable `tabulate_formats`contains the list of currently supported formats.
+ 
+@@ -2116,6 +2144,12 @@ def tabulate(
+     eggs  451
+     ====  ========
+ 
++    "dokuwiki" produces DokuWiki table markup with whitespace alignment:
++
++    >>> print(tabulate([["apple", 3]], ["name", "qty"], tablefmt="dokuwiki"))
++    ^ name    ^    qty ^
++    | apple   |      3 |
++
+     "mediawiki" produces a table markup used in Wikipedia and on other
+     MediaWiki-based sites:
+ 
+diff --git a/tabulate/cli.py b/tabulate/cli.py
+index cfae6fe..6817def 100644
+--- a/tabulate/cli.py
++++ b/tabulate/cli.py
+@@ -60,7 +60,7 @@ def _main():
+     -I INTFMT, --int INTFMT   integer point number format (default: "")
+     -f FMT, --format FMT      set output table format (default: simple)
+ 
+-    Supported output formats: asciidoc, colon_grid, double_grid, double_outline,
++    Supported output formats: asciidoc, colon_grid, dokuwiki, double_grid, double_outline,
+     fancy_grid, fancy_outline, github, grid, heavy_grid, heavy_outline, html, jira,
+     latex, latex_booktabs, latex_longtable, latex_raw, mediawiki, mixed_grid, mixed_outline,
+     moinmoin, orgtbl, outline, pipe, plain, presto, pretty, psql, rounded_grid,
+diff --git a/test/test_output.py b/test/test_output.py
+index ea3da87..9359ec4 100644
+--- a/test/test_output.py
++++ b/test/test_output.py
+@@ -4,7 +4,7 @@ from decimal import Decimal
+ 
+ from pytest import mark
+ 
+-from tabulate import SEPARATING_LINE, simple_separated_format, tabulate
++from tabulate import SEPARATING_LINE, simple_separated_format, tabulate, tabulate_formats
+ 
+ from common import assert_equal, check_warnings, raises, skip
+ 
+@@ -2523,6 +2523,80 @@ def test_rst_multiline_with_empty_cells_headerless():
+     assert_equal(expected, result)
+ 
+ 
++def test_dokuwiki():
++    "Output: dokuwiki headers and data without horizontal rules"
++    expected = "\n".join(
++        [
++            "^ strings    ^    numbers ^",
++            "| spam       |    41.9999 |",
++            "| eggs       |   451 |",
++        ]
++    )
++    result = tabulate(_test_table, _test_table_headers, tablefmt="dokuwiki")
++    assert_equal(expected, result)
++
++
++def test_dokuwiki_headerless():
++    "Output: dokuwiki without headers"
++    expected = "| spam  |   41.9999 |\n| eggs  |  451 |"
++    assert_equal(expected, tabulate(_test_table, tablefmt="dokuwiki"))
++
++
++@mark.parametrize(
++    "align, expected",
++    [
++        ("left", "| x     |\n| long  |"),
++        ("right", "|     x |\n|  long |"),
++        ("center", "|   x    |\n|  long  |"),
++        ("decimal", "|     x |\n|  long |"),
++        (None, "| x |\n| long |"),
++    ],
++)
++def test_dokuwiki_alignment(align, expected):
++    "Output: dokuwiki alignment holds for short and full-width cells"
++    result = tabulate([["x"], ["long"]], tablefmt="dokuwiki", colalign=(align,))
++    assert_equal(expected, result)
++
++
++def test_dokuwiki_header_alignment():
++    "Output: dokuwiki headers can have their own alignment"
++    result = tabulate(
++        [["apple", 3]], ["name", "qty"], tablefmt="dokuwiki", headersglobalalign="center"
++    )
++    expected = "^   name   ^   qty   ^\n| apple   |      3 |"
++    assert_equal(expected, result)
++
++
++def test_dokuwiki_escape_separators():
++    "Output: dokuwiki protects both separators in headers and data"
++    result = tabulate([["a|b", "c^d"], ["|^", "^|"]], ["h|", "h^"], tablefmt="dokuwiki")
++    expected = "\n".join(
++        [
++            "^ h%%|%%    ^ h%%^%%    ^",
++            "| a%%|%%b   | c%%^%%d   |",
++            "| %%|%%%%^%%    | %%^%%%%|%%    |",
++        ]
++    )
++    assert_equal(expected, result)
++
++
++def test_dokuwiki_empty_cells():
++    "Output: dokuwiki empty cells retain their separators"
++    result = tabulate([[None, ""], ["", None]], ["a", "b"], tablefmt="dokuwiki")
++    assert_equal("^ a    ^ b    ^\n|   |   |\n|   |   |", result)
++
++
++def test_dokuwiki_empty_table():
++    "Output: dokuwiki handles empty tables with or without headers"
++    assert_equal("", tabulate([], tablefmt="dokuwiki"))
++    assert_equal("^ name    ^ qty    ^", tabulate([], ["name", "qty"], tablefmt="dokuwiki"))
++
++
++def test_dokuwiki_registered():
++    "API: dokuwiki is listed as a supported table format"
++    assert "dokuwiki" in tabulate_formats
++
++
+ def test_mediawiki():
+     "Output: mediawiki with headers"
+     expected = "\n".join(

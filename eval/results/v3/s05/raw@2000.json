@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 4908,
+ "answers": {
+  "q1": "unknown. The helper's code isn't in the provided material.",
+  "q2": "It accepts only 'round', 'floor' and 'ceil'. Anything else, including 'trunc', 'halfExpand', 'ROUND', '', null, 1 and true, throws a TypeError: \"Expected roundingMode to be one of 'round', 'floor' or 'ceil'\".",
+  "q3": "Making 'round' the default would change existing output and break existing tests, e.g. 59_952_784 → '59.9 MB', because the current code truncates when fraction-digit options are set. The agent decided that an omitted option keeps the old behaviour exactly (round without fraction options, truncate with them). An explicit roundingMode applies to the fraction digits, and this is documented in readme.md.",
+  "q4": "The visible material only gives the outcome: a value that rounds up onto the next unit is shown in that unit, so 999960 bytes with maximumFractionDigits:1 and 'round' gives '1 MB', not '1000 kB'. The mechanism isn't shown.",
+  "q5": "With no fraction-digit options, 'round' behaves exactly like the default (3 significant digits), so 1005 stays '1 kB'. With maximumFractionDigits:2, rounding treats the value as its plain decimal 1.005 and rounds the tie up, giving '1.01 kB'. This difference is documented.",
+  "q6": "The summary says very large bigints are rounded exactly with bigint arithmetic, where before that path always truncated. The toUnrepresentableString code isn't shown.",
+  "q7": "It checks that floor of -x always prints as '-' followed by ceil of x. The specific inputs aren't visible in the material.",
+  "q8": "unknown. The material doesn't show the first test run.",
+  "q9": "unknown. The material doesn't show how the ava suite was run or what broke first.",
+  "q10": "unknown. The material doesn't show the shim, any remaining failing test, or the final result of that run."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer is 'unknown'; none of the four mappings given."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Names the three modes and TypeError, and rejected values, but omits that undefined is accepted."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "States the truncation conflict, the 59_952_784 example, the old behaviour kept when omitted, and the readme.md documentation."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Gives the 999960 -> '1 MB' outcome but not the mechanism (rounded >= base check, skipped for trunc/last unit)."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Correctly notes the default path versus the fraction-digit path and the decimal 1.005 tie, but never mentions toPrecision versus Intl.NumberFormat."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Says exact bigint arithmetic and that it previously truncated, but gives no increment conditions."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Gives the floor(-x) = '-' + ceil(x) property but no value list or fraction-digit settings."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  }
+ },
+ "score": 3.5,
+ "n": 10,
+ "rep": 1
+}

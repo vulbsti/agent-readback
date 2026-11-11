@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4933,
+ "answers": {
+  "q1": "`round` → `halfExpand`; `floor` → `expand` if negative, else `trunc`; `ceil` → `trunc` if negative, else `expand`; omitted (undefined) → `undefined`.",
+  "q2": "The material shows it throws a `TypeError` for other values (tests expect it for `'trunc'`, `'halfExpand'`, `'ROUND'`, `''`, `null`, `1`, `true`), implying it accepts `round`, `floor`, `ceil` and undefined. Its body is truncated in the evidence, so the exact accepted set isn't shown.",
+  "q3": "The default is not literally 'round': existing output truncates fraction digits (e.g. 59_952_784 → 59.9 MB). The agent kept truncation when fraction-digit options are set and the option is omitted (`roundingMode: magnitudeMode ?? 'trunc'`), so existing output doesn't change; this deviation is listed as a risk.",
+  "q4": "With a non-trunc mode, the code pre-formats the number with en-US toLocaleString; if the rounded value is >= base, it does `number /= base` and `exponent += 1`, so 999_960 with max 1 digit gives `1 MB`.",
+  "q5": "Without fraction-digit options the default 3-significant-digit path (`toPrecision`) is used, and 1.005 becomes 1 kB. With maximumFractionDigits:2 and halfExpand, the tie rounds up to 1.01 kB.",
+  "q6": "It uses exact bigint arithmetic: multiplies by `10n ** maximumFractionDigits`, divides by `scale`, and adds 1 for `expand` when the remainder > 0 or for `halfExpand` when `remainder*2n >= scale`. `trunc` adds nothing.",
+  "q7": "unknown",
+  "q8": "The carry test failed, expecting `'999.960 kB'` but getting `'999.96 kB'`. The agent changed the test expectation, not the code.",
+  "q9": "It ran test.js through an ava shim written in the scratchpad. It first crashed on a missing `test.skip`, so the agent added `skip` and `notRegex` to the shim.",
+  "q10": "The `documented examples are accurate` test failed because the shim lacked `readme.md`/`index.d.ts`; it passed after they were copied in. Final result: 48 pass, 0 fail, 3 skipped."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct, including floor/ceil swap for negatives and undefined."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Correct TypeError and implied accepted set, but hedged and did not state the exact set or message definitively."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0.5,
+   "why": "Identifies truncation conflict and keeping old behaviour, but omits readme documentation and gives risk-list instead; roughly correct."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Describes pre-format check and 999_960 -> 1 MB, but omits that it is skipped for trunc/last unit (mentions non-trunc only) and no-grouping detail."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Notes the toPrecision default path versus fraction-digit path, but attributes the difference to halfExpand tie rounding rather than Intl.NumberFormat on the decimal form."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Bigint quotient/remainder approach and both increment conditions given."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is unknown."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Names carry test, 999.960 vs 999.96 mismatch, and the test was fixed."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Mentions shim in scratchpad and test.skip failure with skip/notRegex added; omits the heredoc block, which is only a plus."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names the documented-examples test, cause, and 48 pass/0 fail/3 skipped."
+  }
+ },
+ "score": 6.5,
+ "n": 10,
+ "rep": 1
+}

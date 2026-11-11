@@ -1,0 +1,74 @@
+{
+ "session": "s04",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 5983,
+ "answer_input_tokens": 12236,
+ "answers": {
+  "q1": "It is a TableFormat with lineabove, linebelowheader, linebetweenrows and linebelow all None, headerrow=partial(_dokuwiki_row, \"^\"), datarow=partial(_dokuwiki_row, \"|\"), padding=0 and with_header_hide=None.",
+  "q2": "The tabulate() docstring format list (plus a new doctest), the cli.py help text, and the README (format list, a new example section, and the CLI help text). The agent also imported tabulate_formats in test_output.py for a registration test.",
+  "q3": "It escapes each cell's content, replacing \"|\" with \"%%|%%\" and \"^\" with \"%%^%%\" (DokuWiki nowiki markup). Whether this renders correctly in a real DokuWiki was never checked.",
+  "q4": "Decimal is treated like right alignment (\"  \" + rstrip(value) + \" \"). None/unknown alignment strips the value and wraps it in single spaces (\" \" + value.strip() + \" \").",
+  "q5": "Because tabulate has already padded cells to the column width for alignment before calling the row formatter. The function keeps only the padding opposite the alignment so short cells aren't accidentally centred, then adds DokuWiki-style spacing.",
+  "q6": "It checks an empty table both with and without headers. Per the material, with headers it produces only the ^ header row, and with no rows and no headers it produces an empty string \"\".",
+  "q7": "test_dokuwiki_header_alignment failed (expected '^  name   ^', got '^   name   ^'). The agent changed the test's expected string to match the actual output (\"^   name   ^   qty   ^\\n| apple   |      3 |\") rather than changing the code to the original expectation; the same patch also touched README and __init__.py, details not shown.",
+  "q8": "The agent ran a web search for DokuWiki table syntax and opened DokuWiki syntax.txt and handler.php from raw.githubusercontent. The material doesn't show which fetch failed, so that part is unknown.",
+  "q9": "ruff check with no config reported 190 errors and exited 1, mostly in pre-existing code. The agent reran with --config pyproject.toml, which also failed (check and format exit 1, with the format check saying one file would be reformatted).",
+  "q10": "It collapsed the escape-test tabulate(...) call in test_output.py onto one line, then reran ruff check with a hand-picked rule set (--select E4,E7,E9,F,W,B,C4,ISC,I,C90,UP --ignore B905,E721,C901), which passed, and ruff format --check with the repo config, which passed. Check with the project's own config was never made to pass."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All key facts: four None lines, partial rows with ^ and |, padding=0, with_header_hide=None."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Names docstring, cli.py, README, but misses nothing wrong; however includes extra test import and doesn't mention tabulate_formats auto-pickup. Mostly correct but less complete; partial."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0.5,
+   "why": "Gives %%|%% / %%^%% escaping but doesn't state it applies to both headers and data."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both decimal=right and None/unknown stripped with single spaces are correct."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Cells pre-padded; keep only padding opposite alignment to avoid appearing centered."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Describes both cases but omits the exact header-row string; essentially matches must_contain (empty string; header row only). Hedged wording."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Names the failing test and says expected string was changed, not code; README/docstring mentioned."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0.5,
+   "why": "Mentions search and both fetches, but says failed fetch unknown, missing handler.php 404."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Misses the snap read-only failure (exit 46) and switch to /snap/ruff/1713/bin/ruff; describes later steps instead."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "One-line reformat and explicit --select/--ignore set, format check passed; extra caveat doesn't contradict key facts."
+  }
+ },
+ "score": 7.0,
+ "n": 10,
+ "rep": 1
+}

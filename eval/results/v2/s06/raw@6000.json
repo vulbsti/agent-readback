@@ -1,0 +1,74 @@
+{
+ "session": "s06",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 12363,
+ "answers": {
+  "q1": "Inside the `if (!match?.groups)` block, replacing the old `return NaN;`. It runs only when the original single-value regex fails to match, so single-unit inputs take the unchanged path.",
+  "q2": "`/(-?\\d*\\.?\\d+) *(milliseconds?|msecs?|ms|months?|mo|minutes?|mins?|m|seconds?|secs?|s|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)(?= *-?\\d| *-?\\.\\d|$)/iy`. It has the `i` (case-insensitive) and `y` (sticky) flags, and a lookahead requiring the part to be followed by optional spaces and a number (with optional minus, or leading dot) or end of string.",
+  "q3": "Each component's matched text (`component[0]`) is passed to `parse()` recursively and added to the total. The comment says to keep the single-value parser as the source of unit conversions.",
+  "q4": "Each component's sign is taken from whether its number starts with '-'. The first sets `sign`; if a later component's sign differs, it returns NaN.",
+  "q5": "It returns `count > 1 ? total : NaN`, so a single consumed component gives NaN. After each component, spaces are skipped, and if the offset reaches the end while the string ends with a space, it returns NaN (trailing whitespace rejected).",
+  "q6": "'1h -30m', '-1h 30m', '1h +30m', '1h 30', '1h 30x', '1h 30m junk', '1h,30m', '1h 30m ' (trailing space), ' 1h 30m' (leading space), and '1h\\t30m'.",
+  "q7": "It asserts `parse('1' + ' '.repeat(98) + 's')` equals 1000 (exactly 100 characters is accepted) and that `'1' + ' '.repeat(99) + 's'` (101 characters) throws. It also asserts that an empty string throws.",
+  "q8": "The README says the `StringValue` type used by `ms` and `parseStrict` describes only single values. It tells users to use `parse` for compound strings in TypeScript.",
+  "q9": "Type checking (`tsc --noEmit`) was not run because the TypeScript compiler (node_modules/.bin/tsc) is not installed.",
+  "q10": "The agent first inspected the repo, then patched src/index.ts, then added src/compound.test.ts and the README edits in one patch, then ran `node --test src/compound.test.ts`. Only one test run was needed, and all 3 tests passed."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Matches: replaces bare return NaN in no-match branch; single-unit path unchanged."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Gives regex with iy flags, required unit, and lookahead for number or end."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Recursive parse on component[0], with the stated reason."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "First sign sets sign; later mismatch returns NaN."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Both count > 1 and trailing whitespace NaN covered."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Lists all required inputs."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "100-char passes with 1000; 101 throws; empty throws."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "StringValue single values only; use parse."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Typecheck skipped because tsc not installed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Order and single passing run of 3 tests correct, but it says the agent patched index.ts then test+README without noting these were two separate patches; it adds inspection first and omits that the index.ts patch was alone. Mostly consistent, though the omission of the parallel batch is minor."
+  }
+ },
+ "score": 9.5,
+ "n": 10,
+ "rep": 1
+}

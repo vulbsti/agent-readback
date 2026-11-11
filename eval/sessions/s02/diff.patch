@@ -1,0 +1,169 @@
+diff --git a/README.md b/README.md
+index 2557666..4ae3846 100644
+--- a/README.md
++++ b/README.md
+@@ -7,8 +7,9 @@
+ 
+   Escape string for use in HTML
+ 
+-This module exports a single function, `escapeHtml`, that is used to escape
+-a string of content such that it can be interpolated in HTML content.
++This module exports `escapeHtml`, which escapes a string of content such that
++it can be interpolated in HTML content, and an `unescape` function property
++for decoding supported HTML entities.
+ 
+ ## Installation
+ 
+@@ -40,6 +41,25 @@ respectively; these are known as "raw text elements" in the HTML standard).
+ the value of an attribute, where the value is quoted with either a double
+ quote character (`"`) or a single quote character (`'`).
+ 
++### escapeHtml.unescape(string)
++
++Decode `&quot;`, `&amp;`, `&#39;`, `&lt;`, and `&gt;`, as well as decimal
++(`&#60;`) and hexadecimal (`&#x3C;` or `&#X3c;`) numeric character references.
++Numeric references support Unicode characters, including supplementary characters.
++Unknown named entities, malformed references, and invalid Unicode code points
++(values above `0x10FFFF` or in the surrogate range `0xD800`–`0xDFFF`) are left
++unchanged. References must end with a semicolon; named entities are case-sensitive.
++
++Like `escapeHtml`, this function converts its input to a string. Each call
++decodes one layer, so `&amp;lt;` becomes `&lt;`.
++
++```js
++var unescape = require('escape-html').unescape
++
++console.log(unescape('&quot;Hello&quot; &amp; &#x3C;world&#62;'))
++// -> '"Hello" & <world>'
++```
++
+ ## Example
+ 
+ The `escapeHtml` function is designed to accept a string input of text and
+diff --git a/index.js b/index.js
+index dd64ae8..9a97acc 100644
+--- a/index.js
++++ b/index.js
+@@ -14,6 +14,7 @@
+  */
+ 
+ var matchHtmlRegExp = /["'&<>]/
++var matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g
+ 
+ /**
+  * Module exports.
+@@ -21,6 +22,7 @@ var matchHtmlRegExp = /["'&<>]/
+  */
+ 
+ module.exports = escapeHtml
++module.exports.unescape = unescapeHtml
+ 
+ /**
+  * Escape special characters in the given string of text.
+@@ -76,3 +78,35 @@ function escapeHtml (string) {
+     ? html + str.substring(lastIndex, index)
+     : html
+ }
++
++/**
++ * Decode supported HTML entities in the given string of text.
++ *
++ * @param  {string} string The string to unescape
++ * @return {string}
++ * @public
++ */
++
++function unescapeHtml (string) {
++  return ('' + string).replace(matchEntityRegExp, function (entity, decimal, hex) {
++    switch (entity) {
++      case '&quot;': return '"'
++      case '&amp;': return '&'
++      case '&lt;': return '<'
++      case '&gt;': return '>'
++    }
++
++    var codePoint = decimal ? parseInt(decimal, 10) : parseInt(hex, 16)
++
++    if (codePoint > 0x10FFFF || (codePoint >= 0xD800 && codePoint <= 0xDFFF)) {
++      return entity
++    }
++
++    if (codePoint <= 0xFFFF) {
++      return String.fromCharCode(codePoint)
++    }
++
++    codePoint -= 0x10000
++    return String.fromCharCode(0xD800 + (codePoint >> 10), 0xDC00 + (codePoint & 0x3FF))
++  })
++}
+diff --git a/test/unescape.test.js b/test/unescape.test.js
+new file mode 100644
+index 0000000..f8dfbe8
+--- /dev/null
++++ b/test/unescape.test.js
+@@ -0,0 +1,65 @@
++'use strict'
++
++var test = require('node:test')
++var assert = require('node:assert')
++var escapeHtml = require('..')
++var unescape = escapeHtml.unescape
++
++test('exports unescape alongside the existing escapeHtml function', function () {
++  assert.strictEqual(typeof escapeHtml, 'function')
++  assert.strictEqual(typeof unescape, 'function')
++  assert.strictEqual(escapeHtml('<&>'), '&lt;&amp;&gt;')
++})
++
++test('decodes all entities emitted by escapeHtml', function () {
++  assert.strictEqual(unescape('&quot;&amp;&#39;&lt;&gt;'), '"&\'<>')
++  var original = 'Text "quoted" & <tag> with \'apostrophes\' and &lt;'
++  assert.strictEqual(unescape(escapeHtml(original)), original)
++})
++
++test('decodes decimal numeric references', function () {
++  assert.strictEqual(unescape('&#34;&#38;&#39;&#60;&#62;'), '"&\'<>')
++  assert.strictEqual(unescape('before &#00060; after &#65;'), 'before < after A')
++})
++
++test('decodes hexadecimal references with either x prefix and letter case', function () {
++  assert.strictEqual(unescape('&#x3C;&#X3c;&#x3e;&#X3E;&#x0027;'), '<<>>\'')
++})
++
++test('decodes supplementary characters and valid Unicode boundaries', function () {
++  assert.strictEqual(unescape('&#128512;&#x1F600;'), '\uD83D\uDE00\uD83D\uDE00')
++  assert.strictEqual(unescape('&#0;&#xD7FF;&#xE000;&#65535;&#x10000;&#1114111;'),
++    '\u0000\uD7FF\uE000\uFFFF\uD800\uDC00\uDBFF\uDFFF')
++})
++
++test('leaves invalid code points unchanged without throwing', function () {
++  var invalid = '&#x110000; &#1114112; &#xD800; &#55296; &#xDFFF; &#57343; ' +
++    '&#9999999999999999999999999999999999999999; &#xFFFFFFFFFFFFFFFFFFFF;'
++  assert.strictEqual(unescape(invalid), invalid)
++  assert.strictEqual(unescape('&#x110000;&lt;&#xD800;&#65;'), '&#x110000;<&#xD800;A')
++})
++
++test('leaves unknown and differently cased named entities untouched', function () {
++  var unknown = '&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString;'
++  assert.strictEqual(unescape(unknown), unknown)
++  assert.strictEqual(unescape('&unknown;&amp;&copy;'), '&unknown;&&copy;')
++})
++
++test('leaves malformed or unterminated references untouched', function () {
++  var malformed = '&quot &amp &lt &gt &#39 &#; &#x; &#-1; &#+60; &#x-1; &#12a; &#xGG;'
++  assert.strictEqual(unescape(malformed), malformed)
++})
++
++test('decodes one layer per call', function () {
++  assert.strictEqual(unescape('&amp;lt; &amp;#60; &#38;quot;'), '&lt; &#60; &quot;')
++})
++
++test('preserves plain text and coerces inputs like escapeHtml', function () {
++  assert.strictEqual(unescape(''), '')
++  assert.strictEqual(unescape('plain text & Unicode \uD83D\uDE00'), 'plain text & Unicode \uD83D\uDE00')
++  assert.strictEqual(unescape(undefined), 'undefined')
++  assert.strictEqual(unescape(null), 'null')
++  assert.strictEqual(unescape(42), '42')
++  assert.strictEqual(unescape({}), '[object Object]')
++  assert.strictEqual(unescape({ toString: function () { return '&lt;' } }), '<')
++})

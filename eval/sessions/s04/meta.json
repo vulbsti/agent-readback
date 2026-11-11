@@ -1,0 +1,16 @@
+{
+ "id": "s04",
+ "agent": "codex",
+ "agent_version": "0.166.0",
+ "model": "gpt-6.1-sol",
+ "repo": "python-tabulate",
+ "repo_url": "https://github.com/astanin/python-tabulate",
+ "license": "MIT",
+ "base_commit": "268615a5c27dc40e5c22454c07b44d5c50410da0",
+ "task": "Add a new table format \"dokuwiki\" to tabulate. DokuWiki tables use \"^\" as the cell separator for header rows and \"|\" for data rows, e.g. \"^ name ^ qty ^\" then \"| apple | 3 |\", with no horizontal rule lines. Column alignment should be expressed with DokuWiki padding conventions (two spaces on the side opposite to the alignment; centered = two spaces on both sides). Literal \"|\" and \"^\" characters inside cells must not break the table. Register it wherever table formats are listed (including docs/README if they list formats), add tests in test/test_output.py, and run: /opt/venv/bin/python -m pytest test/test_output.py -q -k dokuwiki",
+ "recorded_at": "2026-11-05",
+ "num_transcript_lines": 80,
+ "tool_calls": 30,
+ "diff_lines": 217,
+ "notes": ""
+}

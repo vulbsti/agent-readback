@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 12284,
+ "answers": {
+  "q1": "unknown. The helper's body is in the truncated part. The visible code only shows that the magnitude mode it feeds is one of 'trunc', 'expand' or 'halfExpand'.",
+  "q2": "The tests show it accepts 'round', 'floor' and 'ceil'. Anything else ('trunc', 'halfExpand', 'ROUND', '', null, 1, true) throws a TypeError reading \"Expected roundingMode to be one of 'round', 'floor' or 'ceil'\". The function body itself isn't shown.",
+  "q3": "With fraction-digit options set, the existing code truncates, so 'round' as the default would change current output and break existing tests (e.g. 59_952_784 → '59.9 MB'). The agent left the default undefined, so omitting the option keeps the old behaviour: it rounds at 3 significant digits and truncates with fraction-digit options. An explicit roundingMode applies to the fraction digits. This is documented in readme.md.",
+  "q4": "The docs and tests say a value that rounds up onto the next unit is printed in that unit, so 999960 bytes with maximumFractionDigits: 1 gives '1 MB', not '1000 kB'. The code that does this is in the truncated part of the diff.",
+  "q5": "Without fraction-digit options, 'round' behaves exactly like the old 3-significant-digit default on the double, which gives '1 kB'. With fraction-digit options, rounding treats the value as its plain decimal, 1.005, which rounds to 1.01. The agent documented this difference.",
+  "q6": "It uses exact bigint arithmetic. It multiplies by 10^maximumFractionDigits (0 with no locale options, otherwise max(maximumFractionDigits ?? 3, minimumFractionDigits)), divides by the unit scale, and keeps the remainder. It then bumps the digits for 'expand' when the remainder is above 0, or for 'halfExpand' on a half-or-more remainder. The rest of the function is truncated.",
+  "q7": "It checks that floor of -value prints as '-' followed by ceil of value. It does so for values 1, 1001, 1337, 1999, 54_321 and 999_901, each with maximumFractionDigits of undefined, 0, 1 and 2.",
+  "q8": "unknown. The first test run's failure isn't in the visible material.",
+  "q9": "The agent used a small stand-in for ava in a scratchpad directory (avashim) outside the repo. It copied index.js, test.js, readme.md and index.d.ts there and ran `node --test test.js`. What broke first isn't shown.",
+  "q10": "The material doesn't show any existing test still failing. The final result was 48 pass, 0 fail and 3 skipped (tests already marked test.skip in the repo), plus 11/11 passing for test-rounding.js."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer says unknown; no mappings given."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Names the three modes and TypeError, but omits that undefined is accepted and the exact message format."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Identifies truncation with fraction digits, undefined default keeps old behaviour, documented in readme."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Gives the 999960 -> '1 MB' outcome but not the mechanism (en-US format check, rounded >= base, divide and increment exponent, skipped for trunc/last unit)."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Explains the two paths: default 3-significant-digit behaviour vs decimal-based rounding with fraction digits. Doesn't name toPrecision/Intl but the substance matches."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Describes bigint multiply/divide/remainder and both increment modes, but gives halfExpand only as 'half-or-more' and doesn't note it previously only truncated."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Correct property, values and fraction-digit settings."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer says unknown."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Mentions shim outside repo and copied files, but not the test.skip TypeError, the shim additions or the blocked heredoc."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Final result 48/0/3 and 11/11 correct, but misses the failing documented-examples test and its cause; claims no failure."
+  }
+ },
+ "score": 5.5,
+ "n": 10,
+ "rep": 2
+}

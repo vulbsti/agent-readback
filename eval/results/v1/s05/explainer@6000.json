@@ -1,0 +1,73 @@
+{
+ "session": "s05",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 5474,
+ "answer_input_tokens": 11861,
+ "answers": {
+  "q1": "round→'halfExpand'; floor→'expand' if negative, else 'trunc'; ceil→'trunc' if negative, else 'expand'; undefined→undefined [H4].",
+  "q2": "Per the tests, it accepts 'round', 'floor', 'ceil' (and undefined). Anything else ('trunc', 'halfExpand', 'ROUND', '', null, 1, true) throws a TypeError matching /Expected roundingMode to be one of 'round', 'floor' or 'ceil'/. The function body itself isn't shown in the visible diff [H7, H14].",
+  "q3": "The spec said default 'round', but making 'round' the default would change existing truncated fraction-digit output (e.g. 59_952_784 → '59.9 MB'). The agent kept the default as undefined (still truncating), required explicit 'round' to round, and documented this in the readme [E38, H13].",
+  "q4": "When the mode isn't trunc and a larger unit exists, the value is pre-rounded via en-US toLocaleString with the locale options (no grouping). If the result is >= base, it divides number by base and increments the exponent, so 999960 with maximumFractionDigits:1 becomes '1 MB' [H8, H3].",
+  "q5": "The default significant-digit path (no fraction-digit options) uses toPrecision for round/undefined, so 1005 → 1.005 → '1 kB' as before. With fraction-digit options, Intl's halfExpand mode is used, so 1.005 rounds to '1.01 kB' [H8, E36, H13].",
+  "q6": "It multiplies the bigint by 10n ** maximumFractionDigits and divides by the scale to get exact digits plus a remainder. It adds 1n if mode is 'expand' and remainder > 0n, or if mode is 'halfExpand' and remainder*2n >= scale. Previously it always truncated [H4, H9].",
+  "q7": "unknown",
+  "q8": "The test 'rounding up carries onto the next unit' failed: it expected '999.960 kB' but got '999.96 kB'. The agent corrected the test's expectation to '999.96 kB' rather than changing the code [E13, E14].",
+  "q9": "The agent built a home-made ava shim outside the repo (in the scratchpad's avashim/node_modules/ava) and ran test.js against it. The first attempt to create it via a heredoc was blocked as 'expansion obfuscation', so it used Write. Then test.js crashed with 'test.skip is not a function' [E15–E19].",
+  "q10": "'documented examples are accurate' still failed (47 pass, 1 fail, 3 skipped) because the shim directory lacked readme.md/index.d.ts and doc fences need `//=>`. After fixing docs and copying them into the shim, the final run gave 48 pass, 0 fail, 3 skipped; test-rounding.js passed 11/11 [E23–E27, E37]."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct including floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names round/floor/ceil plus undefined, TypeError for others; message matches."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0.5,
+   "why": "Correct decision (default undefined, documented in readme, 59.9 MB example), but doesn't state that current code truncates with fraction-digit options as the conflict; it's only implied."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Describes pre-format check, >= base divide and exponent increment, skipped for trunc/last unit, 999960 -> '1 MB'."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Identifies toPrecision on default path vs Intl on fraction-digit path with correct outcomes."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Bigint quotient/remainder and both increment conditions, previously truncated."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Correct test, mismatch, and fix to the test expectation."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Shim outside repo, blocked heredoc, and test.skip error are right, but doesn't mention adding test.skip/notRegex to the shim."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names the documented-examples test, cause, and final 48/0/3 and 11/11."
+  }
+ },
+ "score": 8.0,
+ "n": 10
+}

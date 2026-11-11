@@ -1,0 +1,16 @@
+{
+ "id": "s02",
+ "agent": "codex",
+ "agent_version": "0.166.0",
+ "model": "gpt-6.1-sol",
+ "repo": "escape-html",
+ "repo_url": "https://github.com/component/escape-html",
+ "license": "MIT",
+ "base_commit": "b42947eefa79efff01b3fe988c4c7e7b051ec8d8",
+ "task": "Add an `unescape` function to this package, exported as `module.exports.unescape`, that reverses escapeHtml: it must decode &quot; &amp; &#39; &lt; &gt;, plus decimal (&#60;) and hex (&#x3C; / &#X3c;) numeric character references. Unknown named entities must be left untouched, and invalid code points (e.g. &#x110000;) must be left as-is rather than throwing. Do not add dependencies. Add tests in test/unescape.test.js using node's built-in runner (node:test + node:assert) and run them with `node --test test/unescape.test.js`. Document the function in README.md.",
+ "recorded_at": "2026-11-05",
+ "num_transcript_lines": 29,
+ "tool_calls": 10,
+ "diff_lines": 169,
+ "notes": ""
+}

@@ -1,0 +1,73 @@
+{
+ "session": "s01",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 4695,
+ "answers": {
+  "q1": "`compact_suffixes = (\"K\", \"M\", \"B\", \"T\")`, added right after `human_powers`, with a comment saying it aligns with the first entries of `powers`.",
+  "q2": "unknown",
+  "q3": "unknown",
+  "q4": "It returns \"1.0 quadrillion\". The value rounds past a trillion, so it falls back to the word form instead of a short suffix.",
+  "q5": "intword(1_234_000, \"%0.3f\", compact=True) == \"1.234M\"; intword(999_499, \"%.0f\", compact=True) == \"999K\"; intword(999_500, \"%.0f\", compact=True) == \"1M\".",
+  "q6": "The first test run failed because `src/humanize/_version.py` was missing from the checkout. It did not come from the agent's change.",
+  "q7": "unknown",
+  "q8": "The agent added a two-line placeholder `src/humanize/_version.py` setting `__version__ = \"0.0.0.dev0\"`. The Grep step only searched for `def intword` and found it at number.py line 223; the material does not show it revealing anything about _version.py.",
+  "q9": "The requested command passed with 267 tests in tests/test_number.py, and the 8 doctests in number.py also passed.",
+  "q10": "The agent said git ignores the file, so it won't be committed. The material doesn't show diff.patch's contents beyond the number.py and test diffs, but the same ignore status would explain its absence."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names compact_suffixes with K, M, B, T in order and mentions alignment with powers."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Correct '1.0 quadrillion' and explains fallback to word form because it rounds past trillion."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "All three cases with correct inputs, formats and outputs."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Correctly says missing _version.py and unrelated to the change, but omits ModuleNotFoundError at collection for both test and doctest runs."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0.5,
+   "why": "Stub with 0.0.0.dev0 is correct, but it says Grep revealed nothing about _version.py, missing the hatch-vcs generated/gitignored finding."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "267 tests and 8 doctests passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Says git ignores the file, which is the core reason, but it doesn't cite the src/*/_version.py .gitignore rule and hedges on diff.patch."
+  }
+ },
+ "score": 5.5,
+ "n": 10
+}

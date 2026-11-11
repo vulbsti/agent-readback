@@ -1,0 +1,74 @@
+{
+ "session": "s06",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4574,
+ "answers": {
+  "q1": "In src/index.ts `parse`, it replaces the old `return NaN` that ran when the single-value regex failed. It runs only when that single-value match fails; inputs matching it take the unchanged single-unit path.",
+  "q2": "A sticky, case-insensitive (`/iy`) regex `part`: it matches `-?\\d*\\.?\\d+`, optional spaces, then a unit alternation. A lookahead requires the next thing to be ` *-?\\d`, ` *-?\\.\\d`, or end of string.",
+  "q3": "Each matched component string (e.g. `30m`) is passed recursively to `parse(component[0])` and the result is added to `total`. The comment says the single-value parser stays 'the source of unit conversions'.",
+  "q4": "The first component's sign (whether it starts with '-') is stored in `sign`; any later component with a different sign makes the function return NaN. So `1h -30m` and `-1h 30m` fail, while `-1h -30m` passes.",
+  "q5": "If only one component was consumed (`count` not > 1) it returns NaN, since the result is returned only when `count > 1`. Trailing whitespace returns NaN (guard `offset === str.length && str.endsWith(' ')`, and `1s ` gives NaN); the lookahead likely rejects it earlier, which is unverified.",
+  "q6": "`1h -30m`, `-1h 30m`, `1h +30m`, `1h 30`, `1h 30x`, junk (e.g. `1h 30m junk`), a comma form, leading space, trailing space, and a tab form. Each must be NaN.",
+  "q7": "The preserves test asserts that a 100-character string parses and that a 101-character string throws (as does `''`). The check itself is pre-existing code outside the hunk.",
+  "q8": "unknown",
+  "q9": "Type checking (`tsc --noEmit`) could not be done because TypeScript is not installed.",
+  "q10": "The agent explored, planned, edited `src/index.ts`, then added `src/compound.test.ts`, updated the README, and checked the diff (`git diff --check` clean). It ran `node --test src/compound.test.ts` once, which exited 0, so one run was needed and no fix phase."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Says it replaces the bare return NaN in the no-match branch and runs only when single-value match fails."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Mentions sticky, case-insensitive flags, unit after spaces, and lookahead for another number or end. Required unit is implied by the alternation."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Recursive parse(component[0]), added to total, with the stated reason."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Compares each component's leading '-' to the first sign and returns NaN on mismatch."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Gives both count > 1 and trailing-whitespace NaN."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Lists all the required categories, including both mixed-sign orders, plus sign, unitless, unknown unit, junk, comma, leading/trailing space and tab."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Has the 100-char passes and 101-char throws, but omits the specific 1000 ms result and the details of the construction."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer is unknown."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Typecheck skipped because TypeScript is not installed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "One test run with no fix phase is right, but the order is vague: it doesn't separate the two patches, and says nothing about 3/3 passing."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 1
+}

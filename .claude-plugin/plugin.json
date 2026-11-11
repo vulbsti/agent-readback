@@ -1,0 +1,9 @@
+{
+  "name": "agent-readback",
+  "version": "0.1.0",
+  "description": "Read-only explainer for another coding-agent session: overview, walkthrough, mechanism (Mermaid) and multi-turn ask, with claims cited to transcript events and diff hunks and citation coverage reported per answer.",
+  "author": { "name": "vulbsti" },
+  "homepage": "https://github.com/vulbsti/agent-readback",
+  "license": "Apache-2.0",
+  "keywords": ["explain", "transcript", "review", "codex", "claude-code"]
+}

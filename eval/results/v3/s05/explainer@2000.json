@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4896,
+ "answers": {
+  "q1": "round→'halfExpand'; floor→'expand' for negatives, 'trunc' otherwise; ceil→the reverse ('trunc' for negatives, 'expand' otherwise); undefined→undefined.",
+  "q2": "It accepts 'round', 'floor', 'ceil' (and undefined/omitted). Anything else (e.g. 'trunc', 'ROUND', null, 1) throws a TypeError.",
+  "q3": "Fraction-digit options truncate in the current code, so 'round' can't be both default and current behaviour. The agent decided that omitting the option keeps the existing (truncating) output, while explicit 'round' actually rounds; this is documented in the readme.",
+  "q4": "When the mode isn't trunc, the value is pre-rounded/formatted in en-US; if the rounded value is >= base, it moves up to the next unit (999960 with max 1 fraction digit → '1 MB').",
+  "q5": "Without fraction options, the default significant-digit path uses Number#toPrecision, which gives 1005→'1 kB' (3 sig digits). With fraction options, Intl rounds using shortest-decimal rounding with halfExpand, so 1.005 → '1.01 kB'.",
+  "q6": "It computes digits = number*10^max / scale with bigint math and uses the remainder: for 'expand' adds 1 if remainder > 0, for 'halfExpand' adds 1 if remainder*2 >= scale, and 'trunc' just truncates. Previously it always truncated.",
+  "q7": "unknown",
+  "q8": "The test 'rounding up carries onto the next unit' failed: it expected '999.960 kB' but got '999.96 kB'. The agent changed the test's expected string rather than the code.",
+  "q9": "unknown",
+  "q10": "The 'documented examples are accurate' test failed because readme.md (and d.ts) were not in the shim directory (the agent suspected this; docs needed `//=>` examples). After copying them in, it passed; the final shim run was 48 pass, 0 fail, 3 skipped."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct including floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names three allowed values plus undefined, and TypeError for others."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Identifies truncation conflict, keeps old behaviour when omitted, documented in readme."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Describes the carry to next unit and the 999960 example, but omits that it is skipped for trunc/last unit (YB) and no-grouping detail; says 'not trunc' so partially covers."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Identifies toPrecision vs Intl paths, but doesn't say toPrecision was kept deliberately and the explanation of 1.005 is loosely framed; no mention of docs/tests."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Bigint quotient/remainder and both increment conditions given, plus previously truncated."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is unknown."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Names the carry test, the 999.960 vs 999.96 mismatch, and that the test was fixed."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Answer is unknown."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names the documented examples test, cause (doc files missing from shim), and final 48/0/3."
+  }
+ },
+ "score": 7.0,
+ "n": 10,
+ "rep": 1
+}

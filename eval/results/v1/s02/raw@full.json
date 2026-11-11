@@ -1,0 +1,73 @@
+{
+ "session": "s02",
+ "condition": "raw",
+ "budget": null,
+ "context_tokens_est": 14338,
+ "answer_input_tokens": 28112,
+ "answers": {
+  "q1": "`var matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`, named `matchEntityRegExp`.",
+  "q2": "The function is named `unescapeHtml`, exported by `module.exports.unescape = unescapeHtml` (a property on the `escapeHtml` export).",
+  "q3": "`&#39;` is matched by the decimal numeric branch of the regex, parsed with parseInt(decimal, 10) to 39, and converted with String.fromCharCode(39) to `'`.",
+  "q4": "Code points above 0x10FFFF and surrogates (0xD800–0xDFFF) are left untouched; the original entity text is returned unchanged.",
+  "q5": "It subtracts 0x10000 from the code point and builds a surrogate pair with String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF)).",
+  "q6": "It asserts unescape('&amp;lt; &amp;#60; &#38;quot;') equals '&lt; &#60; &quot;', i.e. only one decoding layer is applied.",
+  "q7": "`&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString;` must stay unchanged; a second assertion checks '&unknown;&amp;&copy;' becomes '&unknown;&&copy;'.",
+  "q8": "`npm test` (mocha test/) failed with exit code 127 because `mocha: not found`.",
+  "q9": "Mocha wasn't installed, so the agent ran the existing test/index.js with node:test's describe/it set as globals; all 30 existing tests passed (exit 0).",
+  "q10": "One: a single apply_patch edit round, after which the new tests passed on the first run (10/10)."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Exact regex and variable name matchEntityRegExp given."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names unescapeHtml and module.exports.unescape = unescapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Decimal numeric branch, parseInt to 39, fromCharCode gives apostrophe."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions (>0x10FFFF and surrogates) and original text returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Manual surrogate pair via subtracting 0x10000 and fromCharCode math."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Correct input/output pair and one-layer explanation."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Lists all required entities including uppercase and prototype-like names."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Mocha not found and exit code 127."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Mocha unavailable, node:test shim, and 30 passed are correct; the 'exit 0' addition is harmless. Actually all key facts present, but 'exit 0' unverified."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Single apply_patch round, 10/10 passed first run."
+  }
+ },
+ "score": 9.5,
+ "n": 10
+}

@@ -1,0 +1,16 @@
+{
+ "id": "s05",
+ "agent": "claude",
+ "agent_version": "2.1.318",
+ "model": "claude-opus-5-5",
+ "repo": "pretty-bytes",
+ "repo_url": "https://github.com/sindresorhus/pretty-bytes",
+ "license": "MIT",
+ "base_commit": "a35ed21bb4169c0bf40942ffa2987a06b8cd2854",
+ "task": "Add a `roundingMode` option to prettyBytes with values 'round' (default, current behaviour), 'floor' and 'ceil', applied to the displayed fraction digits (e.g. 1999 bytes with maximumFractionDigits:1 -> '2 kB' round, '1.9 kB' floor, '2 kB' ceil). It must work together with minimumFractionDigits/maximumFractionDigits, `locale`, `signed` and negative numbers (floor of a negative displayed value should move away from zero in magnitude terms consistently - decide and document). Update index.d.ts and readme.md. The repo uses ava which is not installed and must not be installed; write your tests in test-rounding.js with node's built-in runner (node:test + node:assert) and run `node --test test-rounding.js`.\n\nThis is a non-interactive run: nobody will answer questions [clause shortened in the committed copy]. If the spec conflicts with the existing code, decide, document the decision in readme.md, and complete the implementation.",
+ "recorded_at": "2026-11-05",
+ "num_transcript_lines": 85,
+ "tool_calls": 32,
+ "diff_lines": 470,
+ "notes": "first attempt ended early; rerun with a non-interactive instruction appended"
+}

@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 5221,
+ "answer_input_tokens": 10988,
+ "answers": {
+  "q1": "`matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`.",
+  "q2": "The function is `unescapeHtml`, exported as a property of the default export: `module.exports.unescape = unescapeHtml`.",
+  "q3": "`&#39;` matches the decimal branch of the regex (`#([0-9]+)`), is parsed with `parseInt(…, 10)` to 39, and returned via `String.fromCharCode` as `'`.",
+  "q4": "Code points above 0x10FFFF or in the surrogate range 0xD800–0xDFFF are left untouched; the original entity text is returned.",
+  "q5": "It subtracts 0x10000 and builds a surrogate pair manually with `String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF))`, not `String.fromCodePoint`.",
+  "q6": "It asserts that `unescape('&amp;lt; &amp;#60; &#38;quot;')` equals `'&lt; &#60; &quot;'`, i.e. only one decoding layer is applied.",
+  "q7": "`&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString;` must all remain unchanged (the test also checks `&unknown;&amp;&copy;` becomes `&unknown;&&copy;`).",
+  "q8": "`npm test` failed with exit code 127: `sh: 1: mocha: not found`, because mocha isn't installed.",
+  "q9": "Because mocha wasn't available, the agent mapped `describe`/`it` to node:test via globals and ran `test/index.js`; 30 tests passed, 0 failed.",
+  "q10": "One. A single apply_patch edited test/unescape.test.js, index.js and README.md, and `node --test` then exited 0 with 10 passing."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names matchEntityRegExp with the exact regex."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "unescapeHtml and module.exports.unescape = unescapeHtml both given."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Explains the decimal numeric branch, parseInt gives 39, fromCharCode returns the apostrophe."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions (>0x10FFFF and surrogates D800–DFFF) given, and the original entity is returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Manual surrogate pair via fromCharCode, not fromCodePoint."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Gives the exact input and output pair."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Lists the exact set of entities that must stay unchanged."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Exit code 127 and mocha not found."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Mocha unavailable, node:test shim, and 30 passed are all given, but 'ran with node -e' is only implied; this is essentially complete, so a lenient reading would give 1. Strictly, it matches all required facts."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Single apply_patch, node --test passed with 10 passing and exit 0."
+  }
+ },
+ "score": 9.5,
+ "n": 10,
+ "rep": 1
+}

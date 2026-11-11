@@ -1,0 +1,150 @@
+diff --git a/more_itertools/more.py b/more_itertools/more.py
+index 91d546e..03d2a66 100755
+--- a/more_itertools/more.py
++++ b/more_itertools/more.py
+@@ -5333,7 +5333,18 @@ def nth_prime(n, *, approximate=False):
+     return first_true(count(odd, step=2), pred=is_prime)
+ 
+ 
+-def argmin(iterable, *, key=None):
++def _arg_extreme(func, iterable, key, default):
++    # Shared implementation of argmin() and argmax(); *func* is min or max.
++    if key is not None:
++        iterable = map(key, iterable)
++    pairs = enumerate(iterable)
++    if default is _marker:
++        return func(pairs, key=itemgetter(1))[0]
++    result = func(pairs, key=itemgetter(1), default=_marker)
++    return default if result is _marker else result[0]
++
++
++def argmin(iterable, *, key=None, default=_marker):
+     """
+     Index of the first occurrence of a minimum value in an iterable.
+ 
+@@ -5342,6 +5353,12 @@ def argmin(iterable, *, key=None):
+         >>> argmin([3, 2, 1, 0, 4, 2, 1, 0])
+         3
+ 
++    If the iterable is empty, *default* is returned if it is given.
++    Otherwise, :exc:`ValueError` is raised, as with the builtin :func:`min`::
++
++        >>> argmin([], default=-1)
++        -1
++
+     For example, look up a label corresponding to the position
+     of a value that minimizes a cost function::
+ 
+@@ -5361,12 +5378,10 @@ def argmin(iterable, *, key=None):
+         10
+ 
+     """
+-    if key is not None:
+-        iterable = map(key, iterable)
+-    return min(enumerate(iterable), key=itemgetter(1))[0]
++    return _arg_extreme(min, iterable, key, default)
+ 
+ 
+-def argmax(iterable, *, key=None):
++def argmax(iterable, *, key=None, default=_marker):
+     """
+     Index of the first occurrence of a maximum value in an iterable.
+ 
+@@ -5375,6 +5390,12 @@ def argmax(iterable, *, key=None):
+         >>> argmax([0, 1, 2, 3, 3, 2, 1, 0])
+         3
+ 
++    If the iterable is empty, *default* is returned if it is given.
++    Otherwise, :exc:`ValueError` is raised, as with the builtin :func:`max`::
++
++        >>> argmax([], default=None) is None
++        True
++
+     For example, identify the best machine learning model::
+ 
+         >>> models =   ['svm', 'random forest', 'knn', 'naïve bayes']
+@@ -5389,9 +5410,7 @@ def argmax(iterable, *, key=None):
+         84
+ 
+     """
+-    if key is not None:
+-        iterable = map(key, iterable)
+-    return max(enumerate(iterable), key=itemgetter(1))[0]
++    return _arg_extreme(max, iterable, key, default)
+ 
+ 
+ def _extract_monotonic(iterator, indices):
+diff --git a/more_itertools/more.pyi b/more_itertools/more.pyi
+index 2ae730e..0c5ce0a 100644
+--- a/more_itertools/more.pyi
++++ b/more_itertools/more.pyi
+@@ -990,12 +990,28 @@ def dft(xarr: Sequence[complex]) -> Iterator[complex]: ...
+ def idft(Xarr: Sequence[complex]) -> Iterator[complex]: ...
+ def _nth_prime_ub(n: int) -> float: ...
+ def nth_prime(n: int, *, approximate: bool = ...) -> int: ...
++@overload
+ def argmin(
+     iterable: Iterable[_T], *, key: Callable[[_T], _U] | None = ...
+ ) -> int: ...
++@overload
++def argmin(
++    iterable: Iterable[_T],
++    *,
++    key: Callable[[_T], _U] | None = ...,
++    default: _V,
++) -> int | _V: ...
++@overload
+ def argmax(
+     iterable: Iterable[_T], *, key: Callable[[_T], _U] | None = ...
+ ) -> int: ...
++@overload
++def argmax(
++    iterable: Iterable[_T],
++    *,
++    key: Callable[[_T], _U] | None = ...,
++    default: _V,
++) -> int | _V: ...
+ def extract(
+     iterable: Iterable[_T],
+     indices: Iterable[int],
+diff --git a/tests/test_more.py b/tests/test_more.py
+index a0c4f1f..f4684f6 100644
+--- a/tests/test_more.py
++++ b/tests/test_more.py
+@@ -6877,6 +6877,36 @@ class ArgMinArgMaxTests(TestCase):
+                 self.assertEqual(mi.argmin(iterable, key=key), expected_min)
+                 self.assertEqual(mi.argmax(iterable, key=key), expected_max)
+ 
++    def test_empty_no_default(self):
++        for func in (mi.argmin, mi.argmax):
++            for iterable in ([], iter([]), ()):
++                with self.subTest(func=func, iterable=iterable):
++                    with self.assertRaises(ValueError):
++                        func(iterable)
++                    with self.assertRaises(ValueError):
++                        func(iterable, key=abs)
++
++    def test_empty_with_default(self):
++        for func in (mi.argmin, mi.argmax):
++            for default in (-1, 'x', None, 0):
++                with self.subTest(func=func, default=default):
++                    self.assertIs(func([], default=default), default)
++                    self.assertIs(
++                        func(iter([]), key=abs, default=default), default
++                    )
++
++    def test_default_ignored_when_nonempty(self):
++        self.assertEqual(mi.argmin([3, 1, 2], default=None), 1)
++        self.assertEqual(mi.argmax([3, 1, 2], default=None), 0)
++        self.assertEqual(mi.argmin([-3, 1, 2], key=abs, default=-1), 1)
++        self.assertEqual(mi.argmax([-3, 1, 2], key=abs, default=-1), 0)
++
++    def test_default_is_keyword_only(self):
++        for func in (mi.argmin, mi.argmax):
++            with self.subTest(func=func):
++                with self.assertRaises(TypeError):
++                    func([], None, -1)
++
+ 
+ class ExtractTests(TestCase):
+     def test_basics(self):

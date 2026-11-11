@@ -1,0 +1,74 @@
+{
+ "session": "s06",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 4929,
+ "answers": {
+  "q1": "In the `if (!match?.groups)` branch, which previously returned NaN. It runs only when the existing single-value regex fails to match, so single-unit inputs still use the original path.",
+  "q2": "`/(-?\\d*\\.?\\d+) *(milliseconds?|msecs?|ms|months?|mo|minutes?|mins?|m|seconds?|secs?|s|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)(?= *-?\\d| *-?\\.\\d|$)/iy` — case-insensitive (i) and sticky (y), with a lookahead requiring optional spaces then a number (optionally negative or leading-dot) or end of string.",
+  "q3": "Each matched component (`component[0]`) is passed to the existing single-value `parse()` and added to the total. The code comment says this keeps the single-value parser as the source of unit conversions.",
+  "q4": "For each component it checks whether the number starts with '-'. The first component's sign is stored, and if a later component's sign differs it returns NaN.",
+  "q5": "It returns NaN if count is not greater than 1 (only one component consumed). Spaces between components are skipped, but if the input ends with a space after the last component it returns NaN.",
+  "q6": "unknown",
+  "q7": "It asserts that `'1' + ' '.repeat(98) + 's'` (100 characters) parses to 1000, and that `'1' + ' '.repeat(99) + 's'` (101 characters) throws.",
+  "q8": "The `StringValue` type used by `ms` and `parseStrict` describes only single values. The README tells users to use `parse` for compound strings in TypeScript.",
+  "q9": "Type checking (tsc --noEmit) could not be run because the TypeScript compiler is not installed.",
+  "q10": "The agent first inspected the repo and files, then modified src/index.ts and README.md and added src/compound.test.ts. It then ran `node --test src/compound.test.ts` once in the visible material, and all 3 tests passed. The truncated portion may hide other runs, so only one run is confirmed."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Identifies the no-match branch that previously returned NaN and that it runs only when the single regex fails."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Gives the regex with iy flags, required unit, and lookahead for another number or end of string."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Describes the recursive parse call on each component and the reason of keeping the single-value parser as the source of conversions."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "States that the first component's sign is stored and a later differing sign returns NaN."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Covers count > 1 and trailing space -> NaN, but is imprecise about the offset-reaches-end condition. Both required parts are present, so this is nearly correct; marked 0.5 for the vague wording."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Gives the 100-char input parsing to 1000 and the 101-char input throwing."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Says StringValue covers only single values and to use parse for compound strings."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Typecheck skipped because the TypeScript compiler is not installed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Order is vague and misses the two-patch sequence; it also hedges on the number of runs, though it does say tests passed 3 of 3 in one visible run."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 1
+}

@@ -1,0 +1,74 @@
+{
+ "session": "s03",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 5525,
+ "answer_input_tokens": 10882,
+ "answers": {
+  "q1": "`_arg_extreme(func, iterable, key, default)` in more_itertools/more.py, where `func` is `min` or `max`. Both `argmin` and `argmax` delegate to it.",
+  "q2": "In more.pyi, each of argmin and argmax got two `@overload`s: one without `default` returning `int`, and one with keyword-only `default: _V` returning `int | _V`.",
+  "q3": "It uses the `_marker` sentinel object, not None. With a default, it calls `func(..., default=_marker)` and returns the caller's `default` if the result `is _marker`, otherwise `result[0]`. So None works as a real default.",
+  "q4": "So an empty input still raises the builtin's `ValueError`, keeping the original behavior (`func(pairs, key=itemgetter(1))[0]`) when `default is _marker`.",
+  "q5": "It checks that empty input returns the supplied default, using `assertIs` to confirm the same object comes back. The defaults are -1, 'x', None and 0, with and without `key`.",
+  "q6": "`test_default_is_keyword_only` calls `func([], None, -1)` for both argmin and argmax and asserts it raises `TypeError`.",
+  "q7": "It failed with `ImportError: attempted relative import with no known parent package`. The `doctest-exit=0` is the exit status of `tail` (the pipe's last command), not of doctest.",
+  "q8": "It ran doctests via import in Python. `run_docstring_examples(..., {})` produced NameError failures because the globals dict was empty (a harness mistake), while `doctest.testmod(m)` gave `failed=0, attempted=582`.",
+  "q9": "It ran the full `tests/test_more.py` with `-p no:cacheprovider`, which gave 630 passed and 11343 subtests passed in 5.93s.",
+  "q10": "[answer removed: the original q10 concerned a remark about the user's personal settings]"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names _arg_extreme(func, iterable, key, default), min/max, and argmin/argmax delegate."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Two overloads each; int and int | _V with keyword-only default."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Mentions _marker sentinel, default=_marker passed to func, is _marker check, result[0]."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Preserves original ValueError behavior when no default."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Lists defaults and assertIs, but doesn't mention the empty list vs iter([]) with key=abs specifically; says 'with and without key', which is vague."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "func([], None, -1) positional call expecting TypeError for both."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Relative-import ImportError and 0 came from tail, not doctest."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Both outcomes: NameError from empty globals and testmod failed=0, attempted=582."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Includes -p no:cacheprovider and 630 passed / 11343 subtests."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "[removed]"
+  }
+ },
+ "score": 9.5,
+ "n": 10,
+ "rep": 2
+}

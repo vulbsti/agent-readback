@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 12347,
+ "answers": {
+  "q1": "`var matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`, a global regex with capture groups for decimal and hex numeric references.",
+  "q2": "The function is named `unescapeHtml`, and it is exported as `module.exports.unescape = unescapeHtml`.",
+  "q3": "`&#39;` is not in the switch. It matches the decimal branch of the regex, is parsed with parseInt(decimal, 10) to 39, and is converted with String.fromCharCode(39) to `'`.",
+  "q4": "Code points above 0x10FFFF and surrogate-range values 0xD800–0xDFFF are left untouched. The original entity text is returned unchanged.",
+  "q5": "It subtracts 0x10000 from the code point and builds a surrogate pair with String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF)).",
+  "q6": "It asserts that unescape('&amp;lt; &amp;#60; &#38;quot;') returns '&lt; &#60; &quot;', so only one layer is decoded.",
+  "q7": "The entities &copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString; must stay unchanged. A second assertion also checks that '&unknown;&amp;&copy;' becomes '&unknown;&&copy;'.",
+  "q8": "unknown. The material only says `npm test` was unavailable because Mocha isn't installed; no exit code is given.",
+  "q9": "The final summary says the existing 30 escape tests passed using Node's test APIs, and that npm test was unavailable because Mocha isn't installed. The material does not show the exact `node -e` command, so the reason is inferred: Mocha was missing. The result was 30 tests passed, 0 failed.",
+  "q10": "unknown. The transcript shows no edit rounds, only the final diff, and the summary reports 10 new tests passing."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Exact variable name and regex given, with global flag and capture groups."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names unescapeHtml and module.exports.unescape = unescapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Correctly says &#39; goes through decimal branch, parseInt gives 39, fromCharCode yields apostrophe."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions (>0x10FFFF and surrogates D800-DFFF) and unchanged original text returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Describes manual surrogate pair construction with correct math via fromCharCode."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Gives exact input/output pair matching key."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Lists all required entities including uppercase and prototype-like names."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer says unknown and gives no exit code 127 or 'mocha: not found'."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Correct that mocha was missing and 30 tests passed, but doesn't describe the node:test describe/it shim mapping."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answer says unknown; key is a single patch with 10/10 passing on first run."
+  }
+ },
+ "score": 7.5,
+ "n": 10,
+ "rep": 2
+}

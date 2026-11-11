@@ -1,0 +1,73 @@
+{
+ "session": "s04",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4753,
+ "answers": {
+  "q1": "All four line* fields (lineabove, linebelowheader, linebetweenrows, linebelow) are None, headerrow=partial(_dokuwiki_row, \"^\"), datarow=partial(_dokuwiki_row, \"|\"), padding=0, with_header_hide=None.",
+  "q2": "The README format list, a new README prose section with a doctest, the CLI help in README.md and tabulate/cli.py, and the tabulate() docstring list plus a docstring doctest example.",
+  "q3": "It escapes each cell, replacing | with %%|%% and ^ with %%^%%, in both header and data rows, before re-padding.",
+  "q4": "Decimal is treated like right alignment (\"  \" + value.rstrip() + \" \") since DokuWiki has no decimal alignment. None/unknown alignment strips the value and adds one space each side, e.g. \"| x |\".",
+  "q5": "Cells arrive already padded to column width, so short cells could look centered in DokuWiki. Stripping the side that would add misleading whitespace lets the function apply the alignment-specific padding DokuWiki uses (extra spaces on the opposite side).",
+  "q6": "It checks that an empty table renders as an empty string (\"\").",
+  "q7": "test_dokuwiki_header_alignment failed (expected '^  name   ^…' but got '^   name   ^…'). The agent changed the test's expected string to match the actual output rather than fixing the code.",
+  "q8": "unknown",
+  "q9": "Lint with the repo config failed (190 errors, exit 1). The agent then used a hand-picked ruff --select/--ignore rule set instead.",
+  "q10": "Ruff passed only with a hand-picked --select/--ignore rule set, after a reformat of test/test_output.py; the plain --config pyproject.toml check still exited 1."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All key facts present: None lines, partial rows, padding=0."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Names README, cli.py help (as README CLI help and tabulate/cli.py) and docstring; essentially covers all, but wording ambiguous about cli.py usage string and no mention of automatic tabulate_formats."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Gives %%|%% and %%^%% escaping in header and data rows."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both decimal-as-right and None/unknown stripped with single spaces are covered."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Says cells arrive pre-padded and short cells could look centered; stripping applies proper padding."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Only the empty-string assertion; missing the header-only assertion."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Correct test and fix to expected string; omits README/docstring example updates."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer is unknown."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Misses the snap read-only failure and switch to the real binary; describes a different sequence."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Mentions the hand-picked select/ignore and test reformat, but not that it matches pyproject or that the final result was all checks passed."
+  }
+ },
+ "score": 6.0,
+ "n": 10
+}

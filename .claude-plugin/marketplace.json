@@ -1,0 +1,11 @@
+{
+  "name": "agent-readback",
+  "owner": { "name": "vulbsti" },
+  "plugins": [
+    {
+      "name": "agent-readback",
+      "source": "./",
+      "description": "Read-only explainer for another coding-agent session, with citations to transcript events and diff hunks."
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+[
+ {
+  "id": "q1",
+  "question": "What shared helper did the agent introduce to avoid duplicating logic, and what is its signature?",
+  "answer": "_arg_extreme(func, iterable, key, default), where func is min or max.",
+  "accept": "Must name _arg_extreme with parameters (func, iterable, key, default); argmin/argmax call it with min/max.",
+  "kind": "what",
+  "evidence": "L24; L26; L28; diff more_itertools/more.py @@ -5333,7 +5333,18 @@"
+ },
+ {
+  "id": "q2",
+  "question": "How was the .pyi stub changed for argmin/argmax?",
+  "answer": "Each function got two @overload signatures: without default -> int; with keyword-only `default: _V` -> int | _V.",
+  "accept": "Must mention two overloads per function and the return types int and int | _V.",
+  "kind": "what",
+  "evidence": "L30; diff more_itertools/more.pyi @@ -990,12 +990,28 @@"
+ },
+ {
+  "id": "q3",
+  "question": "How does _arg_extreme tell an empty iterable apart when a default is supplied, while still allowing None as a default?",
+  "answer": "It uses the module's _marker sentinel (the same one first()/last() use) as the parameter default; when a default is given it calls min/max with default=_marker and returns the user default if the result is _marker, otherwise result[0].",
+  "accept": "Must mention the _marker sentinel (not None) as 'no default', and passing default=_marker to min/max and comparing the result with `is _marker`.",
+  "kind": "how",
+  "evidence": "L16-L17; L24; diff more_itertools/more.py @@ -5333,7 +5333,18 @@; L44"
+ },
+ {
+  "id": "q4",
+  "question": "Why does the no-default path call min/max without any default argument at all?",
+  "answer": "So an empty iterable still raises the same ValueError with the same message as before.",
+  "accept": "Must say it preserves the original ValueError (same message/behaviour) when no default is given.",
+  "kind": "why",
+  "evidence": "L24; L44"
+ },
+ {
+  "id": "q5",
+  "question": "What does test_empty_with_default check, and with which default values?",
+  "answer": "For both argmin and argmax with defaults -1, 'x', None and 0, it uses assertIs to check the default is returned for [] and for iter([]) with key=abs.",
+  "accept": "Must list the defaults (-1, 'x', None, 0), mention identity (assertIs), and both the plain empty list and the empty iterator with key=abs.",
+  "kind": "test",
+  "evidence": "L32; diff tests/test_more.py @@ -6877,6 +6877,36 @@"
+ },
+ {
+  "id": "q6",
+  "question": "How does the agent's test check that default is keyword-only?",
+  "answer": "test_default_is_keyword_only calls func([], None, -1) positionally for argmin and argmax and expects TypeError.",
+  "accept": "Must mention passing it as a positional argument (func([], None, -1)) and expecting TypeError.",
+  "kind": "test",
+  "evidence": "L32; diff tests/test_more.py @@ -6877,6 +6877,36 @@"
+ },
+ {
+  "id": "q7",
+  "question": "What happened with `python -m doctest more_itertools/more.py`, and why is the printed `doctest-exit=0` misleading?",
+  "answer": "It crashed with ImportError: attempted relative import with no known parent package; `$?` held the exit status of `tail` in the pipe, not of doctest, so it printed 0.",
+  "accept": "Must mention the relative-import ImportError and that the 0 came from the pipeline (tail), not from doctest.",
+  "kind": "failure",
+  "evidence": "L34-L35"
+ },
+ {
+  "id": "q8",
+  "question": "What did the agent run next to check the doctests, and what were the two outcomes?",
+  "answer": "An inline Python script: doctest.run_docstring_examples(m.argmin/argmax, {}) failed with NameError ('argmin' not defined, because the globals were empty), but doctest.testmod(m) reported TestResults(failed=0, attempted=582).",
+  "accept": "Must mention both: NameError failures from run_docstring_examples with empty globs, and testmod passing with 0 failed out of 582 attempted.",
+  "kind": "sequence",
+  "evidence": "L37-L38"
+ },
+ {
+  "id": "q9",
+  "question": "What was the final full-suite run, with what extra flag, and what was the result?",
+  "answer": "`pytest tests/test_more.py -q -p no:cacheprovider` -> 630 passed, 11343 subtests passed.",
+  "accept": "Must include -p no:cacheprovider (pytest had warned that the cache path is on a read-only file system) and 630 passed / 11343 subtests.",
+  "kind": "sequence",
+  "evidence": "L35 (PytestCacheWarning); L41-L42"
+ },
+ {
+  "id": "q10",
+  "question": "According to the agent's final summary, what happens if `default` is passed to argmin/argmax by position instead of by keyword?",
+  "answer": "It raises TypeError, because default is keyword-only.",
+  "accept": "Must say TypeError (keyword-only parameter).",
+  "kind": "how",
+  "evidence": "L44 (final summary)"
+ }
+]

@@ -1,0 +1,74 @@
+{
+ "session": "s06",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 3928,
+ "answer_input_tokens": 8119,
+ "answers": {
+  "q1": "In `src/index.ts` `parse`, it replaced the `return NaN` inside `if (!match?.groups)`. The compound loop runs only when the single-value regex fails to match.",
+  "q2": "It uses a regex of the form `(-?\\d*\\.?\\d+) *(unit alternatives)` with flags `i` and `y` (case-insensitive, sticky). The lookahead `(?= *-?\\d| *-?\\.\\d|$)` requires another number or the end of the string to follow.",
+  "q3": "Each matched component text is passed to `parse` recursively (`parse(component[0])`) and the results are summed into `total`. The comment says the single-value parser above is kept as the source of unit conversions.",
+  "q4": "For each component, `negative = component[1].startsWith('-')`. The first part sets `sign`, and if a later part's sign differs, the function returns NaN.",
+  "q5": "It returns `count > 1 ? total : NaN`, so a single component gives NaN. After skipping spaces, if the offset reaches the end and `str` ends with a space, it returns NaN, so trailing whitespace is rejected.",
+  "q6": "`1h -30m`, `-1h 30m`, `1h +30m`, `1h 30`, `1h 30x`, `1h 30m junk`, `1h,30m`, `1h 30m ` (trailing space), ` 1h 30m` (leading space), and `1h\\t30m`.",
+  "q7": "It asserts that `'1' + ' '.repeat(98) + 's'` (100 characters) parses to 1000. It also asserts that the 101-character version (99 spaces) throws, and that `parse('')` throws.",
+  "q8": "The `StringValue` type used by `ms` and `parseStrict` describes only single values. The README tells users to use `parse` for compound strings in TypeScript.",
+  "q9": "The type check (`tsc --noEmit`) could not be done because the TypeScript compiler is not installed; the command printed 'TypeScript compiler not installed'.",
+  "q10": "The agent explored the repo, then patched `src/index.ts`, then added `src/compound.test.ts` and the README changes. It then ran the version/tsc check, the git diff checks, and `node --test src/compound.test.ts`. One test run was needed and it exited 0, with no fix phase."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Replaced bare return NaN in no-match branch; runs only when single regex fails."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Mentions i and y flags, lookahead for number or end. Required unit is implied by the unit alternatives without optional marker."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Recursive parse(component[0]), summed, comment about source of unit conversions."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "startsWith('-') per component, first sets sign, mismatch returns NaN."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "count > 1 else NaN, and trailing space after the offset reaches end returns NaN."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Lists all ten inputs."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "100-char input gives 1000, 101-char throws, and empty string throws."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "StringValue for ms/parseStrict single-only; use parse."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Typecheck skipped because TypeScript compiler not installed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Order of patches and a single passing run are right, but it describes the tsc and git diff checks as running before the test rather than in the same parallel batch, and does not state 3/3 passed."
+  }
+ },
+ "score": 9.5,
+ "n": 10,
+ "rep": 1
+}

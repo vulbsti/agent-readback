@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4995,
+ "answers": {
+  "q1": "The variable is `matchEntityRegExp`, defined as `/&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`.",
+  "q2": "The function is `unescapeHtml`. It is exported as a property on the default export: `module.exports.unescape = unescapeHtml`, while `escapeHtml` stays the default export.",
+  "q3": "`&#39;` has no named case. It matches the decimal numeric branch of the regex, goes through `parseInt` base 10, and is converted with `String.fromCharCode`.",
+  "q4": "Code points above 0x10FFFF and surrogates in 0xD800–0xDFFF are left untouched. The original entity text is returned for them.",
+  "q5": "It builds a surrogate pair by hand (0xD800+(cp>>10), 0xDC00+(cp&0x3FF)) for code points 0x10000–0x10FFFF, rather than using `String.fromCodePoint`.",
+  "q6": "It asserts that a single pass decodes only one layer: `&amp;lt;` becomes `&lt;`, not `<`.",
+  "q7": "`&copy;`, `&apos;`, `&AMP;` and `&constructor;` must stay unchanged.",
+  "q8": "`npm test` failed with exit code 127 and `sh: 1: mocha: not found`, because mocha isn't installed.",
+  "q9": "Because `npm test` couldn't run without mocha, the agent ran `test/index.js` with node:test's `describe`/`it` assigned to globals as a shim. All 30 existing tests passed, 0 failed.",
+  "q10": "unknown"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names matchEntityRegExp and gives the exact regex."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "unescapeHtml and module.exports.unescape = unescapeHtml; default stays escapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Correctly says the decimal numeric branch with parseInt and fromCharCode."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions (>0x10FFFF and surrogates D800–DFFF) given; original text returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Manual surrogate pair math, not fromCodePoint."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Gives &amp;lt; -> &lt; but omits the numeric &#38;quot; case and the full input/output pair."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Lists &copy;, &apos;, &AMP;, &constructor; but omits &nbsp; and &LT;; mostly correct but incomplete."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Exit code 127 and mocha: not found."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Mocha unavailable, node:test shim, 30 tests passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 2
+}

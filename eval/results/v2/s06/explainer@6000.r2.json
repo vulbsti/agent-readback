@@ -1,0 +1,74 @@
+{
+ "session": "s06",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 4121,
+ "answer_input_tokens": 8468,
+ "answers": {
+  "q1": "It replaced the old `return NaN` inside the `if (!match?.groups)` block in `parse`, so it runs only when the existing single-value regex fails to match. Single-unit inputs that matched before take the unchanged path.",
+  "q2": "Per component it uses a `part` regex that matches `(-?\\d*\\.?\\d+) *(unit alternation)` with flags `i` and `y` (case-insensitive, sticky). The lookahead `(?= *-?\\d| *-?\\.\\d|$)` requires the next thing to be a number (optionally signed or starting with a dot) or end of string.",
+  "q3": "Each matched component string (e.g. `30m`) is passed back into `parse` recursively and the results are added to `total`. The code comment says the single-value parser stays \"the source of unit conversions\".",
+  "q4": "The first component's sign (whether its number starts with `-`) is stored in `sign`. If a later component's sign differs, the function returns `NaN`. There is no `+` in the regex, so `1h +30m` also fails.",
+  "q5": "With only one component (`count` is not greater than 1), it returns `NaN`. After skipping spaces, a trailing space triggers `NaN` through the guard `offset === str.length && str.endsWith(' ')`. The lookahead probably rejects it earlier, but that was not verified.",
+  "q6": "`'1h -30m'`, `'-1h 30m'`, `'1h +30m'`, `'1h 30'`, `'1h 30x'`, `'1h 30m junk'`, `'1h,30m'`, `'1h 30m '`, `' 1h 30m'`, and `'1h\\t30m'` must all be `NaN`.",
+  "q7": "It asserts that `'1' + ' '.repeat(98) + 's'` (100 characters) parses to 1000. It also asserts that a 101-character string, `'1' + ' '.repeat(99) + 's'`, throws.",
+  "q8": "The README says the `StringValue` type used by `ms` and `parseStrict` describes only single values. It tells users to use `parse` for compound strings in TypeScript.",
+  "q9": "Type checking with `tsc --noEmit` could not be done because the TypeScript compiler is not installed (`node_modules/.bin/tsc` is missing). The existing test suites were also never run, but that was not stated as impossible.",
+  "q10": "The agent explored the repo, edited `src/index.ts`, then added `src/compound.test.ts` and the README changes. After that it checked the Node version, skipped `tsc`, ran `git diff --check`, and ran `node --test src/compound.test.ts`. It needed one test run, which exited 0, and no fix phase."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Replaces bare return NaN in no-match branch; runs only when single regex fails."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Mentions i and y flags, lookahead for number or end. Unit required is implied by the regex shown (no ? on unit group)."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Recursive parse on each component, added to total, comment about source of unit conversions."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "First sign stored, later differing sign returns NaN; + not accepted."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Both parts: count not >1 gives NaN, trailing space guard gives NaN. The hedge is harmless."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Lists all ten inputs exactly."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Has the 100-char passing and 101-char throwing, but omits that the 100-char input parses to 1000? Actually it states 1000. Fully correct apart from the minor parse('') extra, so partial credit is overly harsh; however key facts are present."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "StringValue type for ms/parseStrict is single-value only; use parse."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Typecheck skipped because tsc is not installed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Order is roughly right and one test run with no fixes, but it doesn't say 3/3 passed and describes the steps as separate sequential ones rather than a single batch, and omits the two-patch structure."
+  }
+ },
+ "score": 9.0,
+ "n": 10,
+ "rep": 2
+}

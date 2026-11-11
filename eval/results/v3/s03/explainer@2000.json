@@ -1,0 +1,74 @@
+{
+ "session": "s03",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4629,
+ "answers": {
+  "q1": "`_arg_extreme(func, iterable, key, default)` in `more_itertools/more.py`, where `func` is `min` or `max`. `argmin` and `argmax` both delegate to it.",
+  "q2": "Each of `argmin` and `argmax` got two `@overload`s in `more.pyi`. Without `default` it returns `int`; with `default: _V` it returns `int | _V`.",
+  "q3": "It calls `func(..., default=_marker)` using the existing `_marker` sentinel object. If `_marker` comes back, the input was empty and the caller's `default` is returned, so `None` works as a real default.",
+  "q4": "Calling it without a default keeps the original call shape, so an empty input still raises the builtin's `ValueError`.",
+  "q5": "It checks that an empty input returns the supplied default (via `assertIs`), with and without `key`, including `key=abs` on `iter([])`. The defaults are `-1`, `'x'`, `None` and `0`.",
+  "q6": "`test_default_is_keyword_only` calls `func([], None, -1)` and asserts it raises `TypeError`.",
+  "q7": "It failed with an `ImportError` because of the relative import in `more.py`. The printed `doctest-exit=0` was `tail`'s exit code, not doctest's, so it did not mean the doctests passed.",
+  "q8": "The agent re-ran the doctests via import. `run_docstring_examples(..., {})` gave `NameError` failures because the globals dict was empty (a harness mistake). `doctest.testmod(m)` gave failed=0, attempted=582.",
+  "q9": "The full `tests/test_more.py` run with `-p no:cacheprovider`. It passed: 630 passed, 11343 subtests passed.",
+  "q10": "[answer removed: the original q10 concerned a remark about the user's personal settings]"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names _arg_extreme(func, iterable, key, default), min/max, delegation by argmin/argmax."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Two overloads each; int and int | _V returns."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Uses _marker sentinel passed as default to func; returns user default if _marker returned, so None works."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Original call shape retained so empty input still raises ValueError."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Lists defaults, assertIs, with/without key=abs on iter([])."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "func([], None, -1) positional call expecting TypeError."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Relative-import ImportError and exit code came from tail."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Both outcomes: NameError from empty globs and testmod failed=0, attempted=582."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Has flag and 630 passed/11343 subtests; reason for flag (read-only cache) not mentioned, but the key's core facts are present."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "[removed]"
+  }
+ },
+ "score": 8.5,
+ "n": 10,
+ "rep": 1
+}

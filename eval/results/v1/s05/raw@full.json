@@ -1,0 +1,73 @@
+{
+ "session": "s05",
+ "condition": "raw",
+ "budget": null,
+ "context_tokens_est": 26593,
+ "answer_input_tokens": 51906,
+ "answers": {
+  "q1": "'round' → 'halfExpand'; 'floor' → 'expand' if negative else 'trunc'; 'ceil' → 'trunc' if negative else 'expand'; anything else (undefined) → undefined.",
+  "q2": "It accepts undefined or one of 'round', 'floor', 'ceil' (via a Set). Anything else throws a TypeError: \"Expected roundingMode to be one of 'round', 'floor' or 'ceil', got <type>: <value>\".",
+  "q3": "The spec called 'round' both the default and the current behaviour, but with min/maxFractionDigits the code currently truncates (1999 with maximumFractionDigits:1 gives '1.9 kB', not '2 kB'). The agent decided the default stays undefined and leaves output unchanged: it rounds with the 3-significant-digit default and truncates with fraction-digit options, and an explicit 'round' rounds. This is documented in readme.md.",
+  "q4": "If localeOptions.roundingMode isn't 'trunc' and it isn't the last unit, it formats the scaled number with en-US and those options. If the rounded result is >= base, it divides number by base and increments the exponent, so 999_960 with maximumFractionDigits:1 and 'round' gives '1 MB'.",
+  "q5": "Without fraction-digit options, 'round' uses Number#toPrecision on the stored double (1.005 is stored slightly below, so it rounds down to '1 kB'). With maximumFractionDigits it goes through Intl.NumberFormat, which rounds the shortest decimal form, so 1.005 rounds to '1.01'.",
+  "q6": "It uses exact bigint arithmetic. It multiplies by 10^maximumFractionDigits, divides by the scale to get digits and a remainder, then adds 1 for 'expand' if the remainder > 0, or for 'halfExpand' if remainder*2 >= scale. It then splits the digits into whole and fraction parts, trims trailing zeros and pads to minimumFractionDigits.",
+  "q7": "It checks that floor of -value prints as '-' followed by ceil of value. It loops over values [1, 1001, 1337, 1999, 54321, 999901] and maximumFractionDigits of [undefined, 0, 1, 2].",
+  "q8": "The 'rounding up carries onto the next unit' test failed: it expected '999.960 kB' for 999_960 with minimumFractionDigits:1 and 'round', but got '999.96 kB'. The agent fixed the test expectation to '999.96 kB'.",
+  "q9": "It built a stand-in 'ava' module (node_modules/ava/index.js and package.json) in a scratchpad directory, mapping ava's t methods onto node:assert and node:test, then copied index.js and test.js there and ran node --test test.js. It first failed with 'test.skip is not a function', so the agent added test.skip and notRegex to the shim.",
+  "q10": "'documented examples are accurate' failed because the shim directory didn't have the updated readme.md and index.d.ts (the agent had only copied index.js and test.js). After copying readme.md and index.d.ts in, the existing suite gave 48 pass, 0 fail, 3 skipped, and test-rounding.js gave 11 pass, 0 fail."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct including floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names allowed values, undefined, and TypeError with message."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Identifies truncation conflict, keeps undefined default, documented in readme."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Describes the carry check and the 999_960 example, but omits that it's skipped for trunc... actually mentions trunc and last unit; lacks only the no-grouping detail. Mostly complete, minor gap."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Explains toPrecision vs Intl.NumberFormat on shortest decimal form."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Bigint quotient/remainder with both increment conditions."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "States floor(-v) = '-' + ceil(v) with correct values and settings."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Names failing carry test, 999.960 vs 999.96, test fixed."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Shim in scratchpad, test.skip TypeError, added test.skip and notRegex."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names documented-examples test, cause, and final 48/0/3 and 11/0."
+  }
+ },
+ "score": 9.5,
+ "n": 10
+}

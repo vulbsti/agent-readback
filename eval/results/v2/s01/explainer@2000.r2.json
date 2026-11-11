@@ -1,0 +1,74 @@
+{
+ "session": "s01",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4656,
+ "answers": {
+  "q1": "`compact_suffixes = (\"K\", \"M\", \"B\", \"T\")`, a module-level tuple aligned with the first entries of `powers`.",
+  "q2": "It sits after the existing rounding-carry block (`ordinal += 1; rounded_value = 1.0`) and after the number is formatted, before the unchanged `human_powers`/`_ngettext` word-form lookup, which it falls through to.",
+  "q3": "`compact and ordinal < len(compact_suffixes)`, evaluated after the carry.",
+  "q4": "It returns \"1.0 quadrillion\". The value carries to ordinal 4, which fails `ordinal < 4`, so the word-form fallback is used.",
+  "q5": "`\"%0.3f\"` gives \"1.234M\"; `\"%.0f\"` with 999_499 gives \"999K\" and with 999_500 gives \"1M\" (carry).",
+  "q6": "Both the pytest run and the `--doctest-modules` run errored at collection with `ModuleNotFoundError: No module named 'humanize._version'`. This was not caused by the agent's change; `_version.py` is a hatch-vcs-generated, gitignored file that was missing.",
+  "q7": "It ran a combined `grep` + `git stash` baseline command, which needed approval and never ran. The agent then switched to a plain `Grep`, so the stash baseline never happened.",
+  "q8": "The agent created a stub `src/humanize/_version.py` with a dev version string (ending `0.dev0`). The Grep showed the file is gitignored (a `.gitignore` entry).",
+  "q9": "After the stub, the doctests showed \"8 passed\". The agent claimed 267 passed for pytest, but that output is truncated in the evidence. `git status` showed only the two modified files plus untracked sandbox dotfiles. Nothing else (full suite, linting, type checking) was run.",
+  "q10": "The file is gitignored, which is why it won't be committed and why it doesn't appear in the diff hunks or `git status`."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names compact_suffixes with K, M, B, T in order, module-level tuple."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "After carry and formatting, before the human_powers/_ngettext lookup."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Gives exact condition `compact and ordinal < len(compact_suffixes)` after carry."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Returns '1.0 quadrillion'; carry takes ordinal to 4, so it falls back to the word form."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "All three cases are present: 1.234M, 999K, and 1M."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Cites ModuleNotFoundError for humanize._version in both runs and says it was not caused by the change."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Grep + git stash baseline command needed approval and did not run; the agent switched to Grep."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0.5,
+   "why": "Stub creation and gitignore are right, but the answer is vague on the exact '0.0.0.dev0' string and omits hatch-vcs generation."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Reports 8 doctests passed, but does not confirm 267 passed and calls that output truncated."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Cites that the file is gitignored."
+  }
+ },
+ "score": 9.0,
+ "n": 10,
+ "rep": 2
+}

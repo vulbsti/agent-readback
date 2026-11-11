@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 5474,
+ "answer_input_tokens": 11724,
+ "answers": {
+  "q1": "`round` → `halfExpand`. `floor` → `expand` for negatives and `trunc` otherwise. `ceil` is the reverse (`trunc` for negatives, `expand` otherwise). `undefined` → `undefined`.",
+  "q2": "It accepts `'round'`, `'floor'`, `'ceil'` (and `undefined`). Anything else, such as `'trunc'`, `'ROUND'`, `null`, `1` or `'up'`, throws a `TypeError`.",
+  "q3": "Fraction-digit options truncate in the existing code, so 'round' can't be the current behaviour. The agent made the default `undefined`, which keeps the truncating output unchanged, and made an explicit `'round'` actually round. This is documented in readme.md.",
+  "q4": "When fraction options are set and the mode isn't `trunc`, the value is pre-rounded in en-US. If the rounded value is `>= base`, it is divided by base and moves to the next unit, so 999960 with max 1 digit gives `1 MB`.",
+  "q5": "Without fraction options, the default 3-significant-digit path keeps `Number#toPrecision` for round/omitted, so 1005 gives `1 kB`. With fraction options, `round` goes through Intl `halfExpand`, which rounds on the shortest decimal (1.005 → 1.01), giving `1.01 kB`.",
+  "q6": "It computes the digits as `number*10^max / scale` with bigint arithmetic. It adds 1 for `expand` when the remainder is > 0, or for `halfExpand` when `remainder*2 >= scale`. `trunc` leaves it unchanged. Before this change it always truncated.",
+  "q7": "unknown. The material doesn't show the negative-numbers test's loop. It only states that floor of -x equals -ceil(x), and describes a separate loop test checking that explicit 'round' matches the default output.",
+  "q8": "The test 'rounding up carries onto the next unit' failed: it expected `'999.960 kB'` but got `'999.96 kB'`. The agent changed the test expectation to `'999.96 kB'` and left the code as is.",
+  "q9": "The Bash heredoc to create a stand-in ava was blocked, so the agent wrote a shim `node_modules/ava/index.js` and `package.json` in the scratchpad with the Write tool. The first run of `test.js` crashed with `test.skip is not a function`, which it fixed by adding `test.skip` and `t.notRegex` to the shim.",
+  "q10": "'documented examples are accurate' failed (47 pass, 1 fail, 3 skipped). The agent attributed it to the readme missing from the shim directory, and the docs also needed `//=>` examples. After copying the readme and d.ts into the shim it ran 48 pass, 0 fail, 3 skipped, and `test-rounding.js` ran 11 pass, 0 fail."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct, including floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names the three values plus undefined, and TypeError for anything else."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0.5,
+   "why": "Correctly identifies truncation conflict and the undefined default, and notes the readme. Lacks concrete examples, though the 'omitted keeps old behaviour' point is present."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Describes the pre-round check, the >= base carry, and the 999960 -> 1 MB example. Skipping for trunc is implied, and the last-unit exception is omitted, a minor gap."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Correctly contrasts the toPrecision default path with the Intl halfExpand decimal path."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Bigint quotient/remainder, both increment conditions, and the previous always-truncate behaviour all stated."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answered unknown, with no value list or fraction-digit settings; only the floor(-x) = -ceil(x) relation is mentioned."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Names the carry test, the 999.960 vs 999.96 mismatch, and that the test was corrected rather than the code."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Has the blocked heredoc, the Write tool shim, and the test.skip error with notRegex fix. Does not say the shim lives outside the repo, but the scratchpad implies it."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names the documented-examples test, the cause (docs missing from the shim), and the final 48/0/3 result. Also gives 11/11 for test-rounding."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 2
+}

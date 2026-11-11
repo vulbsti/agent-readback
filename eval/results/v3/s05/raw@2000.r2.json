@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 4909,
+ "answers": {
+  "q1": "unknown",
+  "q2": "unknown",
+  "q3": "Making 'round' the default would change existing output and break existing tests (e.g. 59_952_784 → '59.9 MB', since fraction-digit options truncate by default). The agent decided that when roundingMode is omitted, output stays exactly as before (rounds without fraction-digit options, truncates with them), and an explicit roundingMode applies to the fraction digits (or 3 significant digits). This is documented in readme.md.",
+  "q4": "A value that rounds up onto the next unit is shown in that unit, so 999_960 bytes with maximumFractionDigits: 1 and 'round' gives '1 MB' rather than '1000 kB'. The exact code mechanism isn't shown in the material.",
+  "q5": "With no fraction-digit options, 'round' behaves exactly like the default (3 significant digits), so 1005 gives '1 kB'. With fraction-digit options, rounding treats the value as its plain decimal 1.005, which rounds to 1.01 with ties away from zero. The difference is documented.",
+  "q6": "Very large bigints (beyond what a regular number can hold) are rounded exactly using bigint arithmetic, rather than always truncating as before. The details of toUnrepresentableString aren't shown.",
+  "q7": "The summary says the tests check that floor of -x always prints as '-' followed by ceil of x. The specific inputs of the loop aren't shown.",
+  "q8": "unknown",
+  "q9": "unknown",
+  "q10": "unknown"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Identifies that fraction-digit options truncate, a 'round' default would change output (59_952_784 example), omitted option keeps old behaviour, documented in readme.md."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Gives the 999_960 -> '1 MB' result but explicitly lacks the mechanism (pre-format check, rounded >= base, skipped for trunc/last unit)."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Explains the 1005 -> 1.01 behaviour via decimal rounding and the default path, but does not name toPrecision vs Intl.NumberFormat."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Says exact bigint arithmetic and previously truncated, but lacks quotient/remainder and increment conditions."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "States floor(-x) equals '-' + ceil(x), but gives no values or fraction-digit settings."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  }
+ },
+ "score": 3.0,
+ "n": 10,
+ "rep": 2
+}

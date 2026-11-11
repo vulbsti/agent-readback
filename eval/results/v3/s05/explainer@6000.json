@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 5474,
+ "answer_input_tokens": 11720,
+ "answers": {
+  "q1": "`round` → `halfExpand`; `floor` → `expand` for negatives and `trunc` otherwise; `ceil` is the reverse (`trunc` for negatives, `expand` otherwise); `undefined` → `undefined`.",
+  "q2": "It accepts `'round'`, `'floor'` and `'ceil'` (and `undefined`, meaning omitted). Anything else, such as `'trunc'`, `'ROUND'`, `null` or `1`, throws a `TypeError`.",
+  "q3": "Fraction-digit options truncate in the existing code, so 'round' can't be the current behaviour. The agent made the default `undefined`, which keeps the old truncating output, and made an explicit `'round'` actually round. It documented this in the readme.",
+  "q4": "When fraction options are set and the mode isn't `trunc`, the value is pre-rounded with en-US formatting. If the rounded value is `>= base`, it is divided by the base and moves to the next unit, so 999960 with max 1 digit gives `1 MB`.",
+  "q5": "Without fraction options, the default significant-digit path keeps `toPrecision` for `round`/omitted, which gives `1 kB` for 1005. With fraction options, Intl rounds the shortest decimal value (1.005) with `halfExpand`, so the tie goes up to `1.01 kB`.",
+  "q6": "It computes `digits = number*10^max / scale` in bigint arithmetic and checks the remainder. `expand` adds 1 if the remainder is > 0, `halfExpand` adds 1 if `remainder*2 >= scale`, and `trunc` leaves it. Before this change it always truncated.",
+  "q7": "unknown. The material only says negatives use mathematical floor/ceil (floor of -x equals -ceil of x, with -0 kept). It doesn't describe the loop in the negative-numbers test.",
+  "q8": "The test \"rounding up carries onto the next unit\" failed: it expected `'999.960 kB'` but got `'999.96 kB'`. The agent changed the test's expected string to `'999.96 kB'` and left the code as it was.",
+  "q9": "The agent wrote a stand-in ava shim (`node_modules/ava/index.js` and `package.json`) in the scratchpad with the Write tool, after a Bash heredoc was blocked. The first run crashed with `test.skip is not a function`, so the agent added `test.skip` and `t.notRegex` to the shim.",
+  "q10": "\"documented examples are accurate\" failed (47 pass, 1 fail, 3 skipped), apparently because the shim directory had no `readme.md`; the material doesn't confirm that cause. The agent then added the new doc examples and copied the readme and d.ts into the shim. The final run was 48 pass, 0 fail, 3 skipped for `test.js`, and 11 pass, 0 fail for `test-rounding.js`."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct, including floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names three allowed values, undefined, and TypeError for others."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Identifies truncation conflict, default undefined keeps old output, documented in readme."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Has the pre-round and >= base carry and the 999960 -> 1 MB example, but omits the skip for the last unit (YB never carries)."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Correctly contrasts toPrecision on default path with Intl on decimal form."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Bigint quotient/remainder with both increment conditions and previously truncated."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Correct test, mismatch strings, and test fixed rather than code."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Has the shim, blocked heredoc, test.skip error and fix, but does not say the shim lives outside the repo or that a copy of test.js was run."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Names the test and the final results, but the cause is hedged and not stated as the missing readme.md and index.d.ts; the doc examples were executed."
+  }
+ },
+ "score": 7.5,
+ "n": 10,
+ "rep": 1
+}

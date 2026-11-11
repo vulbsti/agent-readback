@@ -1,0 +1,73 @@
+{
+ "session": "s04",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 4979,
+ "answers": {
+  "q1": "unknown",
+  "q2": "The material shows the README format list (plus a new README section describing dokuwiki), the CLI help text of supported output formats in the README, and the final summary mentions format listings, CLI help, README, and tests (lint covered tabulate/cli.py). The test also checks it is in tabulate_formats.",
+  "q3": "unknown from the code shown; the tests show literal | and ^ in headers and data are wrapped in DokuWiki's %%...%% syntax (e.g. %%|%% and %%^%%).",
+  "q4": "The README says decimal alignment is rendered as right alignment; the handling of None/unknown alignment is not shown, so unknown.",
+  "q5": "unknown",
+  "q6": "It asserts that an empty table with no headers renders as \"\" and that an empty table with headers [\"name\",\"qty\"] renders as \"^ name    ^ qty    ^\".",
+  "q7": "unknown (the shown run of the requested command passed all 12 tests; any earlier failure is in truncated material).",
+  "q8": "unknown",
+  "q9": "unknown",
+  "q10": "The final run used /snap/ruff/1713/bin/ruff: ruff check with --no-cache and selected rules (E4,E7,E9,F,W,B,C4,ISC,I,C90,UP, ignoring B905,E721,C901) on tabulate/__init__.py, tabulate/cli.py and test/test_output.py, then ruff format --check --no-cache --config pyproject.toml. It reported \"All checks passed!\" and \"3 files already formatted\"."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Mentions README and CLI help text in README plus tests, but doesn't clearly name tabulate/cli.py usage string or the tabulate() docstring; partially correct."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Gives %%|%% and %%^%% escaping in headers and data."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Says decimal is rendered as right alignment but doesn't give padding details or the None/unknown case."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Both assertions stated correctly."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is 'unknown'; doesn't name the failed test."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Gives the explicit select/ignore rule set and the all-passed result, but omits the one-line reformat of the test and the reason for the explicit rules."
+  }
+ },
+ "score": 3.5,
+ "n": 10
+}

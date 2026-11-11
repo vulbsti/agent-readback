@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 5766,
+ "answer_input_tokens": 12273,
+ "answers": {
+  "q1": "`round` → `halfExpand`. `floor` → `expand` if negative, else `trunc`. `ceil` → `trunc` if negative, else `expand`. An omitted option → `undefined`.",
+  "q2": "It accepts `'round'`, `'floor'`, `'ceil'` and `undefined`. Anything else throws a `TypeError`; the tests check `'trunc'`, `'halfExpand'`, `'ROUND'`, `''`, `null`, `1`, `true` and `'up'`. The function body itself is not shown in the material.",
+  "q3": "The existing behaviour is not literally 'round': with fraction-digit options it truncates (e.g. 59_952_784 → '59.9 MB'). The agent made the default `undefined`, which keeps truncation when the option is omitted, so existing output does not change. An explicit `'round'` rounds half-up, and the readme documents this deviation.",
+  "q4": "With locale options and a non-trunc mode, the code pre-formats the number with en-US `toLocaleString`. If the rounded value is >= base and a higher unit exists, it does `number /= base` and `exponent += 1`. So 999_960 with max 1 digit becomes '1 MB'.",
+  "q5": "The two calls take different code paths. With no fraction-digit options, `round` keeps the 3-significant-digit `Number#toPrecision` path, giving '1 kB'. With `maximumFractionDigits`, rounding goes through Intl `halfExpand`, giving '1.01 kB'. The readme has a 1005 tie note and a test covers it, but the exact explanation is truncated in the material.",
+  "q6": "It uses exact bigint arithmetic. It multiplies by `10n ** maximumFractionDigits`, divides by `scale`, and looks at the remainder. It adds 1 for `expand` when the remainder is > 0, and for `halfExpand` when `remainder*2n >= scale`. `trunc` adds nothing. Before this change the path always truncated.",
+  "q7": "unknown. The loop in the negative-numbers test is not shown. The documented rule is that `floor(-x)` prints as `-ceil(x)`, but the inputs the loop uses are not in the material.",
+  "q8": "The 'rounding up carries onto the next unit' test failed: it expected '999.960 kB' but got '999.96 kB'. The agent changed the test's expected value to '999.96 kB' and left the code alone.",
+  "q9": "The agent wrote a minimal fake `ava` module into a scratchpad `avashim/node_modules/ava`, using Write after a combined Bash command was blocked as 'expansion obfuscation'. The shimmed `test.js` first crashed with `test.skip is not a function`.",
+  "q10": "'documented examples are accurate' failed (47 pass, 1 fail) because the shim directory had no `readme.md` or `index.d.ts`, which that test parses. After the agent copied them in, the final result was 48 pass, 0 fail, 3 skipped. `test-rounding.js` ended at 11 pass, 0 fail."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct, including floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names three modes plus undefined and TypeError for others; rejected strings match."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Notes truncation with fraction digits, default undefined keeps old output, readme documents it."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Describes the carry check and the 999_960 -> '1 MB' example, but omits that it is skipped for trunc and notes only 'higher unit exists' for last unit; mostly correct, though it says 'non-trunc mode' so it covers trunc too. Slightly thin on the en-US no-grouping detail."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Identifies the toPrecision vs Intl paths, but omits that Intl works on the shortest decimal form and says the explanation is truncated."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Describes bigint quotient/remainder with both increment conditions and prior truncation."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer says unknown and gives no values or fraction-digit settings."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Names the carry test, the 999.960 vs 999.96 mismatch, and says the test was fixed."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Mentions the shim, the blocked command and the test.skip error, but omits the fix of adding test.skip/notRegex and gives a different block reason."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names the documented-examples test, the cause, 48/0/3, and 11 pass for test-rounding."
+  }
+ },
+ "score": 7.5,
+ "n": 10,
+ "rep": 2
+}

@@ -1,0 +1,130 @@
+diff --git a/src/humanize/number.py b/src/humanize/number.py
+index 52a5356..9979f4f 100644
+--- a/src/humanize/number.py
++++ b/src/humanize/number.py
+@@ -218,15 +218,22 @@ human_powers = (
+     NS_("decillion", "decillion"),
+     NS_("googol", "googol"),
+ )
++# Short suffixes used by ``intword(..., compact=True)``, aligned with the first
++# entries of ``powers``. Larger powers fall back to the word form.
++compact_suffixes = ("K", "M", "B", "T")
+ 
+ 
+-def intword(value: NumberOrString, format: str = "%.1f") -> str:
++def intword(value: NumberOrString, format: str = "%.1f", *, compact: bool = False) -> str:
+     """Converts a large integer to a friendly text representation.
+ 
+     Works best for numbers over 1 million. For example, 1_000_000 becomes "1.0 million",
+     1_200_000 becomes "1.2 million" and "1_200_000_000" becomes "1.2 billion". Supports
+     up to decillion (33 digits) and googol (100 digits).
+ 
++    With `compact=True`, short suffixes are used instead of words for thousands
++    ("K"), millions ("M"), billions ("B") and trillions ("T"), e.g. 12_400 becomes
++    "12.4K". Powers above trillion fall back to the word form.
++
+     Examples:
+         ```pycon
+         >>> intword("100")
+@@ -243,6 +250,14 @@ def intword(value: NumberOrString, format: str = "%.1f") -> str:
+         'None'
+         >>> intword("1234000", "%0.3f")
+         '1.234 million'
++        >>> intword(12_400, compact=True)
++        '12.4K'
++        >>> intword(-1_200_000, compact=True)
++        '-1.2M'
++        >>> intword(999_999, compact=True)
++        '1.0M'
++        >>> intword(10**15, compact=True)
++        '1.0 quadrillion'
+ 
+         ```
+ 
+@@ -250,6 +265,8 @@ def intword(value: NumberOrString, format: str = "%.1f") -> str:
+         value (int, float, str): Integer to convert.
+         format (str): To change the number of decimal or general format of the number
+             portion.
++        compact (bool): If `True`, use short suffixes ("K", "M", "B", "T") instead
++            of words up to trillions. Defaults to `False`.
+ 
+     Returns:
+         str: Friendly text representation as a string, unless the value passed could not
+@@ -291,10 +308,14 @@ def intword(value: NumberOrString, format: str = "%.1f") -> str:
+         ordinal += 1
+         rounded_value = 1.0
+ 
+-    singular, plural = human_powers[ordinal]
+-    unit = _ngettext(singular, plural, math.ceil(rounded_value))
+     decimal_sep = decimal_separator()
+     number = (format % rounded_value).replace(".", decimal_sep)
++
++    if compact and ordinal < len(compact_suffixes):
++        return f"{negative_prefix}{number}{compact_suffixes[ordinal]}"
++
++    singular, plural = human_powers[ordinal]
++    unit = _ngettext(singular, plural, math.ceil(rounded_value))
+     return f"{negative_prefix}{number} {unit}"
+ 
+ 
+diff --git a/tests/test_number.py b/tests/test_number.py
+index 5fb12fa..91d7450 100644
+--- a/tests/test_number.py
++++ b/tests/test_number.py
+@@ -189,6 +189,56 @@ def test_intword_rounding_rollover() -> None:
+     assert humanize.intword(2 * 10**100) == "2.0 googol"
+ 
+ 
++@pytest.mark.parametrize(
++    "value, expected",
++    [
++        (0, "0"),
++        (100, "100"),
++        (999, "999"),
++        (1_000, "1.0K"),
++        (12_400, "12.4K"),
++        ("12400", "12.4K"),
++        (1_200_000, "1.2M"),
++        (3_000_000_000, "3.0B"),
++        (7_100_000_000_000, "7.1T"),
++        # Rounding carry into the next suffix
++        (999_999, "1.0M"),
++        (999_999_999, "1.0B"),
++        (999_999_999_999, "1.0T"),
++        # Carry past trillion falls back to the word form
++        (999_999_999_999_999, "1.0 quadrillion"),
++        # Negative numbers
++        (-999, "-999"),
++        (-12_400, "-12.4K"),
++        (-1_200_000, "-1.2M"),
++        (-999_999, "-1.0M"),
++        (-7_100_000_000_000, "-7.1T"),
++        # Above trillion: word form
++        (10**15, "1.0 quadrillion"),
++        (-(10**18), "-1.0 quintillion"),
++        (2 * 10**100, "2.0 googol"),
++        # Non-numeric / non-finite values are unaffected
++        (None, "None"),
++        ("abc", "abc"),
++        (math.inf, "+Inf"),
++    ],
++)
++def test_intword_compact(value: object, expected: str) -> None:
++    assert humanize.intword(value, compact=True) == expected  # type: ignore[arg-type]
++
++
++def test_intword_compact_format() -> None:
++    assert humanize.intword(1_234_000, "%0.3f", compact=True) == "1.234M"
++    assert humanize.intword(999_499, "%.0f", compact=True) == "999K"
++    assert humanize.intword(999_500, "%.0f", compact=True) == "1M"
++
++
++def test_intword_compact_default_unchanged() -> None:
++    assert humanize.intword(12_400) == "12.4 thousand"
++    assert humanize.intword(12_400, compact=False) == "12.4 thousand"
++    assert humanize.intword(1_200_000) == "1.2 million"
++
++
+ @pytest.mark.parametrize(
+     "test_input, expected",
+     [

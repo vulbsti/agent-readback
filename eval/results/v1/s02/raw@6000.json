@@ -1,0 +1,73 @@
+{
+ "session": "s02",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 12352,
+ "answers": {
+  "q1": "`var matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`, a global regex with capture groups for decimal and hex numeric references.",
+  "q2": "The function is named `unescapeHtml` and is exported as `module.exports.unescape = unescapeHtml`.",
+  "q3": "`&#39;` is not in the switch; it matches the decimal branch of the regex, is parsed with parseInt(decimal, 10) to 39, and is converted via String.fromCharCode(39) to `'`.",
+  "q4": "Code points above 0x10FFFF or in the surrogate range 0xD800–0xDFFF are left untouched; the original entity text is returned unchanged.",
+  "q5": "It subtracts 0x10000 from the code point and returns String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF)), i.e. a surrogate pair.",
+  "q6": "It asserts that unescape('&amp;lt; &amp;#60; &#38;quot;') equals '&lt; &#60; &quot;', so only one layer is decoded.",
+  "q7": "`&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString;` must all stay unchanged (and `&unknown;&amp;&copy;` becomes `&unknown;&&copy;`).",
+  "q8": "The agent's summary only says `npm test` was unavailable because Mocha isn't installed; no exit code appears in the material, so the exit code is unknown.",
+  "q9": "Presumably because Mocha wasn't installed, so the existing tests were run through Node's test APIs; that run showed 30 tests passing, 0 failing (36 suites). The exact `node -e` command is truncated in the material.",
+  "q10": "unknown. The material doesn't show the edit steps or any failing run, only the final diff and the summary that the 10 new tests passed."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Gives exact regex and name matchEntityRegExp, with global flag and groups."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "unescapeHtml and module.exports.unescape = unescapeHtml match the key."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Correctly says it goes through decimal branch, parseInt gives 39, fromCharCode."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions given and original entity returned unchanged."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Describes manual surrogate pair construction with correct math."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Exact input/output pair matches the key."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Lists the exact string including &apos;, &copy;, &nbsp;, uppercase and prototype names."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Says exit code unknown; lacks mocha not found and 127."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Has mocha unavailable (hedged) and 30 passing, but no node:test describe/it shim mapping detail."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answered unknown; key says one edit round with 10/10 passing."
+  }
+ },
+ "score": 7.5,
+ "n": 10
+}

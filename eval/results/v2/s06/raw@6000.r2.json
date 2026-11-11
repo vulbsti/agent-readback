@@ -1,0 +1,74 @@
+{
+ "session": "s06",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 12361,
+ "answers": {
+  "q1": "Inside the `if (!match?.groups)` block, replacing the old `return NaN;`. It runs only when the original single-value regex fails to match, so single-unit inputs take the unchanged path.",
+  "q2": "`/(-?\\d*\\.?\\d+) *(milliseconds?|msecs?|ms|months?|mo|minutes?|mins?|m|seconds?|secs?|s|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)(?= *-?\\d| *-?\\.\\d|$)/iy` — flags `i` (case-insensitive) and `y` (sticky); the lookahead requires the component be followed by optional spaces and a number (with optional minus, or a leading '.'), or end of string.",
+  "q3": "Each matched component (`component[0]`) is passed to the single-value `parse()` recursively and the results are summed. The comment says to keep the single-value parser as the source of unit conversions.",
+  "q4": "The code records whether the first component's number starts with '-' as `sign`; for each later component, if its negativity differs from `sign`, it returns NaN.",
+  "q5": "If only one component was consumed (count ≤ 1) it returns NaN (`count > 1 ? total : NaN`). Spaces between components are skipped, but if the string ends with a space after the last component, it returns NaN.",
+  "q6": "'1h -30m', '-1h 30m', '1h +30m', '1h 30', '1h 30x', '1h 30m junk', '1h,30m', '1h 30m ' (trailing space), ' 1h 30m' (leading space), and '1h\\t30m' (tab).",
+  "q7": "It asserts that `'1' + ' '.repeat(98) + 's'` (100 chars) parses to 1000, and that `'1' + ' '.repeat(99) + 's'` (101 chars) throws. It also checks that an empty string throws.",
+  "q8": "The README says the `StringValue` type used by `ms` and `parseStrict` describes only single values, so TypeScript users should use `parse` for compound strings.",
+  "q9": "Type checking (`tsc --noEmit`) was not run because the TypeScript compiler isn't installed in node_modules.",
+  "q10": "The agent first inspected files, then patched src/index.ts, then added src/compound.test.ts and the README changes in one patch, and then ran `node --test src/compound.test.ts` (alongside git diff check and a tsc check). Only one test run was needed, and all 3 tests passed."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Matches: in no-match branch replacing return NaN; only runs when single regex fails."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Regex, iy flags, and lookahead all correctly described."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Recursive parse on component[0], summed, with the stated reason."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "First component's '-' sets sign; mismatch returns NaN."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Both count>1 requirement and trailing space NaN present."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "All ten inputs listed."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "100-char passes to 1000, 101-char throws, empty throws."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "StringValue for ms/parseStrict single values only; use parse."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Typecheck not run since TypeScript compiler not installed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Correct order: index.ts patch, then test+README patch, one test run with 3 passing."
+  }
+ },
+ "score": 10.0,
+ "n": 10,
+ "rep": 2
+}

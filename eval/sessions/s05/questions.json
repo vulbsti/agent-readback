@@ -1,0 +1,82 @@
+[
+  {
+    "id": "q1",
+    "question": "What does the new toMagnitudeMode(roundingMode, isNegative) helper return for each option?",
+    "answer": "round -> 'halfExpand'; floor -> 'expand' if negative else 'trunc'; ceil -> 'trunc' if negative else 'expand'; undefined/other -> undefined.",
+    "accept": "All four mappings required, including the swap of floor and ceil for negative values. The rounding is applied to the magnitude after the sign is split off.",
+    "kind": "what",
+    "evidence": "L22; diff index.js @@ -143,25 +143,75 @@"
+  },
+  {
+    "id": "q2",
+    "question": "What does assertRoundingMode accept, and what does it do with anything else?",
+    "answer": "It accepts undefined or a member of ROUNDING_MODES = {'round', 'floor', 'ceil'}. Anything else throws TypeError \"Expected roundingMode to be one of 'round', 'floor' or 'ceil', got <type>: <value>\".",
+    "accept": "Must name the three allowed values plus undefined, and TypeError for anything else. Strings like 'trunc', 'halfExpand' and 'ROUND' are rejected, as the test checks.",
+    "kind": "what",
+    "evidence": "L22; diff index.js @@ -143,25 +143,75 @@; diff test-rounding.js ('rejects invalid roundingMode')"
+  },
+  {
+    "id": "q3",
+    "question": "The spec said 'round' is both the default and the current behaviour. What conflict did the agent find, and what did it decide?",
+    "answer": "Current code truncates when minimum/maximumFractionDigits are set, so 'round' was not the current behaviour (1999 with maximumFractionDigits:1 gives '1.9 kB'). It kept the default undefined: omitting roundingMode gives exactly the old output (rounding for the 3-significant-digit default, truncation with fraction-digit options). It documented this in readme.md.",
+    "accept": "Must say fraction-digit options truncate today, so a 'round' default would change existing output or tests (e.g. 1999 -> '2 kB', 59_952_784 -> '59.9 MB'). The decision is that an omitted option keeps the old behaviour, documented in readme.md.",
+    "kind": "why",
+    "evidence": "L85; diff readme.md @@ -177,6 +177,63 @@ (IMPORTANT block)"
+  },
+  {
+    "id": "q4",
+    "question": "When fraction-digit options are set and roundingMode rounds up, how does the code handle a carry to the next unit (e.g. 999_960 bytes)?",
+    "answer": "If roundingMode isn't 'trunc' and this isn't the last unit, it formats the number with en-US and no grouping to get the rounded value. If that is >= base, it divides by base and increments the exponent, so 999_960 with maximumFractionDigits:1 and 'round' gives '1 MB'. YB never carries.",
+    "accept": "Must describe the pre-format check (rounded >= base -> divide and exponent+1), that it is skipped for trunc and for the last unit, and the 999_960 -> '1 MB' example.",
+    "kind": "how",
+    "evidence": "L24; diff index.js @@ -266,9 +319,23 @@; test 'rounding up carries onto the next unit'"
+  },
+  {
+    "id": "q5",
+    "question": "Why does prettyBytes(1005, {roundingMode:'round'}) give '1 kB' while prettyBytes(1005, {maximumFractionDigits:2, roundingMode:'round'}) gives '1.01 kB'?",
+    "answer": "The 3-significant-digit default path keeps Number#toPrecision for 'round' (and its exact binary tie behaviour). The fraction-digit path rounds through Intl.NumberFormat, which works on the shortest decimal form of the value.",
+    "accept": "Must say the two paths differ: toPrecision on the default path (kept on purpose so 'round' matches the default) versus Intl.NumberFormat on the decimal form. The agent documented this in readme and tests.",
+    "kind": "why",
+    "evidence": "L24 (code comment); L75; L80; diff readme.md @@ -177,6 +177,63 @@ (NOTE block); diff index.js @@ -266,9 +319,23 @@"
+  },
+  {
+    "id": "q6",
+    "question": "How is rounding done for a bigint whose scaled value is too large for a number (toUnrepresentableString)?",
+    "answer": "With exact bigint arithmetic: digits = (number * 10^maxFractionDigits) / scale. It adds 1 if the mode is 'expand' and the remainder > 0, or if the mode is 'halfExpand' and remainder*2 >= scale. Before this change, that path always truncated.",
+    "accept": "Must mention the bigint quotient/remainder approach and both increment conditions (expand: remainder > 0; halfExpand: 2*remainder >= scale). The note that it previously only truncated is expected.",
+    "kind": "how",
+    "evidence": "L15; diff index.js @@ -143,25 +143,75 @@; L85"
+  },
+  {
+    "id": "q7",
+    "question": "What property does the loop in the negative-numbers test check, over which inputs?",
+    "answer": "For values [1, 1001, 1337, 1999, 54_321, 999_901] and maximumFractionDigits in [undefined, 0, 1, 2], prettyBytes(-v, floor) equals '-' + prettyBytes(v, ceil).",
+    "accept": "Must state floor(-x) === '-' + ceil(x) and give the value list and fraction-digit settings, at least approximately.",
+    "kind": "test",
+    "evidence": "L28; diff test-rounding.js @@ -0,0 +1,143 @@"
+  },
+  {
+    "id": "q8",
+    "question": "What failed on the first `node --test test-rounding.js` run, and how was it fixed?",
+    "answer": "'rounding up carries onto the next unit' failed (9/10 passed): 999_960 with minimumFractionDigits:1 gave '999.96 kB' but the test expected '999.960 kB'. The agent fixed the test expectation to '999.96 kB'.",
+    "accept": "Must name the carry test and the '999.960 kB' vs '999.96 kB' mismatch, and say the test was corrected, not the code.",
+    "kind": "failure",
+    "evidence": "L30-L31; L34"
+  },
+  {
+    "id": "q9",
+    "question": "How did the agent run the existing ava suite without installing ava, and what broke first?",
+    "answer": "It wrote a stand-in ava module in its scratchpad (node_modules/ava mapping t.is/t.throws/etc. to node:test + node:assert) and ran a copy of test.js there. The heredoc version was blocked ('Contains brace with quote character'), so it wrote the files with the Write tool. The first run then failed with 'TypeError: test.skip is not a function', so it added test.skip (and t.notRegex) to the shim.",
+    "accept": "Must mention the shim outside the repo, the test.skip TypeError, and adding test.skip/notRegex. The blocked heredoc is a plus.",
+    "kind": "failure",
+    "evidence": "L27; L36-L37; L39-L42; L43-L46; L47-L52"
+  },
+  {
+    "id": "q10",
+    "question": "After the shim worked, which existing test still failed, why, and what was the final result?",
+    "answer": "'documented examples are accurate' failed (47 pass, 1 fail) because readme.md and index.d.ts were not in the shim directory, and that test evaluates every //=> example in them. After the docs were updated and copied in, the run gave 48 pass, 0 fail, 3 skipped. test-rounding.js gave 11/11.",
+    "accept": "Must name the documented-examples test, the cause (doc files missing from the shim / doc examples are executed), and the final 48 pass / 0 fail / 3 skipped.",
+    "kind": "sequence",
+    "evidence": "L53-L54; L56; L57-L63; L82-L83; L85"
+  }
+]

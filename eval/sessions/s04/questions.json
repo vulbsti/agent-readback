@@ -1,0 +1,82 @@
+[
+  {
+    "id": "q1",
+    "question": "How is the new \"dokuwiki\" TableFormat defined in _table_formats?",
+    "answer": "All four line fields (lineabove, linebelowheader, linebetweenrows, linebelow) are None; headerrow=partial(_dokuwiki_row, \"^\"), datarow=partial(_dokuwiki_row, \"|\"); padding=0; with_header_hide=None.",
+    "accept": "Must mention no rule lines (all None), header/data rows via partial(_dokuwiki_row, '^' / '|'), and padding=0.",
+    "kind": "what",
+    "evidence": "L31-L32; diff tabulate/__init__.py @@ -590,6 +608,16 @@"
+  },
+  {
+    "id": "q2",
+    "question": "Besides _table_formats, in which places did the agent register or list the new format?",
+    "answer": "README.md (supported-formats list, a new dokuwiki section with an example, and the CLI usage text), tabulate/cli.py's usage/help string, and the tabulate() docstring in tabulate/__init__.py (format list and a dokuwiki doctest example).",
+    "accept": "Must name README.md, tabulate/cli.py and the tabulate() docstring. tabulate_formats picks it up automatically because it is sorted(_table_formats.keys()); there is no docs/ directory (rg reported docs missing).",
+    "kind": "where",
+    "evidence": "L12 (rg: docs: No such file or directory); L31; diff README.md @@ -194,6 +194,7 @@, @@ -551,6 +552,20 @@, @@ -1158,7 +1173,7 @@; tabulate/cli.py @@ -60,7 +60,7 @@; tabulate/__init__.py @@ -1819,7 +1847,7 @@, @@ -2116,6 +2144,12 @@"
+  },
+  {
+    "id": "q3",
+    "question": "How does _dokuwiki_row keep literal | and ^ inside cells from breaking the table?",
+    "answer": "It wraps them in DokuWiki nowiki markers: \"|\" -> \"%%|%%\" and \"^\" -> \"%%^%%\", in both header and data cells.",
+    "accept": "Must give the %%|%% / %%^%% escaping and say it applies to headers and data.",
+    "kind": "how",
+    "evidence": "L31; diff tabulate/__init__.py @@ -177,6 +177,24 @@; README.md @@ -551,6 +552,20 @@"
+  },
+  {
+    "id": "q4",
+    "question": "In _dokuwiki_row, how are 'decimal' alignment and a None/unknown alignment rendered?",
+    "answer": "'decimal' is treated like right: \"  \" + value.rstrip() + \" \"; None/other: the value is stripped and padded with one space on each side.",
+    "accept": "Both parts required: decimal = right alignment (two leading spaces, one trailing); None/unknown = stripped with single spaces.",
+    "kind": "how",
+    "evidence": "L31; diff tabulate/__init__.py @@ -177,6 +177,24 @@; test_dokuwiki_alignment"
+  },
+  {
+    "id": "q5",
+    "question": "Why does _dokuwiki_row strip existing whitespace (rstrip/lstrip) before adding its own padding?",
+    "answer": "The row formatter receives cells already padded to column width, so it keeps only the padding opposite the alignment; otherwise short cells would end up looking centered.",
+    "accept": "Must say cells arrive pre-padded by tabulate's column alignment, and stripping keeps short cells from reading as centered in DokuWiki.",
+    "kind": "why",
+    "evidence": "L26 (agent message); L31 code comment; diff tabulate/__init__.py @@ -177,6 +177,24 @@"
+  },
+  {
+    "id": "q6",
+    "question": "What does test_dokuwiki_empty_table assert?",
+    "answer": "tabulate([], tablefmt=\"dokuwiki\") == \"\" and tabulate([], [\"name\", \"qty\"], tablefmt=\"dokuwiki\") == \"^ name    ^ qty    ^\" (a header row only).",
+    "accept": "Both assertions required: empty string with no headers; just the header row with headers.",
+    "kind": "test",
+    "evidence": "L36 (last case in the probe output); L39-L40; diff test/test_output.py @@ -2523,6 +2523,80 @@"
+  },
+  {
+    "id": "q7",
+    "question": "Which test failed on the first run of the requested command, and how did the agent resolve it?",
+    "answer": "test_dokuwiki_header_alignment (1 failed, 11 passed): expected '^  name   ^   qty   ^\\n| apple  |      3 |' but got '^   name   ^   qty   ^\\n| apple   |      3 |'. The agent changed the expected string to match the output, and also updated the README/docstring examples to '^ name    ^    qty ^ / | apple   |      3 |'. It did not change the code.",
+    "accept": "Must name test_dokuwiki_header_alignment and say the fix was to the test's expected string (plus the README and docstring examples), not to the implementation.",
+    "kind": "failure",
+    "evidence": "L41; L44-L45; diff test/test_output.py @@ -2523,6 +2523,80 @@"
+  },
+  {
+    "id": "q8",
+    "question": "What external research did the agent do on DokuWiki syntax, and which fetch failed?",
+    "answer": "A web search for DokuWiki table syntax, then it opened the raw wiki/syntax.txt from the dokuwiki GitHub repo (succeeded) and inc/parser/handler.php, which failed with 404 Not Found.",
+    "accept": "Must mention the web search and fetching syntax.txt, and that handler.php returned 404.",
+    "kind": "sequence",
+    "evidence": "L22-L24; L27-L29; L35"
+  },
+  {
+    "id": "q9",
+    "question": "What happened on the first lint attempt, and what did the agent do next?",
+    "answer": "`ruff` from /snap/bin failed (exit 46) because snap could not create its user data/XDG_RUNTIME_DIR directories on the read-only file system. The agent found the real binary at /snap/ruff/1713/bin/ruff and ran it directly, which reported 190 errors (RUF022, RUF100, BLE001, ...) and exit 1.",
+    "accept": "Must mention the snap wrapper failing because of the read-only file system (exit 46), switching to /snap/ruff/1713/bin/ruff, and getting about 190 lint errors, mostly in existing code.",
+    "kind": "failure",
+    "evidence": "L52-L54; L56-L57; L59-L61"
+  },
+  {
+    "id": "q10",
+    "question": "How did the agent finally get lint and format checks to pass?",
+    "answer": "It joined the long tabulate(...) call in test_dokuwiki_escape_separators onto one line (as `ruff format` wanted) and ran ruff check with an explicit `--select E4,E7,E9,F,W,B,C4,ISC,I,C90,UP --ignore B905,E721,C901`, which matches the pyproject lint config. Result: 'All checks passed!' and '3 files already formatted', and the -k dokuwiki tests still passed (12).",
+    "accept": "Must mention the one-line reformat in the test and the explicit --select/--ignore rule set matching pyproject (because using --config pyproject.toml still showed RUF/BLE errors). The final result is all checks passed.",
+    "kind": "sequence",
+    "evidence": "L63-L67; L69-L71; L74-L77; L18 (pyproject [tool.ruff.lint])"
+  }
+]

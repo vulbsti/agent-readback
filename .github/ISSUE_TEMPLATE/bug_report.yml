@@ -1,0 +1,68 @@
+name: Bug report
+description: Something in readback does not work as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not paste real transcripts or diffs: they can contain prompts, paths and secrets.
+        If a transcript is needed to reproduce, reduce it to a few synthetic records
+        (see `tests/conftest.py` for the shape). Report security issues privately via
+        Security > Report a vulnerability.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected, what you got.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and output
+      description: The exact `readback ...` command and its stderr/stdout (redact as needed).
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: readback version
+      description: Output of `readback --version`.
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Observed agent
+      options:
+        - Claude Code
+        - Codex CLI
+        - not applicable
+    validations:
+      required: true
+  - type: dropdown
+    id: backend
+    attributes:
+      label: Backend
+      options:
+        - claude
+        - codex
+        - anthropic
+        - openai
+        - command
+        - fake
+        - auto-detected / not sure
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS, Python version, agent CLI version
+      placeholder: "macOS 15, Python 3.12, Claude Code 2.x"
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal synthetic reproduction
+      description: Optional. A few JSONL records that trigger the problem.
+      render: json

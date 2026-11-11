@@ -1,0 +1,73 @@
+{
+ "session": "s02",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 5051,
+ "answers": {
+  "q1": "unknown",
+  "q2": "unknown. The material only shows that it is exported as `module.exports.unescape` (per the task and final summary); the internal function name is truncated.",
+  "q3": "unknown",
+  "q4": "unknown. The README says code points above 0x10FFFF and the surrogate range 0xD800–0xDFFF are left unchanged (the original reference text is returned), but the implementation is truncated.",
+  "q5": "unknown. The README and tests show supplementary characters are supported, but the implementation is not shown.",
+  "q6": "It asserts that unescape('&amp;lt; &amp;#60; &#38;quot;') returns '&lt; &#60; &quot;', i.e. only one layer is decoded.",
+  "q7": "&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString; must stay unchanged. A second assertion also requires '&unknown;&amp;&copy;' to become '&unknown;&&copy;'.",
+  "q8": "`npm test` was unavailable because Mocha isn't installed. The exit code is not shown in the material.",
+  "q9": "Presumably because Mocha wasn't installed, so the agent ran the existing tests using Node's test APIs. The result was 30 tests passing, 0 failing. The exact `node -e` command is not shown.",
+  "q10": "unknown"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer is 'unknown'; key regex not given."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0,
+   "why": "Says unknown for internal name; only mentions module.exports.unescape, missing unescapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Gives both ranges (above 0x10FFFF and D800–DFFF) and that original text is returned, though it hedges that implementation is truncated. Facts match key."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0,
+   "why": "Unknown; no description of manual surrogate pair construction."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Input/output pair matches key exactly."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Lists the exact strings including &apos;, &copy;, &nbsp;, &AMP;, &LT;, &constructor;, &toString;."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0.5,
+   "why": "Says mocha not installed, but gives no exit code 127."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Mocha unavailable and 30 passing are right, but the node:test describe/it shim is only vaguely described ('Node's test APIs') and hedged."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  }
+ },
+ "score": 3.5,
+ "n": 10
+}

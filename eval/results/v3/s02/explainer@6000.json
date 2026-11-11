@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 4974,
+ "answer_input_tokens": 10425,
+ "answers": {
+  "q1": "`matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`, added next to `matchHtmlRegExp` in index.js.",
+  "q2": "The function is `unescapeHtml`, exported by `module.exports.unescape = unescapeHtml` (a property on `module.exports`, which is still `escapeHtml`).",
+  "q3": "`&#39;` matches the decimal capture group, is parsed with `parseInt(decimal, 10)` to 39, and is converted with `String.fromCharCode(39)`, giving `'`.",
+  "q4": "Code points above 0x10FFFF or in the surrogate range 0xD800–0xDFFF are left untouched. The original entity text is returned unchanged.",
+  "q5": "It subtracts 0x10000 from the code point and builds a surrogate pair: `String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF))`. For &#x1F600; this gives \\uD83D\\uDE00.",
+  "q6": "It asserts `unescape('&amp;lt; &amp;#60; &#38;quot;')` equals `'&lt; &#60; &quot;'`, so only one layer is decoded per call.",
+  "q7": "The string `&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString;` must be returned unchanged.",
+  "q8": "`npm test` ran `mocha test/` and failed with exit code 127 and `sh: 1: mocha: not found`, because mocha isn't installed.",
+  "q9": "Mocha was unavailable, so the agent mapped `node:test`'s `describe` and `it` onto globals to run the existing test/index.js. Result: 30 tests passed, 0 failed, exit 0.",
+  "q10": "One. A single `apply_patch` touched index.js, README.md and the test file, and `node --test test/unescape.test.js` then exited 0 with no further edits shown."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names matchEntityRegExp with the exact regex."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Gives unescapeHtml and module.exports.unescape = unescapeHtml; default export stays escapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Says &#39; goes through the decimal group, parseInt gives 39, and fromCharCode gives the apostrophe."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Gives both conditions (above 0x10FFFF and surrogates D800–DFFF) and says the original text is returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Describes the manual surrogate pair: subtract 0x10000, then fromCharCode with the high and low surrogate math."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Gives the exact input/output pair."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Gives the full string including &apos;, &copy;, &nbsp;, uppercase variants and prototype names."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Gives mocha not found and exit code 127."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Says mocha was unavailable, describes the node:test describe/it shim, and reports 30 passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Correctly says one patch and no further edits, but does not state 10/10 tests passing."
+  }
+ },
+ "score": 9.5,
+ "n": 10,
+ "rep": 1
+}

@@ -1,0 +1,74 @@
+{
+ "session": "s03",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 11528,
+ "answers": {
+  "q1": "`_arg_extreme(func, iterable, key, default)`, where `func` is `min` or `max`. `argmin` and `argmax` both just call it.",
+  "q2": "Each of argmin and argmax became two `@overload` signatures. One has no `default` and returns `int`; the other has a required keyword-only `default: _V` and returns `int | _V`.",
+  "q3": "It uses the `_marker` sentinel object rather than None. With a default, it calls `func(pairs, key=itemgetter(1), default=_marker)`; if the result is `_marker`, the iterable was empty and it returns the user's default, otherwise `result[0]`.",
+  "q4": "When `default is _marker` (no default given), it calls `func(pairs, key=itemgetter(1))[0]` with no default. An empty iterable then raises the builtin's usual ValueError, as the spec required.",
+  "q5": "For both argmin and argmax it checks that `func([], default=default)` and `func(iter([]), key=abs, default=default)` return the default object itself (`assertIs`). The defaults tested are -1, 'x', None and 0.",
+  "q6": "`test_default_is_keyword_only` calls `func([], None, -1)` with the default passed positionally for both functions, and asserts that a TypeError is raised.",
+  "q7": "Running doctest directly on the file failed with `ImportError: attempted relative import with no known parent package`. The `doctest-exit=0` is misleading because `echo $?` reported the exit status of `tail`, which ended the pipeline, not of doctest.",
+  "q8": "It ran `doctest.run_docstring_examples` on argmin and argmax, then `doctest.testmod(m)` on the imported module. The isolated run failed with NameError because `argmin`/`argmax` weren't in the empty globals passed in. `testmod` reported `TestResults(failed=0, attempted=582)`.",
+  "q9": "It ran the full `tests/test_more.py` with `-p no:cacheprovider`, which avoids the read-only cache warning, and then `git diff --stat`. The result was 630 passed and 11343 subtests passed. The diff covered 3 files, with 73 insertions and 8 deletions.",
+  "q10": "[answer removed: the original q10 concerned a remark about the user's personal settings]"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names _arg_extreme(func, iterable, key, default), func is min/max, argmin/argmax call it."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Two overloads each; int vs int | _V; keyword-only default."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Mentions _marker sentinel, default=_marker passed to func, and returning the user default if result is _marker, else result[0]."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "No default passed, so empty iterable raises the usual ValueError, preserving behavior."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Lists both calls (plain empty list, iter([]) with key=abs), assertIs, and defaults -1, 'x', None, 0."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Positional call func([], None, -1) expecting TypeError, for both functions."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Relative import ImportError and 0 came from tail's exit status in the pipeline."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "NameError from empty globals in run_docstring_examples; testmod failed=0, attempted=582."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Has -p no:cacheprovider, read-only cache warning, 630 passed and 11343 subtests passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "[removed]"
+  }
+ },
+ "score": 10.0,
+ "n": 10,
+ "rep": 1
+}

@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 1838,
+ "answer_input_tokens": 4552,
+ "answers": {
+  "q1": "`matchEntityRegExp`, which matches `&quot;|&amp;|&lt;|&gt;`, decimal `&#N;` and hex `&#[xX]H;`. It is case-sensitive and requires a terminating semicolon.",
+  "q2": "The function is `unescapeHtml`, exported as `module.exports.unescape = unescapeHtml`, so `module.exports` is still `escapeHtml`.",
+  "q3": "`&#39;` has no named case. It goes through the decimal numeric path: `parseInt` base 10, then `String.fromCharCode(39)`.",
+  "q4": "Code points above 0x10FFFF or in the surrogate range 0xD800–0xDFFF are left untouched. The original entity text is returned unchanged.",
+  "q5": "It builds a surrogate pair manually from the code point: 0xD800+(cp>>10) and 0xDC00+(cp&0x3FF). For `&#x1F600;` that gives `\\uD83D\\uDE00`.",
+  "q6": "It asserts single-layer decoding: `&amp;lt;` becomes `&lt;`, not `<`.",
+  "q7": "`&copy;`, `&AMP;` and `&constructor;` must stay unchanged. The material does not show the full list in that test beyond these.",
+  "q8": "`npm test` failed with exit code 127 because `mocha` was not found.",
+  "q9": "Because `npm test` failed (mocha missing), the agent ran the existing `test/index.js` with `node:test`'s `describe`/`it` mapped onto globals. Result: 30 passed, 0 failed, exit 0. The material does not show the exact `node -e` command.",
+  "q10": "One. A single `apply_patch` touched `index.js`, `README.md` and the new test file, and `node --test test/unescape.test.js` then exited 0."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0.5,
+   "why": "Names matchEntityRegExp and the alternatives, but never mentions the global flag; the answer is a description, not the exact regex. Semicolon is covered."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "unescapeHtml, module.exports.unescape, default export stays escapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Decimal numeric path with parseInt and fromCharCode(39)."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions are given and the original text is returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Manual surrogate pair with the correct math."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Gives the &amp;lt; -> &lt; case, but omits the numeric &#38;quot; case and the full input/output pair."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Names &copy;, &AMP; and &constructor; as unchanged, but omits &apos;, &nbsp;, &LT; and others."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Exit code 127 and mocha not found."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Mocha missing, node:test shim, 30 passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Says one patch and a passing run, but omits the 10/10 count."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 2
+}

@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4894,
+ "answers": {
+  "q1": "`round` → `halfExpand`; `floor` → `expand` for negative input, otherwise `trunc`; `ceil` is the reverse (`trunc` for negatives, otherwise `expand`); `undefined` → `undefined`.",
+  "q2": "It accepts `'round'`, `'floor'`, `'ceil'` (and `undefined`). Anything else, such as `'trunc'`, `'ROUND'`, `null` or `1`, throws a `TypeError`.",
+  "q3": "Fraction-digit options truncate in the current code, so making `round` the default would change existing output. The agent decided the default is `undefined`, which keeps truncation and leaves output unchanged. An explicit `'round'` rounds, and the readme documents this.",
+  "q4": "When fraction options are set and the mode isn't `trunc`, the value is pre-rounded with en-US formatting. If the rounded value is `>= base`, it moves up a unit, so 999960 with max 1 fraction digit gives `1 MB`.",
+  "q5": "Without fraction options, the default significant-digit path keeps `Number#toPrecision` for `round`, which gives `1 kB` for 1005. With fraction options, Intl rounds `halfExpand` on the shortest decimal (1.005), which gives `1.01 kB`.",
+  "q6": "It computes `digits = number*10^max / scale` in bigint. It adds 1 for `expand` if the remainder is > 0, or for `halfExpand` if `remainder*2 >= scale`. `trunc` adds nothing. Before this change it always truncated.",
+  "q7": "unknown",
+  "q8": "The test \"rounding up carries onto the next unit\" failed: it expected `'999.960 kB'` but got `'999.96 kB'`. The agent changed the test's expected string and left the code alone.",
+  "q9": "It used a stand-in (shim) for ava, kept in the scratchpad, to run the existing `test.js`. The visible material doesn't say what broke first.",
+  "q10": "The `documented examples are accurate` test failed, apparently because `readme.md` and the `.d.ts` weren't in the shim directory. After they were copied in, it passed. The final `test.js` result was 48 pass, 0 fail, 3 skipped."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct including floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names the three modes plus undefined and TypeError for others."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Identifies truncation with fraction digits, default undefined keeps old output, readme documents it."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Has pre-round check, >= base moves up, and 999960 -> 1 MB, but omits that it is skipped for trunc/last unit (trunc is mentioned only indirectly)."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Correctly contrasts toPrecision default path with Intl on shortest decimal."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Bigint quotient/remainder with both increment conditions and prior truncation."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is unknown."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Names the carry test, the 999.960 vs 999.96 mismatch, and says the test was fixed, not the code."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Mentions the shim in scratchpad but not the test.skip TypeError or what was added."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names the documented-examples test, cause, and final 48/0/3."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 2
+}

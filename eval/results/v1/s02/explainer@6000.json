@@ -1,0 +1,73 @@
+{
+ "session": "s02",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 4968,
+ "answer_input_tokens": 10379,
+ "answers": {
+  "q1": "`matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`. It is case-sensitive and requires the trailing `;`.",
+  "q2": "The function is named `unescapeHtml`. It is exported as `module.exports.unescape = unescapeHtml`, a property on the existing `escapeHtml` export.",
+  "q3": "`&#39;` matches the regex's decimal numeric branch and falls through the switch. It is parsed with `parseInt(decimal, 10)` to 39 and converted with `String.fromCharCode`, giving `'`.",
+  "q4": "Code points above 0x10FFFF and surrogate code points 0xD800–0xDFFF are left untouched. The original entity text is returned unchanged.",
+  "q5": "It subtracts 0x10000 from the code point and builds a surrogate pair with `String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF))`. So `&#x1F600;` becomes `\\uD83D\\uDE00`.",
+  "q6": "It asserts that `unescape('&amp;lt; &amp;#60; &#38;quot;')` returns `'&lt; &#60; &quot;'`, so only one layer of decoding happens per call.",
+  "q7": "The string `&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString;` must stay unchanged. A second assertion requires `&unknown;&amp;&copy;` to become `&unknown;&&copy;`.",
+  "q8": "`npm test` failed with exit code 127 and the message `sh: 1: mocha: not found`, because the script runs `mocha test/` and Mocha isn't installed.",
+  "q9": "Mocha was missing, so the agent shimmed `describe` and `it` onto `node:test` globals to run the existing `test/index.js`. It exited 0 with 30 tests, 30 passing, 0 failing.",
+  "q10": "One. A single apply_patch edited test/unescape.test.js, index.js and README.md, and `node --test test/unescape.test.js` then passed on the first run with exit 0."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Exact regex and name matchEntityRegExp given, with semicolon and global flag."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "unescapeHtml and module.exports.unescape = unescapeHtml; default stays escapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Numeric decimal branch, parseInt gives 39, fromCharCode yields apostrophe."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both >0x10FFFF and surrogates D800-DFFF; original text returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Manual surrogate pair via subtract 0x10000 and fromCharCode math."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Correct input/output pair matches key."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Full string matches key including apos, copy, nbsp, AMP, LT, constructor, toString."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Exit code 127 and mocha not found."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Mocha missing, node:test shim, 30 passing."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Correctly says one round and single patch passing first run, but omits the 10/10 test count."
+  }
+ },
+ "score": 9.5,
+ "n": 10
+}

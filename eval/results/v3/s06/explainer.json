@@ -1,0 +1,66 @@
+{
+ "overview": {
+  "mode": "overview",
+  "text": "**Changed**\n- `src/index.ts:parse`: when the single-value regex fails, the input is now tried as a compound instead of returning `NaN` directly [E6, H3].\n- A sticky case-insensitive regex `part` scans the string; each component needs a number and a unit, followed by another number or the end [H3].\n- Each component's value comes from a recursive `parse(component[0])`, and the values are summed into `total` [H3].\n- Only `' '` may separate parts; leading, trailing or tab whitespace and junk return `NaN` [H3].\n- A sign change between parts returns `NaN`, and the compound path needs `count > 1` [H3].\n- `README.md`: adds `1h 30m` and `2d3h` examples and a paragraph on the syntax, the sign rule, the 100-char limit and the `StringValue` limit [E7, H1].\n\n**Why**\n- The user wanted `parse` to sum compound durations, reject mixed or invalid parts, keep single-unit behaviour and the limit, and use node:test [E1].\n- The agent kept the existing single-unit path \"intact\" as the source of unit conversions [E5, H3].\n- It added a whole-string check that \"requires a unit on every part and consistent signs\" [E5].\n\n**Tests**\n- New file `src/compound.test.ts`, test 1: sums `1h 30m`, `2d3h`, `1 hour 30 minutes`, `1.5h 10s`, `1mo 2ms .5S` and `-1h -30m` to exact millisecond values [H2].\n- Test 2: asserts `NaN` for `1h -30m`, `-1h 30m`, `1h +30m`, `1h 30`, `1h 30x`, junk, commas, leading or trailing space, and tabs [H2].\n- Test 3: checks single-value cases (`100`, `-.5 hr`, `1   MiNuTe`), 100 chars passes, 101 chars and `''` throw, and `1s ` gives `NaN` [H2].\n- `node --test src/compound.test.ts` exited 0; the agent says all three tests passed, but the detailed output is elided [E8, E9].\n- `tsc` was not run because it is not installed; `git diff --check` exited 0 [E8].\n\n**Risks**\n- The existing test files (`parse.test.ts`, `parse-strict.test.ts`, `index.test.ts`, `format.test.ts`) were not run, so a single-unit regression is not ruled out [E3, E8].\n- The `StringValue` type was not extended; compound strings are typed only through `parse`, as the README notes [H1].\n- Leading `+` signs are rejected inside compounds (`1h +30m`), which goes beyond what the user asked for [H2, H3].\n- The 100-char limit relies on the existing check before the compound path; that code is not shown in the evidence [H3].\n- A read of `~/.codex/memories/MEMORY.md` outside the working directory failed with exit 1; it had no effect [E3].",
+  "cited": [
+   "E1",
+   "E3",
+   "E5",
+   "E6",
+   "E7",
+   "E8",
+   "E9",
+   "H1",
+   "H2",
+   "H3"
+  ],
+  "unknown_removed": [],
+  "coverage": 1.0,
+  "input_tokens": 5048,
+  "output_tokens": 1621,
+  "backend": "claude",
+  "events_seen": 9,
+  "seconds": 22.2
+ },
+ "walkthrough": {
+  "mode": "walkthrough",
+  "text": "1. **Explore.** Ran `rg` for `agent-readback|compound duration` in `~/.codex/memories/MEMORY.md`, which exited 1. It then listed repo files: `src/index.ts`, `parse.test.ts`, `parse-strict.test.ts`, `index.test.ts`, `format.test.ts`, `README.md`, `package.json` [E3].\n2. **Explore.** Read `src/index.ts`, the parse tests, `package.json` and `README.md`; most of the output is truncated in the evidence [E4].\n3. **Explore.** Concluded it would keep the single-unit path unchanged and add a full-string compound check that requires a unit on every part and a consistent sign [E5].\n4. **Edit.** In `parse`, the old `return NaN` (reached when the single-unit regex does not match) now leads into a compound parser [E6, H3]:\n   - It uses a sticky regex `part` (`/iy`) with a lookahead requiring the next number or end of string [H3].\n   - It loops over `str`, applies `part` at `offset`, and returns `NaN` on any non-match [H3].\n   - It tracks `sign` from a leading `-` and returns `NaN` if the sign changes [H3].\n5. **Edit.** Each part is converted by recursively calling `parse(component[0])` and added to `total` [E6, H3].\n   - Spaces between parts are skipped, and a trailing space returns `NaN` [H3].\n   - It returns `total` only if `count > 1`, otherwise `NaN` [H3].\n6. **Edit.** Added `src/compound.test.ts` with three `node:test` cases [E7, H2]:\n   - Valid compounds such as `1h 30m`, `2d3h`, `1mo 2ms .5S` and `-1h -30m` [H2].\n   - Rejections such as `1h -30m`, `1h +30m`, `1h 30`, `1h,30m`, `1h\\t30m` and leading/trailing spaces [H2].\n   - Single-value cases and the 100-character limit [H2].\n7. **Edit.** Added a README section with `parse('1h 30m')` and `parse('2d3h')` examples [E7, H1].\n   - It documents the unit and same-sign rules and the 100-character limit [H1].\n   - It notes that the `StringValue` type only covers single values [H1].\n8. **Test.** `node --version` reported v26.9.0. The `tsc` check printed \"TypeScript compiler not installed\", so no type check ran [E8].\n9. **Test.** `git diff --check` and `--stat` exited 0, showing README +9 and `src/index.ts` +22/-1. `compound.test.ts` is untracked [E8].\n10. **Test.** `node --test src/compound.test.ts` exited 0. The detailed output is truncated, and the agent reports that all three tests passed [E8, E9].\n11. **Report.** Summarised the compound support and the README note, and stated that no dependencies were installed and type checking was not run [E9].\n12. **Not verified.** The existing suites (`parse.test.ts`, `parse-strict.test.ts`, `index.test.ts`, `format.test.ts`) were not run, and there was no fix phase [E8, E9].",
+  "cited": [
+   "E3",
+   "E4",
+   "E5",
+   "E6",
+   "E7",
+   "E8",
+   "E9",
+   "H1",
+   "H2",
+   "H3"
+  ],
+  "unknown_removed": [],
+  "coverage": 1.0,
+  "input_tokens": 11057,
+  "output_tokens": 2521,
+  "backend": "claude",
+  "events_seen": 9,
+  "seconds": 28.5
+ },
+ "mechanism": {
+  "mode": "mechanism",
+  "text": "```mermaid\nflowchart TD\n  A[\"parse(str)\"] --> B[\"existing length / empty checks (throw)\"]\n  B --> C[\"single-value regex match\"]\n  C -->|\"match.groups present\"| D[\"existing single-unit conversion\"]\n  C -->|\"no groups\"| E[\"compound loop: offset=0, sign=undefined, total=0, count=0\"]\n  E --> F[\"sticky regex part.exec(str) at lastIndex=offset\"]\n  F -->|\"null\"| N[\"return NaN\"]\n  F -->|\"component\"| G[\"negative = component[1] starts with '-'\"]\n  G -->|\"sign differs from earlier part\"| N\n  G -->|\"sign consistent\"| H[\"total += parse(component[0]); count++\"]\n  H -->|\"recursive call, single-value path\"| D\n  H --> I[\"offset = part.lastIndex; skip spaces\"]\n  I -->|\"at end and str ends with ' '\"| N\n  I -->|\"offset < length\"| F\n  I -->|\"offset == length\"| J[\"return count > 1 ? total : NaN\"]\n```\n\n- The compound branch replaces the old `return NaN` when the single-value regex has no `groups`. Single-unit inputs still take the existing path. [H3]\n- `part` is a sticky, case-insensitive regex (`/iy`). It requires an optionally negative number, optional spaces, and a unit. A lookahead then requires another number (`-?\\d` or `-?\\.\\d`) or end of string. [H3]\n- The sticky flag combined with `lastIndex = offset` forces each component to start exactly at `offset`. Leading spaces, tabs, `,`, `+` and trailing junk therefore fail `exec` and return `NaN`. [H3]\n- Each component's sign comes from `component[1].startsWith('-')`. A sign different from earlier parts returns `NaN`, so `-1h -30m` passes and `1h -30m` and `-1h 30m` are rejected. [H3, H2]\n- Each matched component text goes back into `parse` recursively. Unit conversion stays in the existing single-value code, and the results add up into `total`. [H3]\n- After a match, spaces are skipped. If that reaches the end and `str` ends in a space, the result is `NaN`. This covers `1h 30m ` and `1s `. [H3, H2]\n- `count > 1` is checked so a lone unmatched single value cannot come back as a sum. A bare `1h 30` fails because the second part has no unit. [H3, H2]\n- Test 1 covers the summing path: adjacent `2d3h`, spaced `1h 30m`, long-form, fractional, `1mo 2ms .5S` (unit precedence and case), and all-negative input. [H2]\n- Test 3 covers the single-value path: `100`, `-.5 hr`, `1   MiNuTe`. It also covers the existing length limit: 100 characters parse, 101 characters and `''` throw. [H2]\n- `node --test src/compound.test.ts` exited 0, and the agent reported all three tests passing. [E8, E9]\n- Not verified: `tsc` was not installed, so there was no type check. The existing test files (`parse.test.ts`, `index.test.ts`, `parse-strict.test.ts`, `format.test.ts`) were not run. [E8, E3]",
+  "cited": [
+   "E3",
+   "E8",
+   "E9",
+   "H2",
+   "H3"
+  ],
+  "unknown_removed": [],
+  "coverage": 1.0,
+  "input_tokens": 5099,
+  "output_tokens": 1972,
+  "backend": "claude",
+  "events_seen": 9,
+  "seconds": 22.0
+ }
+}

@@ -1,0 +1,73 @@
+{
+ "session": "s05",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 12285,
+ "answers": {
+  "q1": "unknown",
+  "q2": "It accepts 'round', 'floor' and 'ceil' (and undefined when omitted). Any other value throws a TypeError with the message \"Expected roundingMode to be one of 'round', 'floor' or 'ceil'\". The helper's code is not shown in the material, only the tests and docs of this behavior.",
+  "q3": "With fraction-digit options set, existing code truncates, so 1999 bytes with maximumFractionDigits:1 gives '1.9 kB', not '2 kB'. Making 'round' the default would change existing output and break existing tests (e.g. 59_952_784 → '59.9 MB'). The agent decided to leave the default undefined: with the option omitted the output is unchanged (3 significant digits round, fraction digits truncate), and an explicit roundingMode applies to the fraction digits. This is documented in readme.md.",
+  "q4": "A value that rounds up onto the next unit is printed in that unit, so 999960 bytes with maximumFractionDigits:1 gives '1 MB' rather than '1000 kB'. The exact mechanism in the code is not shown in the material.",
+  "q5": "With no fraction-digit options, 'round' behaves exactly like the default 3-significant-digit rounding, so 1005 stays '1 kB'. With fraction-digit options, rounding treats the value as its plain decimal (1.005), so ties go away from zero and it gives '1.01 kB'. This difference is documented.",
+  "q6": "It uses exact bigint arithmetic. It multiplies by 10^maximumFractionDigits, divides by the scale to get digits and a remainder, and bumps the digits by one for 'expand' when the remainder is above 0 or for 'halfExpand' on a half-or-more remainder (the rest of the code is truncated in the material). The magnitudeMode defaults to 'trunc', and the default 3-significant-digit case rounds to a whole number.",
+  "q7": "It checks that floor(-x) prints as '-' followed by ceil(x). The inputs are values 1, 1001, 1337, 1999, 54_321 and 999_901, each with maximumFractionDigits of undefined, 0, 1 and 2.",
+  "q8": "unknown",
+  "q9": "The agent used a small ava stand-in (a shim) in a scratchpad directory outside the repo, copying in index.js, test.js and the other files and running node --test test.js there. What broke first is not shown in the material.",
+  "q10": "No existing test failed in the visible material. The final run of the existing suite via the shim was 48 pass, 0 fail, 3 skipped (tests already marked test.skip in the repo), and test-rounding.js passed 11/11."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names the three values, undefined, and TypeError; message prefix matches."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Identifies truncation conflict, example outputs, keeps default undefined, documented in readme."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Gives the 999960 -> '1 MB' example but not the mechanism (rounded >= base check, skipped for trunc and last unit)."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Explains default path vs fraction-digit decimal rounding, but doesn't name toPrecision vs Intl.NumberFormat."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Describes bigint multiply, divide, remainder, and both increment conditions; the previous truncation is only a noted extra."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "States floor(-x) = '-' + ceil(x) with the correct values and settings."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Describes the shim outside the repo, but not the test.skip TypeError or the fix."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Final 48/0/3 and 11/11 are correct, but it wrongly says no existing test failed and misses the documented-examples failure."
+  }
+ },
+ "score": 6.0,
+ "n": 10
+}

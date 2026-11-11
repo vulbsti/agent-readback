@@ -1,0 +1,73 @@
+{
+ "session": "s03",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4690,
+ "answers": {
+  "q1": "`_arg_extreme(func, iterable, key, default)` in more.py, which both argmin (with `min`) and argmax (with `max`) delegate to.",
+  "q2": "In more.pyi, each of argmin and argmax now has two `@overload`s: without `default` it returns `int`, and with `default: _V` it returns `int | _V` (following the first/last pattern).",
+  "q3": "It uses the module sentinel `_marker`: it passes `default=_marker` to the builtin min/max and, if the result `is _marker`, returns the user's `default`. Since the check is identity against the sentinel, `None` (and `0`) work as real defaults.",
+  "q4": "When `default is _marker` (none given), it runs the original `func(pairs, key=itemgetter(1))[0]` unchanged, so an empty input still raises the builtin `ValueError`.",
+  "q5": "It checks that an empty input returns the supplied default, using `assertIs` so the exact object is returned, with defaults `-1`, `'x'`, `None` and `0`.",
+  "q6": "`test_default_is_keyword_only` asserts that calling `func([], None, -1)` raises `TypeError`.",
+  "q7": "It failed with an `ImportError` (relative import). The printed `doctest-exit=0` was the exit status of `tail`, not of doctest.",
+  "q8": "It ran `run_docstring_examples` with empty globals, which raised `NameError: name 'argmin' is not defined` (a harness artifact), and then `doctest.testmod(m)`, which reported failed=0, attempted=582.",
+  "q9": "It ran the full `tests/test_more.py` with `-p no:cacheprovider`; 630 tests passed and 11343 subtests passed.",
+  "q10": "[answer removed: the original q10 concerned a remark about the user's personal settings]"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names _arg_extreme(func, iterable, key, default) and argmin/argmax delegate with min/max."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Two overloads each; int and int | _V returns."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Mentions _marker sentinel, default=_marker to min/max, identity check; None works."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "No-default path runs the original call unchanged, so ValueError is preserved."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Has defaults and assertIs, but omits both argmin/argmax and the [] vs iter([]) with key=abs cases."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "func([], None, -1) positional call expecting TypeError."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Relative-import ImportError and tail exit status are right, but it does not say the failure was the cause of the misleading 0 beyond that; mostly complete, minor detail missing (no known parent package)."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "NameError from empty globals and testmod failed=0, attempted=582."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Flag -p no:cacheprovider, 630 passed, 11343 subtests."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "[removed]"
+  }
+ },
+ "score": 8.0,
+ "n": 10
+}

@@ -1,0 +1,66 @@
+{
+ "overview": {
+  "mode": "overview",
+  "text": "**Changed**\n- `src/index.ts:parse`: when the single-value regex fails, it now scans the input with a sticky regex `part` (`/iy`) instead of returning `NaN` [E6, H3].\n- Each component needs a number and a unit, and must be followed by a digit, `-`, `.`, or end of input. Otherwise the function returns `NaN` [H3].\n- Each component is converted by calling `parse(component[0])` recursively and added to `total`. The result is returned only if `count > 1` [H3].\n- Sign rule: the first component's sign is stored in `sign`. A later component with a different sign returns `NaN`. There is no `+` in the regex, so `1h +30m` fails [H3].\n- Spaces between components are skipped. A trailing space returns `NaN`. Tabs and commas also fail [H3, H2].\n- `README.md`: added `parse('1h 30m')` and `parse('2d3h')` examples and a paragraph on compound syntax, the sign rule, the 100-character limit, and the `StringValue` limitation [E7, H1].\n\n**Why**\n- The user wanted compound durations summed in milliseconds, single-unit inputs unchanged, `NaN` for mixed signs or invalid parts, and the 100-character limit kept [E1].\n- The agent kept the existing single-unit path \"intact\" and added \"a full-string compound check that requires a unit on every part and consistent signs\" [E5].\n- The comment in `H3` says the single-value parser stays \"the source of unit conversions\", which is why it recurses [H3].\n\n**Tests**\n- New file `src/compound.test.ts` with three `node:test` cases [E7, H2]:\n  - Sums: `1h 30m`, `2d3h`, `1 hour 30 minutes`, `1.5h 10s`, `1mo 2ms .5S`, `-1h -30m`, each with an exact millisecond value [H2].\n  - Rejects: `1h -30m`, `-1h 30m`, `1h +30m`, `1h 30`, `1h 30x`, junk, a comma, leading or trailing space, and a tab. Each must be `NaN` [H2].\n  - Preserves: `100`, `-.5 hr`, `1   MiNuTe`, and a 100-character string all parse. A 101-character string and `''` throw. `1s ` gives `NaN` [H2].\n- `node --test src/compound.test.ts` exited 0. The agent reports all three passed; the pass lines are truncated in the output [E8, E9].\n- `tsc --noEmit` was skipped because TypeScript is not installed. `git diff --check` was clean [E8].\n\n**Risks**\n- The existing suites (`parse.test.ts`, `parse-strict.test.ts`, `index.test.ts`, `format.test.ts`) were not run, so a regression in single-unit behaviour is not ruled out [E3, E8].\n- Type checking was never done [E8, E9].\n- The unit list is duplicated in the `part` regex, separate from the single-value regex. The two could drift apart [H3].\n- The `ms` and `parseStrict` types (`StringValue`) were not extended. Only the README notes this [H1].\n- The 100-character limit relies on an existing check outside this hunk. The tests exercise it, but the code is not shown [H2, H3].\n- An initial `rg` on `MEMORY.md` exited 1, which was harmless [E3].",
+  "cited": [
+   "E1",
+   "E3",
+   "E5",
+   "E6",
+   "E7",
+   "E8",
+   "E9",
+   "H1",
+   "H2",
+   "H3"
+  ],
+  "unknown_removed": [],
+  "coverage": 1.0,
+  "input_tokens": 5049,
+  "output_tokens": 1839,
+  "backend": "claude",
+  "events_seen": 9,
+  "seconds": 22.5
+ },
+ "walkthrough": {
+  "mode": "walkthrough",
+  "text": "1. Explore: ran `rg` for 'agent-readback|compound duration' in `~/.codex/memories/MEMORY.md`, which exited 1 (event marked ERROR). The agent ignored it and listed repo files: `src/index.ts`, four existing `*.test.ts` files, `package.json`, `README.md` [E3].\n2. Explore: read `src/index.ts` (unit constants, unit type aliases, `parse`), the `parse`/`parse-strict` tests, `package.json` and `README.md`. Most of the output was truncated [E4].\n3. Plan: kept the single-unit regex path unchanged and added a compound fallback that requires a unit on every part and a consistent sign [E5].\n4. Edit `src/index.ts`: when the single-unit match fails, the old `return NaN` is replaced by a sticky regex loop [E6, H3]:\n   - It matches each `number unit` part and recursively calls `parse(component[0])` to sum the parts [E6, H3].\n   - It returns `NaN` on a sign mismatch, an unmatched part, or trailing space [E6, H3].\n   - A result is returned only if `count > 1` [E6, H3].\n5. Edit tests: added `src/compound.test.ts` with three `node:test` tests [E7, H2]:\n   - Compound sums, including `1mo 2ms .5S` and `-1h -30m` [E7, H2].\n   - NaN cases: mixed signs, `1h 30`, junk, comma, tab, and leading/trailing spaces [E7, H2].\n   - Single-value behaviour and the 100-character limit: 99 characters parse, 100 throw [E7, H2].\n6. Edit README: added `1h 30m` and `2d3h` examples and a paragraph on the compound rules [E7, H1]. The paragraph covers sign rules, the 100-character limit, and the fact that `StringValue` only covers single values [E7, H1].\n7. Test: `node --version` returned v26.9.0. `tsc --noEmit` was skipped because the compiler is not installed [E8].\n8. Test: `git diff --check` was clean. The stat shows `README.md` +9 and `src/index.ts` +21/-1, and the new test file is untracked [E8].\n9. Test: `node --test src/compound.test.ts` exited 0. The per-test output is truncated in the evidence; the agent says all three tests passed [E8, E9].\n10. Fix phase: none. No failures needed fixing after the edits [E8].\n11. Report: summarised the compound support, README changes, no installed dependencies, and that type checking was not run [E9].\n12. Not verified: the existing test files (`parse.test.ts`, `index.test.ts`, `parse-strict.test.ts`, `format.test.ts`) were never run [E8].\n13. Not verified: TypeScript type correctness of the new code [E8].",
+  "cited": [
+   "E3",
+   "E4",
+   "E5",
+   "E6",
+   "E7",
+   "E8",
+   "E9",
+   "H1",
+   "H2",
+   "H3"
+  ],
+  "unknown_removed": [],
+  "coverage": 1.0,
+  "input_tokens": 4987,
+  "output_tokens": 1117,
+  "backend": "claude",
+  "events_seen": 9,
+  "seconds": 14.3
+ },
+ "mechanism": {
+  "mode": "mechanism",
+  "text": "```mermaid\nflowchart TD\n  A[\"parse(str)\"] --> B[\"existing single-value regex match\"]\n  B -->|\"match.groups present\"| C[\"existing single-unit conversion (unchanged)\"]\n  B -->|\"no match\"| D[\"compound loop: offset = 0, sign undefined, total = 0, count = 0\"]\n  D -->|\"offset < str.length\"| E[\"sticky regex part.exec(str) at offset\"]\n  E -->|\"null\"| N[\"return NaN\"]\n  E -->|\"component found\"| F[\"negative = component[1] starts with '-'\"]\n  F -->|\"sign set and differs\"| N\n  F -->|\"sign consistent\"| G[\"total += parse(component[0]); count++\"]\n  G -->|\"recursive call on one component\"| C\n  G --> H[\"offset = lastIndex; skip spaces\"]\n  H -->|\"at end and str ends with ' '\"| N\n  H -->|\"more input\"| E\n  H -->|\"offset == length\"| I[\"count > 1 ?\"]\n  I -->|\"yes\"| J[\"return total (ms)\"]\n  I -->|\"no\"| N\n```\nFlow above is derived from the final `src/index.ts` change [H3].\n\n- **Entry and fallback.** The compound logic only runs when the existing single-value regex fails, where the old code did `return NaN`. Single-unit inputs that matched before still take the unchanged path [H3].\n- **Sticky component regex `part` (`/iy`).** It is used for each component [H3].\n  - It matches `-?\\d*\\.?\\d+`, optional spaces, then a unit alternation [H3].\n  - A lookahead requires the next thing to be ` *-?\\d`, ` *-?\\.\\d`, or end of string [H3].\n  - The sticky flag anchors each match at `offset`, so gaps or junk cause `exec` to return null and the function returns `NaN` [H3].\n- **Sign check.** `sign` records whether the first component is negative. Any later component with a different sign returns `NaN`, so `-1h -30m` passes and `1h -30m` / `-1h 30m` fail [H3, H2].\n- **Unit conversion.** Each matched component string (e.g. `30m`) goes back into `parse` recursively. The single-value path stays the only source of conversion factors, and results are summed into `total` [H3].\n- **Advance.** `offset` moves to `lastIndex` and then past any spaces. A trailing-space guard (`offset === str.length && str.endsWith(' ')`) returns `NaN`. From reading the regex, the lookahead likely rejects trailing spaces before this guard runs; that is not verified [H3].\n- **`count > 1` gate.** A lone component that reached the fallback (e.g. `1s `) can never be accepted through the compound path [H3].\n- **Accept tests** run through the loop and `count > 1`: `1h 30m`, `2d3h`, `1 hour 30 minutes`, `1.5h 10s`, `1mo 2ms .5S`, `-1h -30m` [H2, H3].\n- **Reject tests** hit these exits [H2, H3]:\n  - Null `exec`: `1h 30`, `1h 30x`, `1h 30m junk`, `1h,30m`, `1h\\t30m`, `1h +30m`, and leading-space ` 1h 30m` [H2, H3].\n  - Sign mismatch: `1h -30m`, `-1h 30m` [H2].\n- **Single-value tests** (`100`, `-.5 hr`, `1   MiNuTe`) exercise the unchanged branch [H2, H3].\n  - The 100-character throw and the `''` throw are asserted in tests; the code producing them is pre-existing and not shown in the hunk [H2, H3].\n  - `1s ` returns `NaN` via the compound path [H2, H3].\n- **Verification.** One test run and one type-check attempt are shown [E8].\n  - `node --test src/compound.test.ts` exited 0, and the agent reports 3 tests passed. The full test output is truncated in the evidence [E8, E9].\n  - `tsc` was not run because TypeScript is not installed [E8].\n  - The existing test files `src/parse.test.ts` and `src/index.test.ts` were not run [E3, E8].",
+  "cited": [
+   "E3",
+   "E8",
+   "E9",
+   "H2",
+   "H3"
+  ],
+  "unknown_removed": [],
+  "coverage": 1.0,
+  "input_tokens": 11418,
+  "output_tokens": 4027,
+  "backend": "claude",
+  "events_seen": 9,
+  "seconds": 43.3
+ }
+}

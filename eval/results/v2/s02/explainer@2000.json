@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 4988,
+ "answers": {
+  "q1": "The variable is `matchEntityRegExp`, defined as `/&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`.",
+  "q2": "The function is `unescapeHtml`, exported as a property of the default export: `module.exports.unescape = unescapeHtml`. `escapeHtml` stays the default export.",
+  "q3": "`&#39;` is matched by the decimal numeric branch of the regex. `parseInt` gives 39 and `String.fromCharCode` turns it into `'`.",
+  "q4": "Code points above 0x10FFFF and surrogates in 0xD800–0xDFFF are left untouched. The original entity text is returned unchanged.",
+  "q5": "It builds a surrogate pair by hand rather than using `String.fromCodePoint`, with high surrogate 0xD800+(cp>>10) and low surrogate 0xDC00+(cp&0x3FF). `&#x1F600;` becomes 😀.",
+  "q6": "It asserts that a single pass decodes only one layer, so `&amp;lt;` becomes `&lt;` and not `<`.",
+  "q7": "The material names `&copy;`, `&AMP;` and `&constructor;` as staying unchanged for that test. It also lists `&apos;` among unknown names, though it doesn't say which test case holds it.",
+  "q8": "`npm test` failed with exit code 127 and the message `sh: 1: mocha: not found`.",
+  "q9": "`npm test` couldn't run because mocha wasn't installed, so the agent ran `test/index.js` with `describe`/`it` mapped to node:test as globals. All 30 existing tests passed with 0 failed.",
+  "q10": "unknown. The material shows the edits and then the tests passing with 10 tests, but gives no count of edit rounds or any failed test run before it."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names matchEntityRegExp and gives the exact regex."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "unescapeHtml, module.exports.unescape, default stays escapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Decimal numeric branch, parseInt gives 39, fromCharCode gives apostrophe."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions given and original entity returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Manual surrogate pair with correct math, no fromCodePoint."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Gives &amp;lt; -> &lt; but omits the numeric &#38;quot; case and full pair."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Mentions &copy;, &AMP;, &constructor;, &apos; but misses &nbsp;, &LT;, &toString;, and is hedged."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Exit code 127 and mocha not found."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Mocha missing, node:test shim, 30 tests passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answered unknown; key says a single patch with 10/10 passing first run."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 1
+}

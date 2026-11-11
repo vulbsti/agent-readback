@@ -1,0 +1,73 @@
+{
+ "session": "s03",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 4535,
+ "answers": {
+  "q1": "`_arg_extreme(func, iterable, key, default)`, defined in more.py just before argmin; `func` is min or max. argmin and argmax each just call it.",
+  "q2": "Per the agent's summary, each function got two type signatures: one without `default` returning `int`, and one with `default: _V` returning `int | _V`. The diff stat shows 16 lines added to more.pyi.",
+  "q3": "It uses the module's internal `_marker` sentinel as the default passed to min/max (`default=_marker`). If the result is `_marker`, the iterable was empty and the user's `default` is returned, so None works as a real default.",
+  "q4": "So an empty iterable keeps raising min/max's own ValueError with the same message, as before. Only when `default is _marker` (none given) does it take that unchanged path.",
+  "q5": "It checks, for both argmin and argmax, that an empty list returns the default object itself (assertIs), and that an empty iterator with `key=abs` does too. The default values tested are -1, 'x', None and 0.",
+  "q6": "`test_default_is_keyword_only` calls `func([], None, -1)` for both functions and asserts a TypeError is raised.",
+  "q7": "unknown",
+  "q8": "unknown",
+  "q9": "The agent ran `/opt/venv/bin/python -m pytest tests/test_more.py -q -p no:cacheprovider`, adding `-p no:cacheprovider`, and followed it with `git diff --stat`. Result: 630 passed, 11343 subtests passed in 5.93s.",
+  "q10": "[answer removed: the original q10 concerned a remark about the user's personal settings]"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names _arg_extreme(func, iterable, key, default), func is min/max, argmin/argmax call it."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Two signatures per function, int and int | _V; 'type signatures' is effectively overloads."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Mentions _marker sentinel, default=_marker to min/max, result being _marker returns user default."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Preserves original ValueError with same message when no default."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Lists assertIs, empty list and empty iterator with key=abs, and defaults -1, 'x', None, 0."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Calls func([], None, -1) positionally and expects TypeError."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Correct command with -p no:cacheprovider and 630 passed, 11343 subtests passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "[removed]"
+  }
+ },
+ "score": 8.0,
+ "n": 10
+}

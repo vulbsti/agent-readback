@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 1838,
+ "answer_input_tokens": 4546,
+ "answers": {
+  "q1": "The variable is `matchEntityRegExp`. It matches `&quot;|&amp;|&lt;|&gt;|&#dec;|&#[xX]hex;`, case-sensitive with a required semicolon.",
+  "q2": "The function is `unescapeHtml`. It is exported as `module.exports.unescape = unescapeHtml`, so `module.exports` is still `escapeHtml`.",
+  "q3": "`&#39;` has no named case. It goes through the decimal numeric path: parseInt base 10, then `String.fromCharCode(39)`.",
+  "q4": "Code points above 0x10FFFF and surrogates in 0xD800–0xDFFF are left untouched. The original entity text is returned unchanged.",
+  "q5": "It builds a surrogate pair manually: 0xD800+(cp>>10) and 0xDC00+(cp&0x3FF). For `&#x1F600;` that gives `\\uD83D\\uDE00`.",
+  "q6": "It asserts that single-layer decoding happens, so `&amp;lt;` becomes `&lt;` rather than `<`. The exact test code is not shown.",
+  "q7": "`&copy;`, `&AMP;` and `&constructor;` must stay unchanged.",
+  "q8": "`npm test` failed with exit code 127 because `mocha` was not found.",
+  "q9": "`npm test` was unavailable because mocha is missing, so the agent mapped `node:test`'s `describe`/`it` onto globals to run the existing `test/index.js`. Result: 30 passed, 0 failed, exit 0. Whether it used `node -e` specifically is not shown.",
+  "q10": "One edit round: a single `apply_patch` touched index.js, README.md and the new test file, and the new tests then passed. No further edits are shown."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0.5,
+   "why": "Names matchEntityRegExp and the entities, hex/decimal forms, semicolon; but doesn't mention the global flag or the capture groups, and the exact regex is not given."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "unescapeHtml, exported as module.exports.unescape, default stays escapeHtml."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Correctly the decimal numeric path with parseInt and fromCharCode(39)."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions and unchanged entity text returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Manual surrogate pair math correct."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Gets &amp;lt; -> &lt; but omits the numeric &#38;quot; case and the exact test is not given."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Mentions &copy;, &AMP;, &constructor; but omits &apos; and &nbsp;, which are required."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Exit 127 and mocha not found."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Mocha missing, node:test shim, 30 passed; node -e caveat is minor."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Single patch is right, but doesn't state 10/10 passing on the first run."
+  }
+ },
+ "score": 8.0,
+ "n": 10,
+ "rep": 1
+}

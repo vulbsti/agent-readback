@@ -1,0 +1,74 @@
+{
+ "session": "s04",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 4971,
+ "answers": {
+  "q1": "unknown",
+  "q2": "The README.md format list (adding \"dokuwiki\"), a README section describing the format with an example, and the CLI help text of supported output formats. The final summary also says format listings were updated and tests were added in test/test_output.py (including test_dokuwiki_registered, checking membership in tabulate_formats).",
+  "q3": "Per the tests and README, literal | and ^ are escaped using DokuWiki's %%...%% syntax (e.g. | becomes %%|%%, ^ becomes %%^%%). The implementation code of _dokuwiki_row is not shown.",
+  "q4": "unknown. The README says decimal alignment is rendered as right alignment, but the handling of None/unknown alignment is not shown.",
+  "q5": "unknown",
+  "q6": "It asserts that tabulate([], tablefmt=\"dokuwiki\") returns \"\" and that tabulate([], [\"name\", \"qty\"], tablefmt=\"dokuwiki\") returns \"^ name    ^ qty    ^\".",
+  "q7": "unknown. The visible material shows the requested command passing with 12 tests; no failing first run is shown.",
+  "q8": "unknown",
+  "q9": "unknown. The visible material only shows the lint check passing, not an earlier failed attempt.",
+  "q10": "The visible final run used /snap/ruff/1713/bin/ruff check with --no-cache and selected rules on tabulate/__init__.py, tabulate/cli.py and test/test_output.py, plus ruff format --check with --no-cache --config pyproject.toml. Both passed (\"All checks passed!\", \"3 files already formatted\"). Earlier steps are not shown."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Names README.md and CLI help, but omits the tabulate() docstring in tabulate/__init__.py; the tests mention is extra and not wrong."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0.5,
+   "why": "Gives the correct %%|%% / %%^%% escaping but does not say it applies to both headers and data cells."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0,
+   "why": "Answer is 'unknown'; it gives only a partial mention that decimal is treated as right, and the None/unknown handling is missing, so both parts are not met."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Both assertions are stated correctly."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is 'unknown'; it does not name the failing test or the fix."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Answer is 'unknown'; the snap failure and the switch to the real binary are not given."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Reports the final passing results and the ruff select usage, but omits the one-line test reformat and the explicit --select/--ignore set matching pyproject."
+  }
+ },
+ "score": 2.5,
+ "n": 10,
+ "rep": 1
+}

@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "raw",
+ "budget": null,
+ "context_tokens_est": 26593,
+ "answer_input_tokens": 51907,
+ "answers": {
+  "q1": "'round' returns 'halfExpand'. 'floor' returns 'expand' if negative, else 'trunc'. 'ceil' returns 'trunc' if negative, else 'expand'. Anything else (undefined) returns undefined.",
+  "q2": "It accepts undefined, 'round', 'floor' and 'ceil'. Any other value throws a TypeError: \"Expected roundingMode to be one of 'round', 'floor' or 'ceil', got <type>: <value>\".",
+  "q3": "The 3-significant-digit default rounds, but minimumFractionDigits/maximumFractionDigits truncate, so 'round' as default would change existing output (e.g. 1999 with maximumFractionDigits:1 from '1.9 kB' to '2 kB'). The agent decided that omitting roundingMode keeps the old output exactly (round without fraction options, truncate with them), and 'round' must be passed explicitly to round fraction digits; this is documented in readme.md.",
+  "q4": "If roundingMode isn't 'trunc' and the exponent isn't the last unit, it formats the value with Intl.NumberFormat ('en-US', same options, no grouping) and, if the rounded result is >= base, it divides number by base and increments the exponent. So 999_960 with maximumFractionDigits:1 and 'round' becomes '1 MB'.",
+  "q5": "Without fraction-digit options, 'round' keeps using Number#toPrecision, whose tie direction depends on the float representation of 1.005 (rounds down to 1). With fraction-digit options, rounding goes through Intl.NumberFormat, which rounds the shortest decimal form 1.005 and gives 1.01.",
+  "q6": "It uses exact bigint arithmetic: it multiplies by 10^maximumFractionDigits, divides by the scale, and checks the remainder. 'expand' adds 1 if remainder > 0, 'halfExpand' adds 1 if remainder*2 >= scale, and 'trunc' adds nothing. It then splits the digits into whole and fraction parts.",
+  "q7": "It checks that floor of -x equals '-' plus ceil of x. The inputs are values 1, 1001, 1337, 1999, 54321 and 999901, each with maximumFractionDigits of undefined, 0, 1 and 2.",
+  "q8": "The 'rounding up carries onto the next unit' test failed because it expected '999.960 kB' but got '999.96 kB'. The agent corrected the test's expected string to '999.96 kB', after which all tests passed.",
+  "q9": "It built a fake 'ava' module in a scratchpad directory (node_modules/ava mapping onto node:test and node:assert), copied index.js and test.js there, and ran node --test. The first problem was that the shim lacked test.skip ('test.skip is not a function'); it also needed notRegex, and the first attempt at creating the shim via a shell heredoc was blocked.",
+  "q10": "'documented examples are accurate' failed because the shim directory lacked readme.md and index.d.ts, which that test reads. After copying readme.md and index.d.ts in, the existing suite gave 48 pass, 0 fail, 3 skipped, and test-rounding.js gave 11 pass, 0 fail."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct, including the floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names undefined plus the three modes, and the TypeError with the correct message."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Fraction-digit options truncate today, so a 'round' default would change output (1999 example). Omitted option keeps old behaviour, documented in readme."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Pre-format check with Intl en-US, divide and exponent+1 when >= base, skipped for trunc and the last unit, 999_960 -> '1 MB'."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Contrasts toPrecision on the default path with Intl.NumberFormat on the decimal form."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Bigint quotient/remainder approach with both increment conditions."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "floor(-x) equals '-' + ceil(x), with the correct values and fraction-digit settings."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Names the carry test and the 999.960 vs 999.96 mismatch; the test expectation was fixed."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Shim outside the repo, test.skip error, notRegex, and the blocked heredoc all mentioned."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names the documented-examples test, the missing readme.md and index.d.ts, and the final 48/0/3 and 11/11 results."
+  }
+ },
+ "score": 10.0,
+ "n": 10,
+ "rep": 2
+}

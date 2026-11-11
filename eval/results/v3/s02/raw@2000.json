@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 5050,
+ "answers": {
+  "q1": "unknown. The index.js changes are truncated from the material, so the regex and its variable name aren't shown.",
+  "q2": "unknown. The internal function name isn't visible. The task and summary only say it is exported as `module.exports.unescape`.",
+  "q3": "unknown. The switch code isn't shown. The tests and README only show that &#39; is decoded as one of the supported entities.",
+  "q4": "Per the README and tests, code points above 0x10FFFF and surrogates 0xD800–0xDFFF are left untouched. The original reference text is returned unchanged and nothing throws. The implementation code itself isn't shown.",
+  "q5": "unknown. The implementation isn't visible. The README says supplementary characters are supported, and a test covers \\uD800\\uDC00 and \\uDBFF\\uDFFF.",
+  "q6": "It asserts that unescape('&amp;lt; &amp;#60; &#38;quot;') returns '&lt; &#60; &quot;', so only one layer is decoded.",
+  "q7": "&copy;, &apos;, &nbsp;, &unknown;, &AMP;, &LT;, &constructor; and &toString; must all stay unchanged.",
+  "q8": "The agent's summary says `npm test` was unavailable because Mocha isn't installed. The exit code isn't shown.",
+  "q9": "The `node -e` command isn't visible, so the reason is unknown. The summary says the existing escape tests ran with Node's test APIs and 30 passed.",
+  "q10": "unknown. The transcript is truncated and doesn't show the edit rounds. The final summary reports the new tests passing (10 passed)."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer is 'unknown'; key requires matchEntityRegExp and the regex."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Gives module.exports.unescape export but not the internal name unescapeHtml; says unknown for it."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0,
+   "why": "Answer is 'unknown'; doesn't state it goes through the decimal numeric branch."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Names both >0x10FFFF and surrogates D800–DFFF, and says the original text is returned unchanged."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0,
+   "why": "Answer is 'unknown'; no manual surrogate-pair construction described."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Correct input/output pair and one-layer explanation."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Lists all the required entities, including uppercase variants and prototype-like names."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0.5,
+   "why": "Says npm test failed because mocha is not installed, but gives no exit code 127."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Gives the 30 passed result via Node test APIs, but says the reason is unknown (mocha unavailable)."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answer is 'unknown'; doesn't say a single patch with no rework. Mentions 10 passed only."
+  }
+ },
+ "score": 4.5,
+ "n": 10,
+ "rep": 1
+}

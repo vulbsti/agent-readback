@@ -1,0 +1,74 @@
+{
+ "session": "s05",
+ "condition": "explainer",
+ "budget": 6000,
+ "context_tokens_est": 5766,
+ "answer_input_tokens": 12264,
+ "answers": {
+  "q1": "`round` returns `halfExpand`. `floor` returns `expand` if negative, else `trunc`. `ceil` returns `trunc` if negative, else `expand`. An omitted mode returns `undefined`.",
+  "q2": "It lets valid values and `undefined` through and throws a `TypeError` for anything else. The tests expect a `TypeError` for `'trunc'`, `'halfExpand'`, `'ROUND'`, `''`, `null`, `1`, `true` and `'up'`. The function body is truncated in the material, so the exact accepted list is not shown; the type is `'round' | 'floor' | 'ceil'`.",
+  "q3": "The default is not literally `'round'`: with fraction-digit options the existing code truncates (e.g. 1999 with max 1 → `1.9 kB`). Making `'round'` the default would change existing output. The agent left the default `undefined`, which keeps truncation, and made `'round'` an explicit opt-in. It documented this in the readme.",
+  "q4": "It pre-formats the number with `toLocaleString` in `en-US` using the rounding mode. If the rounded value is `>= base` and a larger unit exists, it does `number /= base` and `exponent += 1`. So `999960` with max 1 gives `1 MB`.",
+  "q5": "They take different paths. Without fraction-digit options, `round` uses `Number#toPrecision` at 3 significant digits, giving `1 kB`. With `maximumFractionDigits:2`, rounding goes through `Intl` with `halfExpand`, giving `1.01 kB`. The material mentions a readme tie note about 1005 but its text is truncated, so the exact reason for the tie is unknown.",
+  "q6": "It uses exact bigint arithmetic: it multiplies by `10n ** maximumFractionDigits` and divides by `scale`, then looks at the remainder. It adds 1 for `expand` when remainder > 0, or for `halfExpand` when `remainder*2n >= scale`. `trunc` adds nothing. Before this change it always truncated.",
+  "q7": "unknown. The material gives no inputs for a negative-number loop. It describes only a loop over values including 1337, 1005 and 999_500 that checks `roundingMode:'round'` matches the output with no option. The negative cases it lists are individual examples, such as `-0.04` and `-1005`.",
+  "q8": "The 'rounding up carries onto the next unit' test failed, expecting `'999.960 kB'` but getting `'999.96 kB'`. The agent changed the test's expected value to `'999.96 kB'` and left the code unchanged.",
+  "q9": "It wrote a minimal fake `ava` module in the scratchpad (`avashim/node_modules/ava/index.js` and `package.json`) and ran `test.js` against it. It first crashed with `test.skip is not a function`.",
+  "q10": "'documented examples are accurate' still failed because it parses `readme.md` and `index.d.ts`, which weren't in the shim directory. The agent copied them in. The final result was 48 pass, 0 fail, 3 skipped."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct, including floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Says TypeError and undefined, and the rejected strings; but does not state the accepted list as definitive, though the type line names round/floor/ceil. Message format not given."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Identifies truncation conflict, example, kept undefined default, documented in readme."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Has the rounded >= base check, divide, exponent+1 and the 999960 example; omits skip for trunc and no grouping detail."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Correctly names toPrecision vs Intl paths, but hedges and does not explain the decimal-form reason."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Matches bigint quotient/remainder and both increment conditions, plus prior truncation."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answered unknown; key is floor(-x) == '-'+ceil(x) over given inputs."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Names the carry test, the mismatch, and that the test was fixed not the code."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Shim outside repo and test.skip error given; missing the blocked heredoc and the addition of test.skip/notRegex."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names the documented examples test, the cause, and the final 48/0/3 result."
+  }
+ },
+ "score": 7.0,
+ "n": 10,
+ "rep": 1
+}

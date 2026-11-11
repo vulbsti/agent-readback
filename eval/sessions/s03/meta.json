@@ -1,0 +1,16 @@
+{
+ "id": "s03",
+ "agent": "claude",
+ "agent_version": "2.1.318",
+ "model": "claude-opus-5-5",
+ "repo": "more-itertools",
+ "repo_url": "https://github.com/more-itertools/more-itertools",
+ "license": "MIT",
+ "base_commit": "f42daddf205f335fea6e200dad46049f33e71221",
+ "task": "`more_itertools.argmin` and `argmax` currently raise on an empty iterable. Add a keyword-only `default` parameter to both, mirroring the builtin min()/max(): if the iterable is empty and default is given, return default; if it is empty and no default is given, keep raising ValueError. Note that None must be a valid default value. Avoid duplicating logic between the two functions. Update the .pyi stub and docstrings, add tests to tests/test_more.py, and run them with: /opt/venv/bin/python -m pytest tests/test_more.py -q -k \"argmin or argmax\"",
+ "recorded_at": "2026-11-05",
+ "num_transcript_lines": 44,
+ "tool_calls": 17,
+ "diff_lines": 150,
+ "notes": ""
+}

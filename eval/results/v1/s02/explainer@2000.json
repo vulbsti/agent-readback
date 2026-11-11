@@ -1,0 +1,73 @@
+{
+ "session": "s02",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 1967,
+ "answer_input_tokens": 4812,
+ "answers": {
+  "q1": "`matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`. It is case-sensitive and requires the trailing `;`.",
+  "q2": "The function is named `unescapeHtml`. It is exported as `module.exports.unescape = unescapeHtml`, a property on the existing `escapeHtml` export.",
+  "q3": "`&#39;` has no named case, so it falls through to the decimal numeric path. The digits are parsed with `parseInt` (radix 10) and the code point converted with `String.fromCharCode`, giving `'`.",
+  "q4": "Code points above 0x10FFFF and those in the surrogate range 0xD800–0xDFFF are left untouched. The original entity text is returned for them.",
+  "q5": "It subtracts 0x10000 from the code point and builds a surrogate pair: 0xD800 + (cp >> 10) and 0xDC00 + (cp & 0x3FF), via `String.fromCharCode`. For `&#x1F600;` this gives `\\uD83D\\uDE00`.",
+  "q6": "It checks that `replace` runs once without re-scanning its output, so `&amp;lt;` decodes to `&lt;` and not further to `<`.",
+  "q7": "The material names `&copy;`, `&AMP;` and `&constructor;` as examples. The full list of entities in that test is not shown, so there may be others.",
+  "q8": "`npm test` failed with exit code 127 and `mocha: not found`, because the test script runs `mocha test/` and Mocha was not installed.",
+  "q9": "Mocha was missing, so the agent ran the existing `test/index.js` through a `node -e` shim mapping `describe`/`it` onto `node:test`. It exited 0 with 30 tests, 30 passing, 0 failing.",
+  "q10": "unknown. The material describes the edits as a single sequence and does not show edit rounds. `node --test test/unescape.test.js` exited 0 with 10 tests passing, and no earlier failed test run is mentioned."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Gives exact regex and name matchEntityRegExp; notes semicolon and global flag present in regex."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "unescapeHtml and module.exports.unescape = unescapeHtml; matches key."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Says &#39; goes through the decimal numeric path with parseInt and fromCharCode."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions (>0x10FFFF and surrogates D800–DFFF) and original entity returned."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Describes manual surrogate pair construction with correct math via fromCharCode."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Correctly says &amp;lt; becomes &lt;, but omits the full input/output pair and numeric &#38;quot; case."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0.5,
+   "why": "Mentions &copy; and &AMP; and &constructor; but not &apos;, &nbsp;, &LT;; admits incomplete list."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Exit code 127 and mocha not found, with the test script cause."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Mocha missing, node:test shim, 30 passing."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answered unknown; key is a single edit round with 10/10 passing on first run."
+  }
+ },
+ "score": 8.0,
+ "n": 10
+}

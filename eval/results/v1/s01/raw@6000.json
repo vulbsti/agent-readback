@@ -1,0 +1,73 @@
+{
+ "session": "s01",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 11946,
+ "answers": {
+  "q1": "`compact_suffixes = (\"K\", \"M\", \"B\", \"T\")`, with a comment saying it's aligned with the first entries of `powers` and larger powers fall back to the word form.",
+  "q2": "It comes after the rounding-carry logic (ordinal bump/rounded_value = 1.0) and after the `number` string is formatted, but before the `human_powers[ordinal]` / `_ngettext` lookup, which was moved below it.",
+  "q3": "`if compact and ordinal < len(compact_suffixes):` — it then returns `f\"{negative_prefix}{number}{compact_suffixes[ordinal]}\"`.",
+  "q4": "It returns \"1.0 quadrillion\". Rounding carries the ordinal up to quadrillion (index 4), which is not below len(compact_suffixes)=4, so it falls back to the word form.",
+  "q5": "intword(1_234_000, \"%0.3f\", compact=True) == \"1.234M\"; intword(999_499, \"%.0f\", compact=True) == \"999K\"; intword(999_500, \"%.0f\", compact=True) == \"1M\".",
+  "q6": "Test collection failed with `ModuleNotFoundError: No module named 'humanize._version'`. It didn't come from the agent's change; the generated version file was missing from the checkout.",
+  "q7": "It tried a single compound Bash command (grep for _version, then git stash, run baseline tests, git stash pop, git status). It was rejected as needing approval because it contained multiple operations, so it didn't run.",
+  "q8": "It created a stub `src/humanize/_version.py` with `__version__ = \"0.0.0.dev0\"`. The Grep showed pyproject.toml's hatch-vcs hook writes that file (`build.hooks.vcs.version-file`), .gitignore ignores `src/*/_version.py`, and `__init__.py` imports `__version__` from it.",
+  "q9": "`pytest tests/test_number.py` gave 267 passed, and the doctests in `src/humanize/number.py` gave 8 passed.",
+  "q10": "The agent said it's gitignored (`src/*/_version.py` in .gitignore). The diff.patch shows only number.py and test_number.py changes, consistent with git status listing only those two as modified and the ignored stub not appearing."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names compact_suffixes with K, M, B, T in the correct order and notes the alignment with powers."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Correctly places the compact return after the carry and number formatting, and before the human_powers/_ngettext lookup, which was moved below it."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Gives the condition compact and ordinal < len(compact_suffixes)."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Returns '1.0 quadrillion'. The carry pushes the ordinal to 4, which is beyond the suffixes, so it falls back to the word form."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "All three cases are given with the correct inputs and outputs."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 0.5,
+   "why": "Gives the ModuleNotFoundError for humanize._version and says it was unrelated to the change. It doesn't say that both the pytest and doctest runs failed at collection."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Describes the compound grep plus git stash command, which was rejected as needing approval. It doesn't mention the switch to Grep, but the core facts are correct."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Stub created with __version__ = \"0.0.0.dev0\". Grep showed the hatch-vcs hook generates the file and .gitignore ignores it."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "267 tests passed and 8 doctests passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Cites the .gitignore rule src/*/_version.py as the reason the stub is absent from the diff."
+  }
+ },
+ "score": 9.5,
+ "n": 10
+}

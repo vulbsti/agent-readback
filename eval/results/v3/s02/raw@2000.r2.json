@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 5060,
+ "answers": {
+  "q1": "unknown",
+  "q2": "unknown",
+  "q3": "unknown",
+  "q4": "Per the README and tests, invalid code points (above 0x10FFFF or in the surrogate range 0xD800–0xDFFF) are left unchanged, i.e. the original reference text is returned as-is. The implementation code isn't visible, so nothing more specific is known.",
+  "q5": "unknown",
+  "q6": "It asserts that unescape('&amp;lt; &amp;#60; &#38;quot;') returns '&lt; &#60; &quot;', i.e. only one layer is decoded.",
+  "q7": "&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString; must all stay unchanged, and '&unknown;&amp;&copy;' must become '&unknown;&&copy;'.",
+  "q8": "The agent reported that `npm test` was unavailable because Mocha isn't installed. The exit code isn't shown in the material.",
+  "q9": "Because Mocha wasn't installed, the agent apparently ran the existing escape tests via Node's own test APIs instead (the final summary says 'using Node's test APIs'). The result was 30 passed, 0 failed. The exact `node -e` command isn't visible.",
+  "q10": "unknown"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Gives both conditions (above 0x10FFFF, surrogates D800–DFFF) and says the original reference text is returned unchanged."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Gives the exact input/output pair and the one-layer decoding."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Lists the exact string of entities that must stay unchanged, including &apos;, &copy;, &nbsp;, &AMP;, &LT;, &constructor; and &toString;."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0.5,
+   "why": "Says mocha isn't installed, but gives no exit code 127."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Gives the reason (mocha missing), the use of Node's test APIs, and the result of 30 passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  }
+ },
+ "score": 4.5,
+ "n": 10,
+ "rep": 2
+}

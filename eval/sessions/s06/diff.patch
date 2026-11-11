@@ -1,0 +1,94 @@
+diff --git a/README.md b/README.md
+index d752132..abdce05 100644
+--- a/README.md
++++ b/README.md
+@@ -154,10 +154,19 @@ As of `v3.0`, you can import `parse` and `format` separately.
+ import { parse, format } from 'ms';
+ 
+ parse('1h'); // 3600000
++parse('1h 30m'); // 5400000
++parse('2d3h'); // 183600000
+ 
+ format(2000); // "2s"
+ ```
+ 
++`parse` also accepts compound durations, including written-out units and
++fractions (for example, `1 hour 30 minutes` or `1.5h 10s`). Each part must
++have a unit, and all parts must have the same sign: `-1h -30m` is valid,
++but `1h -30m` returns `NaN`. Inputs are limited to 100 characters. The
++`StringValue` type used by `ms` and `parseStrict` describes single values;
++use `parse` for compound strings in TypeScript.
++
+ ### Enhanced Type Safety
+ 
+ If you want strict type checking for the input value, you can use `parseStrict`.
+diff --git a/src/compound.test.ts b/src/compound.test.ts
+new file mode 100644
+index 0000000..0ab73cb
+--- /dev/null
++++ b/src/compound.test.ts
+@@ -0,0 +1,31 @@
++import { test } from 'node:test';
++import assert from 'node:assert/strict';
++import { parse } from './index.ts';
++
++test('sums compound durations with adjacent, spaced, long and fractional units', () => {
++  assert.equal(parse('1h 30m'), 5_400_000);
++  assert.equal(parse('2d3h'), 183_600_000);
++  assert.equal(parse('1 hour 30 minutes'), 5_400_000);
++  assert.equal(parse('1.5h 10s'), 5_410_000);
++  assert.equal(parse('1mo 2ms .5S'), 2_629_800_502);
++  assert.equal(parse('-1h -30m'), -5_400_000);
++});
++
++test('rejects mixed signs and invalid or incomplete components', () => {
++  for (const value of [
++    '1h -30m', '-1h 30m', '1h +30m', '1h 30', '1h 30x',
++    '1h 30m junk', '1h,30m', '1h 30m ', ' 1h 30m', '1h\t30m',
++  ]) {
++    assert.ok(Number.isNaN(parse(value)), value);
++  }
++});
++
++test('preserves single-value parsing and the 100-character limit', () => {
++  assert.equal(parse('100'), 100);
++  assert.equal(parse('-.5 hr'), -1_800_000);
++  assert.equal(parse('1   MiNuTe'), 60_000);
++  assert.equal(parse('1' + ' '.repeat(98) + 's'), 1_000);
++  assert.throws(() => parse('1' + ' '.repeat(99) + 's'));
++  assert.throws(() => parse(''));
++  assert.ok(Number.isNaN(parse('1s ')));
++});
+diff --git a/src/index.ts b/src/index.ts
+index d50e3c7..8507e95 100644
+--- a/src/index.ts
++++ b/src/index.ts
+@@ -80,7 +80,27 @@ export function parse(str: string): number {
+     );
+ 
+   if (!match?.groups) {
+-    return NaN;
++    // Every compound component must have a unit and consume the entire input.
++    // Keep the single-value parser above as the source of unit conversions.
++    const part = /(-?\d*\.?\d+) *(milliseconds?|msecs?|ms|months?|mo|minutes?|mins?|m|seconds?|secs?|s|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)(?= *-?\d| *-?\.\d|$)/iy;
++    let offset = 0;
++    let sign: boolean | undefined;
++    let total = 0;
++    let count = 0;
++    while (offset < str.length) {
++      part.lastIndex = offset;
++      const component = part.exec(str);
++      if (!component) return NaN;
++      const negative = component[1].startsWith('-');
++      if (sign !== undefined && sign !== negative) return NaN;
++      sign = negative;
++      total += parse(component[0]);
++      count++;
++      offset = part.lastIndex;
++      while (str[offset] === ' ') offset++;
++      if (offset === str.length && str.endsWith(' ')) return NaN;
++    }
++    return count > 1 ? total : NaN;
+   }
+ 
+   // Named capture groups need to be manually typed today.

@@ -1,0 +1,33 @@
+<!doctype html><!-- rendered to docs/img/live.png: Playwright, Chrome, viewport 1400 wide, scale 1, full-page screenshot --><html><head><meta charset=utf-8><style>
+body{margin:0;background:#0d1117;font-family:"DejaVu Sans Mono",monospace;color:#e6edf3;width:1400px}
+.wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px}
+.pane{background:#151b23;border:1px solid #30363d;border-radius:8px;overflow:hidden}
+.bar{background:#1f2630;padding:8px 12px;font-size:13px;color:#9198a1;border-bottom:1px solid #30363d}
+.bar b{color:#e6edf3;font-weight:600}
+.body{padding:10px 12px;font-size:12.5px;line-height:1.6}
+.r{white-space:pre;overflow:hidden} .t{color:#656c76} .id{color:#4493f8} .k{color:#d29922} .err{color:#f85149;font-weight:700}
+ul{margin:4px 0;padding-left:18px;font-family:-apple-system,"DejaVu Sans",sans-serif;font-size:13.5px;line-height:1.55} li{margin:0 0 7px}
+code{font-family:"DejaVu Sans Mono",monospace;font-size:12px;background:#0d1117;padding:0 3px;border-radius:3px}
+.c{color:#4493f8;font-family:"DejaVu Sans Mono",monospace;font-size:12px}
+.cap{grid-column:1/3;font-family:-apple-system,"DejaVu Sans",sans-serif;font-size:13px;color:#9198a1;padding:0 2px}
+</style></head><body><div class=wrap>
+<div class=pane><div class=bar><b>events</b> · readback watch: a Claude Code agent working in another window</div><div class=body><div class=r><span class=t>17:37:01</span> <span class=id>E1</span> <span class="k">user      </span>  Add an optional second argument `options` to escapeHtml with a boolean `qu…</div>
+<div class=r><span class=t>17:37:05</span> <span class=id>E2</span> <span class="k">Bash      </span>  $ ls -R | grep -v node_modules | head -50; cat package.json; git ls-files …</div>
+<div class=r><span class=t>17:37:08</span> <span class=id>E3</span> <span class="k">Read      </span>  index.js</div>
+<div class=r><span class=t>17:37:19</span> <span class=id>E4</span> <span class="k">Bash      </span><span class=err>!</span> $ python3 - &lt;&lt;&#x27;EOF&#x27; p=&#x27;index.js&#x27; s=open(p).read() s=s.replace(&quot;&quot;&quot;var match…</div>
+<div class=r><span class=t>17:37:19</span> <span class=id>E5</span> <span class="k">Write     </span>  test/options.test.js &#x27;use strict&#x27; var test</div>
+<div class=r><span class=t>17:37:28</span> <span class=id>E6</span> <span class="k">assistant </span>  Bash heredoc was blocked; I&#x27;ll use Edit instead.</div>
+<div class=r><span class=t>17:37:28</span> <span class=id>E7</span> <span class="k">Edit      </span>  index.js --- old var matchHtmlRegExp = /[&quot;</div>
+<div class=r><span class=t>17:37:28</span> <span class=id>E8</span> <span class="k">Edit      </span>  index.js --- old * @return {string} * @pub</div>
+<div class=r><span class=t>17:37:28</span> <span class=id>E9</span> <span class="k">Edit      </span>  index.js --- old case 34: // &quot; escape = &#x27;&amp;</div>
+<div class=r><span class=t>17:37:28</span> <span class=id>E10</span> <span class="k">Edit      </span>  index.js --- old case 39: // &#x27; escape = &#x27;&amp;</div>
+<div class=r><span class=t>17:37:37</span> <span class=id>E11</span> <span class="k">Bash      </span><span class=err>!</span> $ node --test test/options.test.js; ls node_modules/.bin/mocha 2&gt;/dev/null…</div>
+<div class=r><span class=t>17:37:42</span> <span class=id>E12</span> <span class="k">assistant </span>  I added the `options` argument to `escapeHtml` and wrote tests for it. `no…</div></div></div>
+<div class=pane><div class=bar><b>explanation</b> · after ≥6 new events, here E10 (--explain-every 6)</div><div class=body><ul><li>Agent inspected the repo (<code>index.js</code>, <code>test/index.js</code>, <code>package.json</code>) and read <code>escapeHtml</code>&#x27;s char-code switch implementation <span class=c>[E2, E3]</span>.</li>
+<li>First edit attempt via Python heredoc in Bash was blocked (&quot;Contains brace with quote character&quot;); agent switched to the Edit tool <span class=c>[E4, E6]</span>.</li>
+<li>Added <code>matchHtmlNoQuotesRegExp = /[&amp;&lt;&gt;]/</code>; <code>escapeHtml(string, options)</code> computes <code>quotes = !(options &amp;&amp; options.quotes === false)</code> and picks the regex accordingly <span class=c>[E7, E8, H1, H2]</span>.</li>
+<li>In the switch, <code>case 34</code>/<code>case 39</code> now <code>continue</code> when <code>!quotes</code>, skipping <code>&amp;quot;</code>/<code>&amp;#39;</code> output <span class=c>[E9, E10, H3]</span>.</li>
+<li>Created <code>test/options.test.js</code> with 7 <code>node:test</code> cases: default/empty/true options, quotes false, mixed <code>&amp;&lt;&gt;</code>, quotes-only, leading-quote edge cases <span class=c>[E5, H4]</span>.</li>
+<li>Requested <code>node --test test/options.test.js</code> has NOT been run yet; existing <code>test/index.js</code> suite also not run — correctness unverified <span class=c>[E1]</span>.</li></ul></div></div>
+<div class=cap>Real output from a live session (an agent adding an option to escape-html), captured while it ran. readback only reads the transcript and the diff; the executor's context is untouched.</div>
+</div></body></html>

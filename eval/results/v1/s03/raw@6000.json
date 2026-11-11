@@ -1,0 +1,73 @@
+{
+ "session": "s03",
+ "condition": "raw",
+ "budget": 6000,
+ "context_tokens_est": 6001,
+ "answer_input_tokens": 11530,
+ "answers": {
+  "q1": "A private helper `_arg_extreme(func, iterable, key, default)` in more.py, where `func` is `min` or `max`; `argmin` and `argmax` both just call it.",
+  "q2": "Each of argmin and argmax now has two @overload signatures: one without `default` returning `int`, and one with a required keyword-only `default: _V` returning `int | _V`.",
+  "q3": "It uses the module's `_marker` sentinel object as the 'no default given' value. With a default, it calls func(..., default=_marker) and if `_marker` comes back the iterable was empty, so it returns the user's default (which may be None).",
+  "q4": "So that an empty iterable keeps raising the builtin's own ValueError with the same message, mirroring min()/max() behavior.",
+  "q5": "For both argmin and argmax, it checks that an empty list (and an empty iterator with key=abs) returns the default object itself (assertIs), for defaults -1, 'x', None and 0.",
+  "q6": "test_default_is_keyword_only asserts that calling `func([], None, -1)` (default passed positionally) raises TypeError, for both argmin and argmax.",
+  "q7": "It failed with an ImportError ('attempted relative import with no known parent package') because the file was run as a standalone module. The `doctest-exit=0` is misleading because it is the exit status of `tail` at the end of the pipe/echo, not of the doctest run.",
+  "q8": "It ran a Python snippet that imported more_itertools.more and called doctest.run_docstring_examples on argmin/argmax plus doctest.testmod(m). The run_docstring_examples calls failed with NameError (argmin/argmax not defined, since no globals were passed), but testmod on the whole module reported TestResults(failed=0, attempted=582).",
+  "q9": "It ran the full tests/test_more.py with `-p no:cacheprovider`, and got 630 passed, 11343 subtests passed.",
+  "q10": "[answer removed: the original q10 concerned a remark about the user's personal settings]"
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Names _arg_extreme(func, iterable, key, default), func is min/max, and argmin/argmax call it."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Two overloads per function, returning int and int | _V, with keyword-only default."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Uses the _marker sentinel, passes default=_marker to min/max, and returns the user default when _marker comes back."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Keeps the same ValueError behaviour and message for an empty iterable."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Covers assertIs, the defaults -1, 'x', None, 0, and both the empty list and the empty iterator with key=abs."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Positional func([], None, -1) call expecting TypeError."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Relative-import ImportError, and the 0 was tail's exit status."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "NameError from run_docstring_examples with no globals; testmod gave failed=0, attempted=582."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Has -p no:cacheprovider, 630 passed, and 11343 subtests passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "[removed]"
+  }
+ },
+ "score": 10.0,
+ "n": 10
+}

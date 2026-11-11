@@ -1,0 +1,74 @@
+{
+ "overview": {
+  "mode": "overview",
+  "text": "**Changed**\n- `index.js`: new `matchEntityRegExp` matches `&quot;|&amp;|&lt;|&gt;|&#dec;|&#[xX]hex;`, so a semicolon is required and names are case-sensitive [E5, H3].\n- `index.js:unescapeHtml`: coerces input with `'' + string`, maps named entities, and parses numeric references with `parseInt` [H5].\n- `unescapeHtml` returns the entity unchanged when the code point is >0x10FFFF or in 0xD800\u20130xDFFF. Above 0xFFFF it emits a surrogate pair [H5].\n- `&#39;` is decoded by the decimal path, not by a named case [H5].\n- `index.js` exports the function as `module.exports.unescape = unescapeHtml` [H4].\n- `README.md`: the intro is reworded and a new `escapeHtml.unescape(string)` section covers semantics and an example [H1, H2].\n\n**Why**\n- The user asked for a dependency-free inverse of `escapeHtml` that leaves unknown and invalid references intact, with node:test tests and README docs [E1].\n- The agent stated it would first inspect how `escapeHtml` is exported, then add the export [E2].\n- No reasons are stated for the regex-based design or for rejecting surrogates. Not shown.\n\n**Tests**\n- New `test/unescape.test.js` has 10 `test()` cases [H6]:\n  - export check, and a round trip `unescape(escapeHtml(original))` [H6]\n  - decimal references, including `&#00060;`; hex references with `x`/`X` and mixed case [H6]\n  - supplementary characters and boundaries (`&#1114111;` \u2192 `\\uDBFF\\uDFFF`) [H6]\n  - invalid values left unchanged: `&#x110000;`, surrogates, 40-digit overflow [H6]\n  - unknown or wrong-case names unchanged (`&copy;`, `&AMP;`, `&constructor;`) [H6]\n  - malformed input unchanged (`&amp` with no `;`, `&#;`, `&#-1;`, `&#xGG;`) [H6]\n  - single-layer decoding (`&amp;lt;` \u2192 `&lt;`), and coercion of `undefined`, `null`, `42`, `{}`, and a custom `toString` [H6]\n- `node --test test/unescape.test.js` exited 0. The output is truncated; the agent reports 10 passing [E5, E9].\n- `npm test` exited 127 because `mocha` was not found [E6].\n- The existing `test/index.js` was run through a `node:test` describe/it shim: 30 passed [E8].\n\n**Risks**\n- The existing suite was never run under mocha, its real runner [E6, E8].\n- The full `node --test` output is truncated, so the per-test pass list is not shown [E5].\n- Agent assumptions:\n  - surrogate code points are treated as invalid, which goes beyond the user's single example (`&#x110000;`) [E1, H5]\n  - `&#0;` decodes to NUL [H6]\n- An earlier exploration command exited 1, likely because the `rg` search for AGENTS.md found nothing (not shown) [E4].\n- Unrelated changes: the README intro sentence was rewritten; nothing else outside the request is shown [H1].",
+  "cited": [
+   "E1",
+   "E2",
+   "E4",
+   "E5",
+   "E6",
+   "E8",
+   "E9",
+   "H1",
+   "H2",
+   "H3",
+   "H4",
+   "H5",
+   "H6"
+  ],
+  "unknown_removed": [],
+  "coverage": 0.926,
+  "input_tokens": 7219,
+  "output_tokens": 1556,
+  "backend": "claude",
+  "events_seen": 9,
+  "seconds": 19.5
+ },
+ "walkthrough": {
+  "mode": "walkthrough",
+  "text": "1. **Explore:** listed project files and found `index.js`, `test/index.js`, `README.md`, `package.json`, `component.json`, and `benchmark/index.js`. [E3]\n2. **Explore:** read `index.js`, which uses `module.exports = escapeHtml` and a `matchHtmlRegExp` char-switch escaper. It also read `package.json`. [E4]\n3. **Explore (failure):** the chained `cat README.md && cat test/index.js && rg --files -g AGENTS.md` exited 1. The likely cause is that `rg` found no AGENTS.md, but this is not shown. The agent did not comment on it and continued. [E4]\n4. **Edit:** one `apply_patch` touched `index.js`, `README.md` and the new `test/unescape.test.js`. [E5]\n5. **Edit, regex:** in `index.js`, added `matchEntityRegExp` matching `&quot|amp|lt|gt;`, decimal `&#N;` and hex `&#[xX]H;`, all case-sensitive and semicolon-terminated. [H3]\n6. **Edit, export:** added `module.exports.unescape = unescapeHtml`. [H4]\n7. **Edit, function:** `unescapeHtml` coerces input with `'' + string`, then calls `.replace`:\n   - Named entities map to their characters. [H5]\n   - `&#39;` is decoded through the numeric path. [H5]\n   - Code points above `0x10FFFF` or in `0xD800\u20130xDFFF` return the original entity unchanged. [H5]\n   - Code points above `0xFFFF` are built manually as surrogate pairs. [H5]\n8. **Edit, tests:** added 10 `node:test` cases. They cover:\n   - round trip with `escapeHtml`, plus decimal and hex references [H6]\n   - supplementary characters and Unicode boundaries [H6]\n   - invalid and huge code points, unknown or wrong-case names, malformed references [H6]\n   - single-layer decoding and input coercion [H6]\n9. **Edit, docs:** README now describes both exports. It adds an `escapeHtml.unescape(string)` section listing decoding rules, invalid-input handling and an example. [H1, H2]\n10. **Test:** `node --test test/unescape.test.js` exited 0. The agent reported 10 passes, but the full count is cut off in the output. [E5, E7]\n11. **Check:** `git diff --check` was clean. The stat showed README +24 and index.js +34, with the test file untracked. [E6]\n12. **Test (failure):** `npm test` exited 127 with `mocha: not found`. [E6]\n13. **Fix/verify:** the agent ran the existing `test/index.js` instead by mapping `node:test`'s `describe`/`it` onto globals. Result: 30 pass, 0 fail, exit 0. [E7, E8]\n14. **Report:** summarized the change and validation: 10 new tests pass, 30 existing tests pass, and `npm test` is unavailable. [E9]\n15. **Not verified:** the benchmark was not run, and the suite was not run under real Mocha. [E6, E9]",
+  "cited": [
+   "E3",
+   "E4",
+   "E5",
+   "E6",
+   "E7",
+   "E8",
+   "E9",
+   "H1",
+   "H2",
+   "H3",
+   "H4",
+   "H5",
+   "H6"
+  ],
+  "unknown_removed": [],
+  "coverage": 0.913,
+  "input_tokens": 7170,
+  "output_tokens": 1233,
+  "backend": "claude",
+  "events_seen": 9,
+  "seconds": 15.2
+ },
+ "mechanism": {
+  "mode": "mechanism",
+  "text": "```mermaid\nflowchart TD\n  A[\"require('escape-html').unescape\"] --> B[\"unescapeHtml(string)\"]\n  B -->|\"'' + string coercion\"| C[\"str.replace(matchEntityRegExp, cb)\"]\n  C -->|\"no match: unknown/malformed/no semicolon\"| D[\"text left unchanged\"]\n  C -->|\"match: entity, decimal, hex\"| E[\"switch(entity)\"]\n  E -->|\"&quot; &amp; &lt; &gt;\"| F[\"return literal char\"]\n  E -->|\"numeric ref\"| G[\"parseInt(decimal,10) or parseInt(hex,16)\"]\n  G --> H{\"codePoint > 0x10FFFF or 0xD800..0xDFFF?\"}\n  H -->|\"yes\"| I[\"return entity as-is\"]\n  H -->|\"no, <= 0xFFFF\"| J[\"String.fromCharCode(codePoint)\"]\n  H -->|\"no, > 0xFFFF\"| K[\"surrogate pair: 0xD800+(cp>>10), 0xDC00+(cp&0x3FF)\"]\n  F --> L[\"single-pass result string\"]\n  J --> L\n  K --> L\n  I --> L\n```\n\n- `module.exports.unescape = unescapeHtml` attaches the function as a property, so `module.exports` is still `escapeHtml` [H4].\n- `unescapeHtml` coerces input with `'' + string`. Tests show `undefined`/`null`/`42`/`{}` become strings, and a custom `toString` returning `&lt;` decodes to `<` [H5, H6].\n- `matchEntityRegExp` only matches `&quot;|&amp;|&lt;|&gt;|&#digits;|&#[xX]hex;` with a required `;`. The match is case-sensitive [H3].\n- Inputs that don't match stay as they are. Tests cover `&copy;`, `&AMP;`, `&constructor;`, `&#x;`, `&#-1;`, `&#12a;`, and `&lt` without `;` [H6].\n- `&#39;` has no named case. It goes through the decimal capture to `String.fromCharCode(39)` [H3, H5, H6].\n- Numeric refs: decimal is parsed base 10 and hex base 16. Tests include `&#00060;`, `&#X3c;` and `&#x0027;` [H5, H6].\n- The validity guard returns the original entity for values above `0x10FFFF` or in the surrogate range. Tests cover `&#x110000;`, `&#xD800;`, `&#57343;` and a 40-digit decimal [H5, H6].\n- For values above `0xFFFF` it builds a surrogate pair. Tests check that `&#128512;`/`&#x1F600;` give `\\uD83D\\uDE00` and that `&#1114111;` gives `\\uDBFF\\uDFFF` [H5, H6].\n- A single `replace` pass decodes only one layer: `&amp;lt;` becomes `&lt;` [H5, H6].\n- `node --test test/unescape.test.js` exited 0. Legacy escape tests passed (30) under a `node:test` shim. `npm test` failed with exit 127 because mocha is missing [E5, E6, E8].",
+  "cited": [
+   "E5",
+   "E6",
+   "E8",
+   "H3",
+   "H4",
+   "H5",
+   "H6"
+  ],
+  "unknown_removed": [],
+  "coverage": 1.0,
+  "input_tokens": 7272,
+  "output_tokens": 1270,
+  "backend": "claude",
+  "events_seen": 9,
+  "seconds": 14.7
+ }
+}

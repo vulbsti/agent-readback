@@ -1,0 +1,74 @@
+{
+ "session": "s02",
+ "condition": "raw",
+ "budget": null,
+ "context_tokens_est": 14338,
+ "answer_input_tokens": 28114,
+ "answers": {
+  "q1": "It added `var matchEntityRegExp = /&(?:quot|amp|lt|gt|#([0-9]+)|#[xX]([0-9a-fA-F]+));/g`, named `matchEntityRegExp`.",
+  "q2": "The function is named `unescapeHtml` internally and is exported via `module.exports.unescape = unescapeHtml`, as a property on the exported `escapeHtml` function.",
+  "q3": "`&#39;` is matched by the decimal numeric branch of the regex (`#([0-9]+)`). It is parsed with parseInt(…, 10) to 39 and converted with String.fromCharCode, giving `'`.",
+  "q4": "Code points above 0x10FFFF and surrogates in 0xD800–0xDFFF are left untouched. The original entity text is returned unchanged.",
+  "q5": "It subtracts 0x10000 from the code point and builds a surrogate pair with String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF)).",
+  "q6": "It asserts that unescape('&amp;lt; &amp;#60; &#38;quot;') returns '&lt; &#60; &quot;', so only one layer of decoding is applied.",
+  "q7": "The string '&copy; &apos; &nbsp; &unknown; &AMP; &LT; &constructor; &toString;' must remain unchanged. Also '&unknown;&amp;&copy;' must become '&unknown;&&copy;'.",
+  "q8": "`npm test` ran `mocha test/` and failed with `mocha: not found`, exit code 127.",
+  "q9": "Because `npm test` failed with Mocha not installed, the agent ran the existing mocha-style tests via Node's test runner by setting global.describe and global.it. All 30 tests passed, 0 failed.",
+  "q10": "One. The agent applied a single patch (index.js, tests, README) and the new tests passed on the first run (10/10)."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "Exact regex and variable name matchEntityRegExp given."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "unescapeHtml and module.exports.unescape = unescapeHtml stated."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Decimal numeric branch, parseInt to 39, fromCharCode."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 1,
+   "why": "Both conditions and unchanged entity return stated."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 1,
+   "why": "Manual surrogate pair with correct math."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Exact input/output pair matches."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 1,
+   "why": "Exact string matches key; extra claim does not contradict it."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "mocha not found and exit code 127."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 1,
+   "why": "Mocha missing, node test runner shim with globals, 30 passed."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Single patch, 10/10 passed first run."
+  }
+ },
+ "score": 10.0,
+ "n": 10,
+ "rep": 2
+}

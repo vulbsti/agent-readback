@@ -1,0 +1,74 @@
+{
+ "session": "s04",
+ "condition": "raw",
+ "budget": 2000,
+ "context_tokens_est": 2001,
+ "answer_input_tokens": 4976,
+ "answers": {
+  "q1": "unknown. The diff of tabulate/__init__.py is truncated, so the TableFormat definition isn't visible.",
+  "q2": "In README.md the agent added \"dokuwiki\" to the supported formats list, added a dedicated dokuwiki description with example, and added it to the CLI help's supported output formats. The final summary also mentions format listings and CLI help, and tabulate/cli.py was linted. A test checks that it is in tabulate_formats.",
+  "q3": "The README says literal | and ^ in headers and data are escaped with DokuWiki's %%...%% syntax (for example, h%%|%% and c%%^%%d in the tests). The _dokuwiki_row code itself isn't visible.",
+  "q4": "Per the README, decimal alignment is rendered as right alignment. How None or unknown alignment is handled isn't shown, so unknown.",
+  "q5": "unknown. The _dokuwiki_row code and its reasoning are not in the material.",
+  "q6": "It asserts that tabulate([], tablefmt=\"dokuwiki\") returns \"\", and that an empty table with headers [\"name\",\"qty\"] returns just the header row \"^ name    ^ qty    ^\".",
+  "q7": "unknown. The visible run of the requested command passed all 12 tests, and no earlier failure is shown.",
+  "q8": "unknown. No external research or failed fetch is visible in the material.",
+  "q9": "unknown. Only the final lint run is visible, and it passed.",
+  "q10": "The visible passing run used /snap/ruff/1713/bin/ruff check with --no-cache and selected rules (E4,E7,E9,F,W,B,C4,ISC,I,C90,UP), plus ruff format --check on tabulate/__init__.py, tabulate/cli.py and test/test_output.py. It reported \"All checks passed!\" and \"3 files already formatted\". What changes led to this aren't shown."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 0,
+   "why": "Answer is 'unknown'; no key facts given."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 0.5,
+   "why": "Names README.md and CLI help, but not the tabulate() docstring; cli.py only mentioned as linted, partly vague."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 0.5,
+   "why": "Gives %%...%% escaping for headers and data with examples, but doesn't state the exact %%|%% / %%^%% mapping explicitly (examples imply it)."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Decimal treated as right is correct, but None/unknown handling missing; both parts required."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Both assertions stated correctly."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answer is 'unknown'; misses test_dokuwiki_header_alignment."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0,
+   "why": "Answer is 'unknown'."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 0.5,
+   "why": "Gives the select rules and final passing results, but omits the one-line reformat and the ignore list/pyproject explanation."
+  }
+ },
+ "score": 3.0,
+ "n": 10,
+ "rep": 2
+}

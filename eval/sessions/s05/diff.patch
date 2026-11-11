@@ -1,0 +1,470 @@
+diff --git a/index.d.ts b/index.d.ts
+index 4fac6e9..3a6834d 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -72,7 +72,7 @@ export type Options = {
+ 
+ 	Must not be greater than `maximumFractionDigits`, which throws a `RangeError` when both are set.
+ 
+-	Note: When `minimumFractionDigits` or `maximumFractionDigits` is specified, values are truncated instead of rounded to provide more intuitive results for file sizes.
++	Note: When `minimumFractionDigits` or `maximumFractionDigits` is specified, values are truncated instead of rounded to provide more intuitive results for file sizes, unless `roundingMode` is set.
+ 
+ 	@example
+ 	```
+@@ -99,7 +99,7 @@ export type Options = {
+ 
+ 	Must not be less than `minimumFractionDigits`, which throws a `RangeError` when both are set.
+ 
+-	Note: When `minimumFractionDigits` or `maximumFractionDigits` is specified, values are truncated instead of rounded to provide more intuitive results for file sizes.
++	Note: When `minimumFractionDigits` or `maximumFractionDigits` is specified, values are truncated instead of rounded to provide more intuitive results for file sizes, unless `roundingMode` is set.
+ 
+ 	@example
+ 	```
+@@ -115,6 +115,47 @@ export type Options = {
+ 	*/
+ 	readonly maximumFractionDigits?: number;
+ 
++	/**
++	How the last displayed digit is rounded.
++
++	- `'round'`: Round to the nearest digit, with ties going away from zero.
++	- `'floor'`: Round toward negative infinity.
++	- `'ceil'`: Round toward positive infinity.
++
++	It applies to the fraction digits allowed by `minimumFractionDigits` and `maximumFractionDigits`, or, when neither is set, to the 3 significant digits shown by default.
++
++	Negative numbers follow the mathematical definition, so `floor` moves a negative value away from zero and `ceil` moves it toward zero. For any value, `floor` of `-x` prints as `-` followed by `ceil` of `x`. The sign is decided by the input, so a negative value that rounds to zero still prints as `-0`.
++
++	A value that rounds up onto the next unit is printed in that unit, so `999960` bytes with `maximumFractionDigits: 1` is `1 MB` rather than `1000 kB`.
++
++	When omitted, the output is the same as before this option existed: the 3 significant digit default rounds (exactly like `'round'`), while `minimumFractionDigits` and `maximumFractionDigits` truncate toward zero. Pass `'round'` explicitly to round the fraction digits instead.
++
++	Throws a `TypeError` for any other value.
++
++	@default undefined
++
++	@example
++	```
++	import prettyBytes from 'pretty-bytes';
++
++	prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'round'});
++	//=> '2 kB'
++
++	prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'floor'});
++	//=> '1.9 kB'
++
++	prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'ceil'});
++	//=> '2 kB'
++
++	prettyBytes(-1999, {maximumFractionDigits: 1, roundingMode: 'floor'});
++	//=> '-2 kB'
++
++	prettyBytes(1001, {roundingMode: 'ceil'});
++	//=> '1.01 kB'
++	```
++	*/
++	readonly roundingMode?: 'round' | 'floor' | 'ceil';
++
+ 	/**
+ 	Put a space between the number and unit.
+ 
+diff --git a/index.js b/index.js
+index c5f37ab..38f85c5 100644
+--- a/index.js
++++ b/index.js
+@@ -143,25 +143,75 @@ const divide = (numberOrBigInt, base, exponent) => {
+ 
+ /*
+ The plain decimal digits of a scaled value that no `number` can hold. `Intl.NumberFormat` is not involved, so the output carries no grouping or localized separator, the same as the fallback for a value with more fraction digits than it accepts.
++
++`magnitudeMode` is one of `trunc`, `expand` and `halfExpand`, applied to the (non-negative) magnitude with exact `bigint` arithmetic.
+ */
+-const toUnrepresentableString = (number, base, exponent, localeOptions) => {
++const toUnrepresentableString = (number, base, exponent, localeOptions, magnitudeMode = 'trunc') => {
+ 	const scale = BigInt(base) ** BigInt(exponent);
+-	const whole = number / scale;
+ 
+-	// The 3 significant digit default never bites here: it only ever rounds to at least as many digits as the value has integers, and this one has far more than 3.
+-	if (localeOptions === undefined) {
++	// The 3 significant digit default only ever rounds to at least as many digits as the value has integers, and this one has far more than 3, so it rounds to a whole number. The fraction digit options take over from that default.
++	const minimumFractionDigits = localeOptions?.minimumFractionDigits ?? 0;
++	const maximumFractionDigits = localeOptions === undefined ? 0 : Math.max(localeOptions.maximumFractionDigits ?? 3, minimumFractionDigits);
++	const multiplier = 10n ** BigInt(maximumFractionDigits);
++	const numerator = number * multiplier;
++	let digits = numerator / scale;
++	const remainder = numerator % scale;
++
++	if ((magnitudeMode === 'expand' && remainder > 0n) || (magnitudeMode === 'halfExpand' && remainder * 2n >= scale)) {
++		digits += 1n;
++	}
++
++	const whole = digits / multiplier;
++	if (maximumFractionDigits === 0) {
+ 		return whole.toString();
+ 	}
+ 
+-	// The fraction digit options take over from that default, so the integer part stays exact and the fraction is truncated.
+-	const minimumFractionDigits = localeOptions.minimumFractionDigits ?? 0;
+-	const maximumFractionDigits = Math.max(localeOptions.maximumFractionDigits ?? 3, minimumFractionDigits);
+-	const truncated = ((number % scale) * (10n ** BigInt(maximumFractionDigits)) / scale).toString().padStart(maximumFractionDigits, '0');
+-	const fraction = truncated.replace(/0+$/, '').padEnd(minimumFractionDigits, '0');
++	const fraction = (digits % multiplier).toString().padStart(maximumFractionDigits, '0').replace(/0+$/, '').padEnd(minimumFractionDigits, '0');
+ 
+ 	return fraction ? `${whole}.${fraction}` : whole.toString();
+ };
+ 
++const ROUNDING_MODES = new Set(['round', 'floor', 'ceil']);
++
++const assertRoundingMode = roundingMode => {
++	if (roundingMode !== undefined && !ROUNDING_MODES.has(roundingMode)) {
++		throw new TypeError(`Expected roundingMode to be one of 'round', 'floor' or 'ceil', got ${typeof roundingMode}: ${String(roundingMode)}`);
++	}
++};
++
++/*
++The digits are rounded on the magnitude, after the sign has been split off, so `floor` and `ceil` swap for a negative value: `floor` moves toward negative infinity, which is away from zero for a negative value.
++`undefined` keeps the behavior from before the option existed.
++*/
++const toMagnitudeMode = (roundingMode, isNegative) => {
++	switch (roundingMode) {
++		case 'round': {
++			return 'halfExpand';
++		}
++
++		case 'floor': {
++			return isNegative ? 'expand' : 'trunc';
++		}
++
++		case 'ceil': {
++			return isNegative ? 'trunc' : 'expand';
++		}
++
++		default: {
++			return undefined;
++		}
++	}
++};
++
++// `Intl.NumberFormat` caps significant digits at 21. A value with more integer digits than that is at least `1e21`, where every `number` is already a whole number, so there is nothing left to round.
++const roundToSignificantDigits = (number, digits, magnitudeMode) => {
++	if (digits > 21) {
++		return number;
++	}
++
++	return Number(number.toLocaleString('en-US', {maximumSignificantDigits: digits, roundingMode: magnitudeMode, useGrouping: false}));
++};
++
+ /*
+ The sign to print in front of the number. A difference of exactly zero gets a space instead of a plus sign, for better alignment. `0 === 0n` is `false`, so both are compared.
+ */
+@@ -192,7 +242,7 @@ const assertFractionDigits = (name, value) => {
+ 	}
+ };
+ 
+-const buildLocaleOptions = options => {
++const buildLocaleOptions = (options, magnitudeMode) => {
+ 	const {minimumFractionDigits, maximumFractionDigits} = options;
+ 
+ 	if (minimumFractionDigits === undefined && maximumFractionDigits === undefined) {
+@@ -210,7 +260,8 @@ const buildLocaleOptions = options => {
+ 	return {
+ 		...(minimumFractionDigits !== undefined && {minimumFractionDigits}),
+ 		...(maximumFractionDigits !== undefined && {maximumFractionDigits}),
+-		roundingMode: 'trunc',
++		// Without an explicit `roundingMode`, the fraction digit options truncate, as they always have.
++		roundingMode: magnitudeMode ?? 'trunc',
+ 	};
+ };
+ 
+@@ -228,7 +279,9 @@ export default function prettyBytes(number, options) {
+ 	};
+ 
+ 	assertFixedWidth(options.fixedWidth);
+-	const localeOptions = buildLocaleOptions(options);
++	assertRoundingMode(options.roundingMode);
++	const magnitudeMode = toMagnitudeMode(options.roundingMode, number < 0);
++	const localeOptions = buildLocaleOptions(options, magnitudeMode);
+ 
+ 	// Indexed by `bits` then `binary`, so the four combinations line up in one table.
+ 	const UNITS = UNIT_SETS[(options.bits ? 2 : 0) + (options.binary ? 1 : 0)];
+@@ -266,9 +319,23 @@ export default function prettyBytes(number, options) {
+ 			exponent -= 1;
+ 		}
+ 
+-		if (!localeOptions) {
++		if (localeOptions) {
++			// Rounding up can carry onto the next unit, like `999.96 kB` to `1000.0 kB`, which reads as `1 MB` instead. Truncation never carries.
++			if (localeOptions.roundingMode !== 'trunc' && exponent < UNITS.length - 1) {
++				const rounded = Number(number.toLocaleString('en-US', {...localeOptions, useGrouping: false}));
++
++				if (rounded >= base) {
++					number /= base;
++					exponent += 1;
++				}
++			}
++		} else {
+ 			const minimumPrecision = Math.max(3, Math.floor(number).toString().length);
+-			number = Number(number.toPrecision(minimumPrecision));
++
++			// `round` is the default, so it keeps `Number#toPrecision` and its exact tie behavior.
++			number = magnitudeMode === undefined || magnitudeMode === 'halfExpand'
++				? Number(number.toPrecision(minimumPrecision))
++				: roundToSignificantDigits(number, minimumPrecision, magnitudeMode);
+ 
+ 			if (number >= base && exponent < UNITS.length - 1) {
+ 				number /= base;
+@@ -279,7 +346,7 @@ export default function prettyBytes(number, options) {
+ 		numberString = toLocaleString(number, options.locale, localeOptions);
+ 	} else {
+ 		// The scaled value is past what a `number` can hold, so the exact quotient is written out instead.
+-		numberString = toUnrepresentableString(number, base, exponent, localeOptions);
++		numberString = toUnrepresentableString(number, base, exponent, localeOptions, magnitudeMode);
+ 	}
+ 
+ 	const result = prefix + numberString + separator + UNITS[exponent];
+diff --git a/index.test-d.ts b/index.test-d.ts
+index 7f56f9c..7194454 100644
+--- a/index.test-d.ts
++++ b/index.test-d.ts
+@@ -8,3 +8,6 @@ expectType<string>(prettyBytes(1337, {locale: true}));
+ expectType<string>(prettyBytes(1337, {bits: true}));
+ expectType<string>(prettyBytes(1337, {binary: true}));
+ expectType<string>(prettyBytes(1337, {space: true}));
++expectType<string>(prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'floor'}));
++expectType<string>(prettyBytes(1999, {roundingMode: 'ceil'}));
++expectType<string>(prettyBytes(1999, {roundingMode: 'round'}));
+diff --git a/readme.md b/readme.md
+index 48aa7b7..f025c41 100644
+--- a/readme.md
++++ b/readme.md
+@@ -137,7 +137,7 @@ Must be an integer between 0 and 100. Throws a `TypeError` for invalid values.
+ Must not be greater than `maximumFractionDigits`, which throws a `RangeError` when both are set.
+ 
+ > [!NOTE]
+-> When `minimumFractionDigits` or `maximumFractionDigits` is specified, values are truncated instead of rounded to provide more intuitive results for file sizes.
++> When `minimumFractionDigits` or `maximumFractionDigits` is specified, values are truncated instead of rounded to provide more intuitive results for file sizes, unless [`roundingMode`](#roundingmode) is set.
+ 
+ ```js
+ import prettyBytes from 'pretty-bytes';
+@@ -164,7 +164,7 @@ Must be an integer between 0 and 100. Throws a `TypeError` for invalid values.
+ Must not be less than `minimumFractionDigits`, which throws a `RangeError` when both are set.
+ 
+ > [!NOTE]
+-> When `minimumFractionDigits` or `maximumFractionDigits` is specified, values are truncated instead of rounded to provide more intuitive results for file sizes.
++> When `minimumFractionDigits` or `maximumFractionDigits` is specified, values are truncated instead of rounded to provide more intuitive results for file sizes, unless [`roundingMode`](#roundingmode) is set.
+ 
+ ```js
+ import prettyBytes from 'pretty-bytes';
+@@ -177,6 +177,63 @@ prettyBytes(1920);
+ //=> '1.92 kB'
+ ```
+ 
++##### roundingMode
++
++Type: `'round' | 'floor' | 'ceil'`\
++Default: `undefined` (see below)
++
++How the last displayed digit is rounded.
++
++- `'round'`: Round to the nearest digit, with ties going away from zero.
++- `'floor'`: Round toward negative infinity.
++- `'ceil'`: Round toward positive infinity.
++
++It applies to the fraction digits allowed by `minimumFractionDigits` and `maximumFractionDigits`, or, when neither is set, to the 3 significant digits shown by default. It works with `locale`, `signed`, `binary`, `bits` and `bigint` input.
++
++Throws a `TypeError` for any other value.
++
++```js
++import prettyBytes from 'pretty-bytes';
++
++prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'round'});
++//=> '2 kB'
++
++prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'floor'});
++//=> '1.9 kB'
++
++prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'ceil'});
++//=> '2 kB'
++
++prettyBytes(1001, {roundingMode: 'ceil'});
++//=> '1.01 kB'
++
++prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'floor', locale: 'de'});
++//=> '1,9 kB'
++```
++
++**Negative numbers.** `floor` and `ceil` follow the mathematical definition (the same as `Math.floor`/`Math.ceil` and `Intl.NumberFormat`), not the magnitude: `floor` always moves toward negative infinity, so it moves a negative value *away* from zero, and `ceil` moves it toward zero. For any value, `floor` of `-x` prints as `-` followed by `ceil` of `x`. `'round'` is symmetric: ties go away from zero for either sign. The sign comes from the input, so a negative value that rounds to zero still prints as `-0`, the same as without this option.
++
++```js
++import prettyBytes from 'pretty-bytes';
++
++prettyBytes(-1999, {maximumFractionDigits: 1, roundingMode: 'floor'});
++//=> '-2 kB'
++
++prettyBytes(-1999, {maximumFractionDigits: 1, roundingMode: 'ceil'});
++//=> '-1.9 kB'
++
++prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'floor', signed: true});
++//=> '+1.9 kB'
++```
++
++**Unit carry.** A value that rounds up onto the next unit is printed in that unit, the same as the default rounding already does, so `999960` bytes with `maximumFractionDigits: 1` and `roundingMode: 'round'` is `1 MB` rather than `1000 kB`. The largest unit (`YB`/`YiB`) never carries.
++
++> [!IMPORTANT]
++> **Why the default is not literally `'round'`.** Before this option existed, the output already used two different behaviors: the 3 significant digit default *rounds*, but `minimumFractionDigits`/`maximumFractionDigits` *truncate* (see the note above). Making `'round'` the default would change existing output, such as `1999` bytes with `maximumFractionDigits: 1` going from `'1.9 kB'` to `'2 kB'`. So when `roundingMode` is omitted the output stays exactly as before. Without fraction digit options that is identical to `'round'`. With them it truncates, so pass `roundingMode: 'round'` to round instead.
++
++> [!NOTE]
++> With the 3 significant digit default, `'round'` keeps using `Number#toPrecision`, so exact ties behave as described under [`number`](#number) (`1005` bytes is `1 kB`). With fraction digit options, rounding goes through `Intl.NumberFormat`, which rounds the shortest decimal form of the value, so `1005` bytes with `maximumFractionDigits: 2` and `roundingMode: 'round'` is `1.01 kB`. For a `bigint` past the `number` range, rounding is exact.
++
+ ##### space
+ 
+ Type: `boolean`\
+diff --git a/test-rounding.js b/test-rounding.js
+new file mode 100644
+index 0000000..eb71b0d
+--- /dev/null
++++ b/test-rounding.js
+@@ -0,0 +1,143 @@
++import {test} from 'node:test';
++import assert from 'node:assert/strict';
++import prettyBytes from './index.js';
++
++test('spec examples with maximumFractionDigits', () => {
++	assert.equal(prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'round'}), '2 kB');
++	assert.equal(prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'floor'}), '1.9 kB');
++	assert.equal(prettyBytes(1999, {maximumFractionDigits: 1, roundingMode: 'ceil'}), '2 kB');
++	assert.equal(prettyBytes(1999n, {maximumFractionDigits: 1, roundingMode: 'round'}), '2 kB');
++	assert.equal(prettyBytes(1999n, {maximumFractionDigits: 1, roundingMode: 'floor'}), '1.9 kB');
++});
++
++test('omitted roundingMode keeps existing behavior', () => {
++	// Fraction digit options keep truncating.
++	assert.equal(prettyBytes(1999, {maximumFractionDigits: 1}), '1.9 kB');
++	assert.equal(prettyBytes(59_952_784, {maximumFractionDigits: 1}), '59.9 MB');
++	// The 3 significant digit default keeps rounding, and explicit `round` matches it.
++	for (const value of [1337, 1005, 1125, 999_500, 1999, 0.000_123_45, 123_456_789]) {
++		assert.equal(prettyBytes(value, {roundingMode: 'round'}), prettyBytes(value));
++	}
++
++	assert.equal(prettyBytes(1337, {roundingMode: undefined}), '1.34 kB');
++});
++
++test('round, floor and ceil with fraction digits', () => {
++	assert.equal(prettyBytes(1150, {maximumFractionDigits: 1, roundingMode: 'round'}), '1.2 kB');
++	assert.equal(prettyBytes(1149, {maximumFractionDigits: 1, roundingMode: 'round'}), '1.1 kB');
++	assert.equal(prettyBytes(1101, {maximumFractionDigits: 1, roundingMode: 'ceil'}), '1.2 kB');
++	assert.equal(prettyBytes(1100, {maximumFractionDigits: 1, roundingMode: 'ceil'}), '1.1 kB');
++	assert.equal(prettyBytes(1199, {maximumFractionDigits: 1, roundingMode: 'floor'}), '1.1 kB');
++	assert.equal(prettyBytes(1337, {minimumFractionDigits: 2, maximumFractionDigits: 2, roundingMode: 'round'}), '1.34 kB');
++	assert.equal(prettyBytes(1337, {minimumFractionDigits: 2, maximumFractionDigits: 2, roundingMode: 'floor'}), '1.33 kB');
++	assert.equal(prettyBytes(1331, {minimumFractionDigits: 2, maximumFractionDigits: 2, roundingMode: 'ceil'}), '1.34 kB');
++	assert.equal(prettyBytes(1999, {minimumFractionDigits: 1, maximumFractionDigits: 1, roundingMode: 'round'}), '2.0 kB');
++	assert.equal(prettyBytes(1999, {minimumFractionDigits: 3, roundingMode: 'ceil'}), '1.999 kB');
++	assert.equal(prettyBytes(1999, {maximumFractionDigits: 0, roundingMode: 'floor'}), '1 kB');
++	assert.equal(prettyBytes(1001, {maximumFractionDigits: 0, roundingMode: 'ceil'}), '2 kB');
++	assert.equal(prettyBytes(1500, {maximumFractionDigits: 0, roundingMode: 'round'}), '2 kB');
++	assert.equal(prettyBytes(1126, {binary: true, maximumFractionDigits: 2, roundingMode: 'ceil'}), '1.1 KiB');
++	assert.equal(prettyBytes(1126, {binary: true, maximumFractionDigits: 2, roundingMode: 'floor'}), '1.09 KiB');
++});
++
++test('round, floor and ceil with the significant digit default', () => {
++	assert.equal(prettyBytes(1999, {roundingMode: 'floor'}), '1.99 kB');
++	assert.equal(prettyBytes(1999, {roundingMode: 'ceil'}), '2 kB');
++	assert.equal(prettyBytes(1001, {roundingMode: 'ceil'}), '1.01 kB');
++	assert.equal(prettyBytes(1001, {roundingMode: 'floor'}), '1 kB');
++	assert.equal(prettyBytes(1337, {roundingMode: 'floor'}), '1.33 kB');
++	assert.equal(prettyBytes(123_456_789, {roundingMode: 'ceil'}), '124 MB');
++	assert.equal(prettyBytes(0.000_123_45, {roundingMode: 'ceil'}), '0.000124 B');
++	assert.equal(prettyBytes(0.000_123_45, {roundingMode: 'floor'}), '0.000123 B');
++});
++
++test('rounding up carries onto the next unit', () => {
++	assert.equal(prettyBytes(999_960, {maximumFractionDigits: 1, roundingMode: 'round'}), '1 MB');
++	assert.equal(prettyBytes(999_960, {minimumFractionDigits: 1, roundingMode: 'round'}), '999.96 kB');
++	assert.equal(prettyBytes(999_960, {minimumFractionDigits: 1, maximumFractionDigits: 1, roundingMode: 'round'}), '1.0 MB');
++	assert.equal(prettyBytes(999_901, {maximumFractionDigits: 1, roundingMode: 'ceil'}), '1 MB');
++	assert.equal(prettyBytes(999_999, {maximumFractionDigits: 1, roundingMode: 'floor'}), '999.9 kB');
++	assert.equal(prettyBytes(999_100, {roundingMode: 'ceil'}), '1 MB');
++	assert.equal(prettyBytes(999_999, {roundingMode: 'floor'}), '999 kB');
++	assert.equal(prettyBytes(1_048_575, {binary: true, maximumFractionDigits: 1, roundingMode: 'round'}), '1 MiB');
++	assert.equal(prettyBytes(1_048_575, {binary: true, maximumFractionDigits: 1, roundingMode: 'floor'}), '1023.9 KiB');
++	// The largest unit has nowhere to carry to.
++	assert.equal(prettyBytes(999.96e24, {maximumFractionDigits: 1, roundingMode: 'round'}), '1000 YB');
++});
++
++test('negative numbers: floor moves toward negative infinity, ceil toward positive infinity', () => {
++	assert.equal(prettyBytes(-1999, {maximumFractionDigits: 1, roundingMode: 'floor'}), '-2 kB');
++	assert.equal(prettyBytes(-1999, {maximumFractionDigits: 1, roundingMode: 'ceil'}), '-1.9 kB');
++	assert.equal(prettyBytes(-1999, {maximumFractionDigits: 1, roundingMode: 'round'}), '-2 kB');
++	assert.equal(prettyBytes(-1150, {maximumFractionDigits: 1, roundingMode: 'round'}), '-1.2 kB');
++	assert.equal(prettyBytes(-1999n, {maximumFractionDigits: 1, roundingMode: 'floor'}), '-2 kB');
++	assert.equal(prettyBytes(-1999n, {maximumFractionDigits: 1, roundingMode: 'ceil'}), '-1.9 kB');
++	assert.equal(prettyBytes(-1001, {roundingMode: 'floor'}), '-1.01 kB');
++	assert.equal(prettyBytes(-1001, {roundingMode: 'ceil'}), '-1 kB');
++	assert.equal(prettyBytes(-999_901, {maximumFractionDigits: 1, roundingMode: 'floor'}), '-1 MB');
++	// floor(x) === -ceil(-x)
++	for (const value of [1, 1001, 1337, 1999, 54_321, 999_901]) {
++		for (const maximumFractionDigits of [undefined, 0, 1, 2]) {
++			const floor = prettyBytes(-value, {maximumFractionDigits, roundingMode: 'floor'});
++			const ceil = prettyBytes(value, {maximumFractionDigits, roundingMode: 'ceil'});
++			assert.equal(floor, `-${ceil}`);
++		}
++	}
++});
++
++test('signed option', () => {
++	assert.equal(prettyBytes(1999, {signed: true, maximumFractionDigits: 1, roundingMode: 'floor'}), '+1.9 kB');
++	assert.equal(prettyBytes(1999, {signed: true, maximumFractionDigits: 1, roundingMode: 'ceil'}), '+2 kB');
++	assert.equal(prettyBytes(-1999, {signed: true, maximumFractionDigits: 1, roundingMode: 'floor'}), '-2 kB');
++	assert.equal(prettyBytes(-1999, {signed: true, maximumFractionDigits: 1, roundingMode: 'ceil'}), '-1.9 kB');
++	assert.equal(prettyBytes(0, {signed: true, minimumFractionDigits: 1, roundingMode: 'ceil'}), ' 0.0 B');
++	assert.equal(prettyBytes(-0, {signed: true, roundingMode: 'floor'}), ' 0 B');
++});
++
++test('locale option', () => {
++	assert.equal(prettyBytes(1999, {locale: 'de', maximumFractionDigits: 1, roundingMode: 'floor'}), '1,9 kB');
++	assert.equal(prettyBytes(1999, {locale: 'de', maximumFractionDigits: 1, roundingMode: 'round'}), '2 kB');
++	assert.equal(prettyBytes(1337, {locale: 'de', roundingMode: 'floor'}), '1,33 kB');
++	assert.equal(prettyBytes(-1337, {locale: 'de', roundingMode: 'floor'}), '-1,34 kB');
++	assert.equal(prettyBytes(1_048_575, {locale: 'en', binary: true, maximumFractionDigits: 1, roundingMode: 'floor'}), '1,023.9 KiB');
++	assert.equal(prettyBytes(1_048_575, {locale: 'en', binary: true, maximumFractionDigits: 1, roundingMode: 'round'}), '1 MiB');
++	assert.equal(prettyBytes(1331, {locale: ['de', 'en'], minimumFractionDigits: 2, maximumFractionDigits: 2, roundingMode: 'ceil'}), '1,34 kB');
++});
++
++test('bigint past the number range', () => {
++	const scale = 10n ** 24n;
++	const value = (10n ** 400n) + (scale * 19n / 20n); // ...0.95 YB
++	const whole = `1${'0'.repeat(376)}`;
++	const wholePlusOne = `1${'0'.repeat(375)}1`;
++	assert.equal(prettyBytes(value), `${whole} YB`);
++	assert.equal(prettyBytes(value, {roundingMode: 'round'}), `${wholePlusOne} YB`);
++	assert.equal(prettyBytes(value, {roundingMode: 'floor'}), `${whole} YB`);
++	assert.equal(prettyBytes(value, {roundingMode: 'ceil'}), `${wholePlusOne} YB`);
++	assert.equal(prettyBytes(value, {maximumFractionDigits: 1}), `${whole}.9 YB`);
++	assert.equal(prettyBytes(value, {maximumFractionDigits: 1, roundingMode: 'round'}), `${wholePlusOne} YB`);
++	assert.equal(prettyBytes(value, {minimumFractionDigits: 1, maximumFractionDigits: 1, roundingMode: 'round'}), `${wholePlusOne}.0 YB`);
++	assert.equal(prettyBytes(value + 1n, {maximumFractionDigits: 2, roundingMode: 'ceil'}), `${whole}.96 YB`);
++	assert.equal(prettyBytes(-value, {maximumFractionDigits: 1, roundingMode: 'floor'}), `-${wholePlusOne} YB`);
++	assert.equal(prettyBytes(-value, {maximumFractionDigits: 1, roundingMode: 'ceil'}), `-${whole}.9 YB`);
++	assert.equal(prettyBytes(10n ** 400n, {maximumFractionDigits: 2, roundingMode: 'ceil'}), `${whole} YB`);
++});
++
++test('documented tie behavior and rounding to zero', () => {
++	assert.equal(prettyBytes(1005, {roundingMode: 'round'}), '1 kB');
++	assert.equal(prettyBytes(1005, {maximumFractionDigits: 2, roundingMode: 'round'}), '1.01 kB');
++	assert.equal(prettyBytes(-1005, {maximumFractionDigits: 2, roundingMode: 'round'}), '-1.01 kB');
++	assert.equal(prettyBytes(-0.04, {maximumFractionDigits: 1, roundingMode: 'ceil'}), '-0 B');
++	assert.equal(prettyBytes(-0.04, {maximumFractionDigits: 1, roundingMode: 'floor'}), '-0.1 B');
++	assert.equal(prettyBytes(0.04, {maximumFractionDigits: 1, roundingMode: 'ceil'}), '0.1 B');
++});
++
++test('rejects invalid roundingMode', () => {
++	for (const roundingMode of ['trunc', 'halfExpand', 'ROUND', '', null, 1, true]) {
++		assert.throws(() => prettyBytes(1337, {roundingMode}), {
++			name: 'TypeError',
++			message: /Expected roundingMode to be one of 'round', 'floor' or 'ceil'/,
++		});
++	}
++
++	assert.throws(() => prettyBytes(0, {signed: true, roundingMode: 'up'}), TypeError);
++});

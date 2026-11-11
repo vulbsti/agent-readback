@@ -1,0 +1,73 @@
+{
+ "session": "s05",
+ "condition": "explainer",
+ "budget": 2000,
+ "context_tokens_est": 2003,
+ "answer_input_tokens": 5013,
+ "answers": {
+  "q1": "round→'halfExpand'; floor→'expand' if negative else 'trunc'; ceil→'trunc' if negative else 'expand'; undefined→undefined.",
+  "q2": "It accepts only 'round', 'floor' or 'ceil' (and undefined, i.e. omitted). Anything else ('trunc', 'halfExpand', 'ROUND', '', null, 1, true) throws a TypeError matching /Expected roundingMode to be one of 'round', 'floor' or 'ceil'/. The function body itself isn't shown in the visible diff.",
+  "q3": "Making the default 'round' would change existing output, because fraction-digit formatting currently truncates (e.g. 59_952_784 → '59.9 MB' would become '60 MB'). The agent left the default as undefined (truncation kept), documented it in the readme, and noted callers must pass 'round' explicitly to round fraction digits.",
+  "q4": "When the mode isn't trunc and a larger unit exists, the value is pre-rounded via en-US toLocaleString with the locale options (useGrouping false). If the rounded result is >= base, number /= base and exponent += 1, so 999960 with maximumFractionDigits:1 gives '1 MB'.",
+  "q5": "Without fraction-digit options, the default 3-significant-digit path uses toPrecision for round/undefined, giving 1 kB. With fraction digits, Intl is called with halfExpand, which rounds 1.005 to 1.01.",
+  "q6": "It scales the bigint digits by 10n ** maximumFractionDigits, divides by scale, and uses the remainder: adds 1n for 'expand' if remainder > 0n, and for 'halfExpand' if remainder*2n >= scale; otherwise it truncates.",
+  "q7": "unknown",
+  "q8": "The test 'rounding up carries onto the next unit' expected '999.960 kB' but got '999.96 kB'. The agent corrected the test's expected value to '999.96 kB' and left the code unchanged.",
+  "q9": "It wrote a home-made ava shim outside the repo (via Write, after a heredoc was blocked) and ran test.js through it. First, test.js crashed with 'test.skip is not a function'.",
+  "q10": "The 'documented examples are accurate' test failed because the shim directory lacked readme.md/index.d.ts (and doc fences need //=>). After fixing the shim setup, the final result was 48 pass, 0 fail, 3 skipped; test-rounding.js passed 11/11."
+ },
+ "grades": {
+  "q1": {
+   "id": "q1",
+   "score": 1,
+   "why": "All four mappings correct, including floor/ceil swap for negatives."
+  },
+  "q2": {
+   "id": "q2",
+   "score": 1,
+   "why": "Names round/floor/ceil plus undefined, and TypeError for anything else."
+  },
+  "q3": {
+   "id": "q3",
+   "score": 1,
+   "why": "Identifies that fraction-digit formatting truncates today, so a 'round' default would change output; kept default undefined and documented in readme."
+  },
+  "q4": {
+   "id": "q4",
+   "score": 0.5,
+   "why": "Correct mechanism and the 999960 -> '1 MB' example, but does not mention that the check is skipped for trunc/last unit explicitly beyond 'larger unit exists' and 'isn't trunc' (mostly covered); omits YB note. Mostly right."
+  },
+  "q5": {
+   "id": "q5",
+   "score": 0.5,
+   "why": "Correctly says toPrecision on default path versus Intl with fraction digits, but does not mention that Intl works on the shortest decimal form or that this was kept deliberately and documented."
+  },
+  "q6": {
+   "id": "q6",
+   "score": 1,
+   "why": "Describes bigint scaling, division, and both increment conditions."
+  },
+  "q7": {
+   "id": "q7",
+   "score": 0,
+   "why": "Answered unknown."
+  },
+  "q8": {
+   "id": "q8",
+   "score": 1,
+   "why": "Names carry test, 999.960 vs 999.96 mismatch, and says the test was corrected, not the code."
+  },
+  "q9": {
+   "id": "q9",
+   "score": 0.5,
+   "why": "Mentions the shim outside repo, blocked heredoc, and the test.skip error, but not that test.skip/notRegex was added to the shim."
+  },
+  "q10": {
+   "id": "q10",
+   "score": 1,
+   "why": "Names documented-examples test, cause (doc files missing from shim), and final 48 pass/0 fail/3 skipped and 11/11."
+  }
+ },
+ "score": 7.5,
+ "n": 10
+}
