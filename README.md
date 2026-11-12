@@ -14,7 +14,7 @@ The executor agent's repo is never written, with two narrow, disclosed exception
 uv tool install git+https://github.com/vulbsti/agent-readback   # or: pipx install git+https://github.com/vulbsti/agent-readback
 ```
 
-It needs Python 3.10+ and has zero runtime dependencies. CI passes on Linux and macOS (GitHub Actions, Python 3.10 and 3.13). Windows is untested.
+It needs Python 3.10+ and has zero runtime dependencies. CI runs on Linux (Python 3.10 and 3.13); macOS is tested on manual CI runs. Windows is untested.
 
 You also need one model backend. readback auto-detects them in this order:
 1. `READBACK_CMD`: any command that reads the prompt on stdin and prints the answer, e.g. `READBACK_CMD="llm -m my-model"`.

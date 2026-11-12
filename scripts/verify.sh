@@ -60,7 +60,7 @@ step "required project files"
 check bash -o pipefail -c '
 missing=0
 for f in LICENSE README.md CONTRIBUTING.md CODE_OF_CONDUCT.md SECURITY.md CHANGELOG.md AGENTS.md DECISIONS.md \
-  .github/CODEOWNERS .github/dependabot.yml .github/pull_request_template.md .github/workflows/ci.yml \
+  .github/CODEOWNERS .github/pull_request_template.md .github/workflows/ci.yml \
   .github/ISSUE_TEMPLATE/bug_report.yml .github/ISSUE_TEMPLATE/feature_request.yml \
   docs/architecture.md docs/usage.md docs/plugin.md docs/backends.md docs/ROADMAP.md docs/eval.md docs/alternatives.md \
   .claude-plugin/plugin.json .claude-plugin/marketplace.json commands/readback.md skills/readback/SKILL.md; do

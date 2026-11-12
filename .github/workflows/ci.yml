@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      macos:
+        description: "Also run the macOS job (public repo only; skipped while private)"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -14,12 +20,11 @@ concurrency:
 
 jobs:
   test:
-    name: ${{ matrix.os }} / py${{ matrix.python }}
-    runs-on: ${{ matrix.os }}
+    name: ubuntu / py${{ matrix.python }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
         python: ["3.10", "3.13"]
     steps:
       - uses: actions/checkout@v7
@@ -34,3 +39,16 @@ jobs:
         run: uv run ruff format --check .
       - name: Test
         run: uv run pytest -q
+
+  test-macos:
+    # macOS is manual-only: Actions -> CI -> Run workflow -> tick macos. Never runs while the repo is
+    # private (macOS minutes bill at 10x), and never on push/PR.
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.macos && !github.event.repository.private }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+      - run: uv sync
+      - run: uv run pytest -q

@@ -108,7 +108,7 @@ Then:
 ## Pull requests
 
 - One logical change per PR. Run `uv run pytest -q`, `uv run ruff check .` and
-  `uv run ruff format --check .` before pushing; CI runs the same on Linux and macOS.
+  `uv run ruff format --check .` before pushing; CI runs the same on Linux (macOS on manual dispatch).
 - Changes to `prompts.py` change the product's output. Describe the effect and, if you can, run
   the eval on at least one session before and after.
 - Update `CHANGELOG.md` under `## [Unreleased]`.
